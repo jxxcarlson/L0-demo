@@ -1,5 +1,6 @@
 module Render.Settings exposing
     ( Settings
+    , defaultSettings
     , leftIndentation
     , maxHeadingFontSize
     , redColor
@@ -15,6 +16,17 @@ type alias Settings =
     , showTOC : Bool
     , titleSize : Int
     , width : Int
+    }
+
+
+defaultSettings : Settings
+defaultSettings =
+    { width = 500
+    , titleSize = 30
+    , paragraphSpacing = 28
+    , showTOC = True
+    , showErrorMessages = False
+    , selectedId = ""
     }
 
 

@@ -120,13 +120,31 @@ abstract g s exprList =
     Element.paragraph [] [ Element.el [ Font.size 18 ] (Element.text "Abstract."), simpleElement [] g s exprList ]
 
 
-link g s exprList =
-    case exprList of
-        (Text label _) :: (Text url _) :: _ ->
-            link_ url label
 
-        _ ->
-            el [ Font.color errorColor ] (Element.text "bad data for link")
+--link g s exprList =
+--    case exprList of
+--        (Text label _) :: (Text url _) :: _ ->
+--            link_ url label
+--
+--        _ ->
+--            el [ Font.color errorColor ] (Element.text "bad data for link")
+
+
+link g s exprList =
+    let
+        args =
+            exprList |> ASTTools.exprListToStringList |> List.filter (\t -> String.trim t /= "") |> Debug.log "XXX Args"
+
+        n =
+            List.length args
+
+        label =
+            List.take (n - 1) args |> String.join " " |> Debug.log "XXX Label"
+
+        url =
+            List.drop (n - 1) args |> String.join "" |> Debug.log "XXX URL"
+    in
+    link_ url label
 
 
 link_ : String -> String -> Element MarkupMsg
