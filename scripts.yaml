@@ -1,0 +1,7 @@
+scripts:
+
+  update-vendor:
+      - cp -r /Users/jxxcarlson/dev/bluesky/simple/src vendor/L0/
+      # - cp -r /Users/jxxcarlson/dev/lamdera/bluesky/shift-reduce/src vendor/markup2/
+
+  cloc: cloc --by-file --exclude-dir=Evergreen src/
