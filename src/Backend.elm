@@ -194,10 +194,11 @@ updateFromFrontend sessionId clientId msg model =
 
         SaveDocument currentUser document ->
             let
-                --title =
-                --   Ab`stract.getItem document.language "title" document.content
+                title =
+                    Abstract.getBlockContents "title" document.content |> Debug.log "TITLE!!"
+
                 documentDict =
-                    Dict.insert document.id document model.documentDict
+                    Dict.insert document.id { document | title = title } model.documentDict
             in
             ( { model | documentDict = documentDict }, Cmd.none )
 

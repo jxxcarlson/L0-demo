@@ -243,7 +243,7 @@ viewZipdocs model deltaH =
         , Font.color (E.rgb 0.1 0.1 1.0)
         , E.spacing 8
         ]
-        (E.el [ Font.size 16, Font.color (E.rgb 0.1 0.1 0.1) ] (E.text <| "Published Zipdocs (" ++ String.fromInt (List.length model.publicDocuments) ++ ")") :: viewPublicDocuments model)
+        (E.el [ Font.size 16, Font.color (E.rgb 0.1 0.1 0.1) ] (E.text <| "Published docs (" ++ String.fromInt (List.length model.publicDocuments) ++ ")") :: viewPublicDocuments model)
 
 
 footer model width_ =

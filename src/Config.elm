@@ -9,7 +9,7 @@ module Config exposing
 
 
 appName =
-    "Zipdocs"
+    "L0 Lab Demo"
 
 
 appUrl =
@@ -26,7 +26,6 @@ startupHelpDocumentId =
 
 helpDocumentId =
     "yr248.qb459"
-
 
 
 transitKey =

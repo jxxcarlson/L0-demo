@@ -3,6 +3,7 @@ module Abstract exposing
     , AbstractOLD
     , empty
     , get
+    , getBlockContents
     , getItem
     , toString
     )
@@ -67,6 +68,22 @@ getItem itemName source =
 
 {-|
 
+    > getBlockContents "title" "one\ntwo\n\n| title\nfoo bar\nbaz\n\n1\n2"
+      "foo bar\nbaz"
+
+-}
+getBlockContents : String -> String -> String
+getBlockContents blockName source =
+    case Parser.run (blockParser blockName) source of
+        Err _ ->
+            "??"
+
+        Ok str ->
+            str
+
+
+{-|
+
     > getItem "title" "o [foo bar] ho ho ho [title Foo] blah blah"
     "Foo" : String
 
@@ -80,5 +97,18 @@ itemParser name =
         |. Parser.spaces
         |= Parser.getOffset
         |. Parser.chompUntil "]"
+        |= Parser.getOffset
+        |= Parser.getSource
+
+
+blockParser : String -> Parser String
+blockParser name =
+    Parser.succeed String.slice
+        |. Parser.chompUntil "| "
+        |. Parser.chompUntil name
+        |. Parser.symbol name
+        |. Parser.spaces
+        |= Parser.getOffset
+        |. Parser.chompUntil "\n\n"
         |= Parser.getOffset
         |= Parser.getSource

@@ -88,8 +88,8 @@ init url key =
       -- DOCUMENT
       , lineNumber = 0
       , permissions = ReadOnly
-      , sourceText = ""
-      , ast = []
+      , sourceText = welcome
+      , ast = L0.parse 0 Document.defaultSettings welcome
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -103,6 +103,16 @@ init url key =
       }
     , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments ]
     )
+
+
+welcome =
+    """
+| title
+Welcome to the L0 Lab Demo
+
+[image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]
+
+"""
 
 
 debounceConfig : Debounce.Config FrontendMsg
@@ -408,8 +418,7 @@ update msg model =
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
-
-                --, parseData = Markup.API.parse model.language model.counter (String.lines doc.content)
+                , ast = L0.parse model.counter Document.defaultSettings doc.content
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
@@ -511,13 +520,11 @@ updateDoc model str =
 
         Just doc ->
             let
-                --parseData =
-                --    Markup.API.parse doc.language model.counter (String.lines doc.content)
-                --
-                --newTitle =
-                --    Abstract.getItem "title" parseData.ast |> Maybe.withDefault "Untitled"
+                newTitle =
+                    Abstract.getBlockContents "title" doc.content
+
                 newDocument =
-                    { doc | content = str }
+                    { doc | content = str, title = newTitle }
 
                 documents =
                     List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
