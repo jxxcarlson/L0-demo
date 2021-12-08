@@ -11,6 +11,7 @@ import Dict exposing (Dict)
 import Document exposing (Document)
 import File exposing (File)
 import Http
+import L0
 import Random
 import Render.Msg
 import Time
@@ -48,6 +49,7 @@ type alias FrontendModel =
 
     -- DOCUMENT
     , sourceText : String
+    , ast : L0.AST
     , searchCount : Int
     , searchSourceText : String
     , lineNumber : Int

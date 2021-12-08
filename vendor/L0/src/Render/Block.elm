@@ -81,6 +81,7 @@ blockDict =
     Dict.fromList
         [ ( "indent", indented )
         , ( "heading", heading )
+        , ( "title", title )
         ]
 
 
@@ -92,15 +93,20 @@ verbatimDict =
         ]
 
 
+title count settings args exprs =
+    Element.paragraph [ Font.size (round Render.Settings.maxHeadingFontSize) ] (renderWithDefault "| heading" count settings exprs)
+
+
 heading count settings args exprs =
+    -- level 1 is reserved for titles
     let
         headingLevel =
             case List.head args of
                 Nothing ->
-                    1
+                    2
 
                 Just level ->
-                    String.toFloat level |> Maybe.withDefault 1
+                    String.toFloat level |> Maybe.withDefault 2 |> (\x -> x + 1)
 
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round

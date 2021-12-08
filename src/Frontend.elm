@@ -18,6 +18,7 @@ import Frontend.Cmd
 import Frontend.PDF as PDF
 import Frontend.Update
 import Html exposing (Html)
+import L0
 import Lamdera exposing (sendToBackend)
 import List.Extra
 import Process
@@ -88,6 +89,7 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = ""
+      , ast = []
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -364,6 +366,7 @@ update msg model =
             in
             ( { model
                 | sourceText = str
+                , ast = L0.parse model.counter Document.defaultSettings str
                 , debounce = debounce
               }
             , cmd

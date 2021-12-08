@@ -1,10 +1,12 @@
 module Document exposing
     ( Access(..)
     , Document
+    , defaultSettings
     , empty
     , wordCount
     )
 
+import Render.Settings
 import Time
 import User exposing (User)
 
@@ -29,6 +31,17 @@ type Access
     = Public
     | Private
     | Shared { canRead : List Username, canWrite : List Username }
+
+
+defaultSettings : Render.Settings.Settings
+defaultSettings =
+    { width = 500
+    , titleSize = 30
+    , paragraphSpacing = 28
+    , showTOC = True
+    , showErrorMessages = False
+    , selectedId = ""
+    }
 
 
 empty =

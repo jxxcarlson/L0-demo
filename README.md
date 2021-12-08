@@ -1,3 +1,3 @@
-# l0-lab-lamdera
+# L0-lab-lamdera
 
 Experimental markup language

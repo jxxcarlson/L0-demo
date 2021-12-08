@@ -390,22 +390,10 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    (L0.renderFromString3 model.counter defaultSettings doc.content
-                        |> Result.withDefault [ E.text "Error" ]
+                    (L0.renderFromAST model.counter Document.defaultSettings model.ast
                         |> List.map (E.map Render)
                     )
                 ]
-
-
-defaultSettings : Render.Settings.Settings
-defaultSettings =
-    { width = 500
-    , titleSize = 30
-    , paragraphSpacing = 28
-    , showTOC = True
-    , showErrorMessages = False
-    , selectedId = ""
-    }
 
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
