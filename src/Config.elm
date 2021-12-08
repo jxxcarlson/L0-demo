@@ -13,7 +13,7 @@ appName =
 
 
 appUrl =
-    "https://zipdocs.lamdera.app"
+    "https://l0-lab-demo.lamdera.app"
 
 
 pdfServer =
