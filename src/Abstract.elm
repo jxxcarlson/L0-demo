@@ -7,7 +7,6 @@ module Abstract exposing
     , toString
     )
 
-import Lang.Lang as Lang
 import Parser exposing ((|.), (|=), Parser)
 
 
@@ -33,20 +32,20 @@ empty =
     }
 
 
-get : Lang.Lang -> String -> Abstract
-get lang source =
+get : String -> Abstract
+get source =
     let
         title =
-            getItem lang "title" source
+            getItem "title" source
 
         author =
-            getItem lang "author" source
+            getItem "author" source
 
         abstract =
-            getItem lang "abstract" source
+            getItem "abstract" source
 
         tags =
-            getItem lang "tags" source
+            getItem "tags" source
     in
     { title = title
     , author = author
@@ -56,52 +55,30 @@ get lang source =
     }
 
 
-getItem : Lang.Lang -> String -> String -> String
-getItem lang itemName source =
-    case Parser.run (itemParser lang itemName) source of
+getItem : String -> String -> String
+getItem itemName source =
+    case Parser.run (itemParser itemName) source of
         Err _ ->
-            ""
+            "??"
 
         Ok str ->
             str
 
 
-itemParser : Lang.Lang -> String -> Parser String
-itemParser lang name =
-    case lang of
-        Lang.Markdown ->
-            annotationParser name
+{-|
 
-        Lang.MiniLaTeX ->
-            macroParser name
+    > getItem "title" "o [foo bar] ho ho ho [title Foo] blah blah"
+    "Foo" : String
 
-        _ ->
-            Parser.succeed ""
-
-
-macroParser : String -> Parser String
-macroParser name =
-    let
-        prefix =
-            "\\" ++ name ++ "{"
-    in
+-}
+itemParser : String -> Parser String
+itemParser name =
     Parser.succeed String.slice
-        |. Parser.chompUntil prefix
-        |. Parser.symbol prefix
-        |= Parser.getOffset
-        |. Parser.chompUntil "}"
-        |= Parser.getOffset
-        |= Parser.getSource
-
-
-annotationParser : String -> Parser String
-annotationParser name =
-    Parser.succeed String.slice
-        |. Parser.chompUntil "[!"
+        |. Parser.chompUntil "["
         |. Parser.chompUntil name
-        |. Parser.chompUntil "]("
-        |. Parser.symbol "]("
+        |. Parser.symbol name
+        |. Parser.spaces
         |= Parser.getOffset
-        |. Parser.chompUntil ")"
+        |. Parser.chompUntil "]"
         |= Parser.getOffset
         |= Parser.getSource

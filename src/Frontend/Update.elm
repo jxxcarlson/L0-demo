@@ -6,7 +6,6 @@ module Frontend.Update exposing
 
 import Document exposing (Document)
 import Lamdera exposing (sendToBackend)
-import Lang.Lang
 import List.Extra
 import Types exposing (..)
 
@@ -33,20 +32,11 @@ newDocument model =
             Document.empty
 
         title =
-            case model.language of
-                Lang.Lang.L1 ->
-                    "[title New Document]\n\n"
-
-                Lang.Lang.Markdown ->
-                    "[! title](New Document)\n\n"
-
-                Lang.Lang.MiniLaTeX ->
-                    "\\title{New Document}\n\n"
+            "[title New Document]\n\n"
 
         doc =
             { emptyDoc
                 | content = title
-                , language = model.language
                 , author = Maybe.map .username model.currentUser
             }
     in

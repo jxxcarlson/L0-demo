@@ -11,8 +11,6 @@ import Dict exposing (Dict)
 import Document exposing (Document)
 import File exposing (File)
 import Http
-import Lang.Lang
-import Markup.API exposing (ParseData)
 import Random
 import Render.Msg
 import Time
@@ -49,7 +47,6 @@ type alias FrontendModel =
     , syncRequestIndex : Int
 
     -- DOCUMENT
-    , parseData : ParseData
     , sourceText : String
     , searchCount : Int
     , searchSourceText : String
@@ -58,7 +55,6 @@ type alias FrontendModel =
     , debounce : Debounce String
     , currentDocument : Maybe Document
     , documents : List Document
-    , language : Lang.Lang.Lang
     , inputSearchKey : String
     , printingState : PrintingState
     , documentDeleteState : DocumentDeleteState
@@ -192,7 +188,6 @@ type FrontendMsg
     | GetSelection String
       -- DOC
     | InputSearchSource String
-    | Render Render.Msg.MarkupMsg
     | InputText String
     | DebounceMsg Debounce.Msg
     | Saved String
@@ -201,12 +196,12 @@ type FrontendMsg
     | InputAuthorId String
     | NewDocument
     | SetDocumentAsCurrent DocPermissions Document
-    | SetLanguage Lang.Lang.Lang
     | SetPublic Document Bool
     | AskFoDocumentById String
     | AskForDocumentByAuthorId
     | DeleteDocument
     | SetDeleteDocumentState DocumentDeleteState
+    | Render Render.Msg.MarkupMsg
       -- Export
     | ExportToMarkdown
     | ExportToLaTeX

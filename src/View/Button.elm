@@ -10,10 +10,7 @@ module View.Button exposing
     , getDocumentByPrivateId
     , help
     , importJson
-    , l1LanguageButton
     , linkTemplate
-    , markupLanguageButton
-    , miniLaTeXLanguageButton
     , newDocument
     , openEditor
     , printToPDF
@@ -35,7 +32,6 @@ import Element.Background as Background
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
-import Lang.Lang
 import Types exposing (..)
 import View.Color as Color
 import View.Style
@@ -245,42 +241,6 @@ search =
 getDocument : Element FrontendMsg
 getDocument =
     buttonTemplate [] (AskFoDocumentById "aboutCYT") "Get document"
-
-
-markupLanguageButton model =
-    let
-        bg =
-            if model.language == Lang.Lang.Markdown then
-                Background.color Color.darkRed
-
-            else
-                Background.color (E.rgb255 40 40 40)
-    in
-    buttonTemplate [ bg ] (SetLanguage Lang.Lang.Markdown) "Markdown"
-
-
-l1LanguageButton model =
-    let
-        bg =
-            if model.language == Lang.Lang.L1 then
-                Background.color Color.darkRed
-
-            else
-                Background.color (E.rgb255 40 40 40)
-    in
-    buttonTemplate [ bg ] (SetLanguage Lang.Lang.L1) "L1"
-
-
-miniLaTeXLanguageButton model =
-    let
-        bg =
-            if model.language == Lang.Lang.MiniLaTeX then
-                Background.color Color.darkRed
-
-            else
-                Background.color (E.rgb255 40 40 40)
-    in
-    buttonTemplate [ bg ] (SetLanguage Lang.Lang.MiniLaTeX) "MiniLaTeX"
 
 
 setDocumentAsCurrent : DocPermissions -> Maybe Document.Document -> Document.Document -> Element FrontendMsg

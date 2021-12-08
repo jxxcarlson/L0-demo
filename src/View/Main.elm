@@ -10,8 +10,9 @@ import Html exposing (Html)
 import Html.Attributes as HtmlAttr exposing (attribute)
 import Html.Events
 import Json.Decode
-import Markup.API
+import L0
 import Render.Msg
+import Render.Settings
 import String.Extra
 import Types exposing (..)
 import View.Button as Button
@@ -302,8 +303,6 @@ header model width_ =
         , Button.cancelDeleteDocument model
         , View.Utility.showIf model.showEditor Button.closeEditor
         , View.Utility.hideIf (model.currentUser == Nothing || model.permissions == ReadOnly || model.showEditor) Button.openEditor
-        , Button.miniLaTeXLanguageButton model
-        , Button.markupLanguageButton model
         , View.Utility.showIf model.showEditor (Button.togglePublic model.currentDocument)
 
         -- , Button.l1LanguageButton model
@@ -391,8 +390,22 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    (Markup.API.renderFancy (settings model.selectedId) doc.language model.counter (String.lines doc.content) |> List.map (E.map Render))
+                    (L0.renderFromString3 model.counter defaultSettings doc.content
+                        |> Result.withDefault [ E.text "Error" ]
+                        |> List.map (E.map Render)
+                    )
                 ]
+
+
+defaultSettings : Render.Settings.Settings
+defaultSettings =
+    { width = 500
+    , titleSize = 30
+    , paragraphSpacing = 28
+    , showTOC = True
+    , showErrorMessages = False
+    , selectedId = ""
+    }
 
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
@@ -420,17 +433,6 @@ softTruncate k str =
 
         str2 :: rest ->
             str2 ++ " ..."
-
-
-settings : String -> Markup.API.Settings
-settings selectedId =
-    { width = 500
-    , titleSize = 30
-    , showTOC = True
-    , showErrorMessages = True
-    , paragraphSpacing = 14
-    , selectedId = selectedId
-    }
 
 
 viewStatusReport model =

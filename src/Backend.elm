@@ -136,7 +136,7 @@ updateFromFrontend sessionId clientId msg model =
                     Token.get authorIdTokenData.seed
 
                 title =
-                    Abstract.getItem doc_.language "title" doc_.content
+                    Abstract.getItem "title" doc_.content
 
                 doc =
                     { doc_
@@ -386,7 +386,7 @@ getAbstract documentDict id =
             Abstract.empty
 
         Just doc ->
-            Abstract.get doc.language doc.content
+            Abstract.get doc.content
 
 
 searchInAbstract : String -> Abstract -> Bool

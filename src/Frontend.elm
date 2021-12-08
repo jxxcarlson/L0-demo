@@ -1,18 +1,16 @@
 module Frontend exposing (..)
 
+import Abstract
 import Authentication
 import Backend.Backup
-import Block.Accumulator
 import Browser exposing (UrlRequest(..))
 import Browser.Events
 import Browser.Navigation as Nav
 import Cmd.Extra exposing (withCmd, withCmds, withNoCmd)
 import Config
-import Data
 import Debounce exposing (Debounce)
 import Docs
 import Document exposing (Access(..))
-import Expression.ASTTools
 import File
 import File.Download as Download
 import File.Select as Select
@@ -20,11 +18,8 @@ import Frontend.Cmd
 import Frontend.PDF as PDF
 import Frontend.Update
 import Html exposing (Html)
-import LaTeX.Export.API
 import Lamdera exposing (sendToBackend)
-import Lang.Lang as Lang exposing (Lang(..))
 import List.Extra
-import Markup.API
 import Process
 import Render.Msg exposing (MarkupMsg(..))
 import Task
@@ -90,7 +85,6 @@ init url key =
       , syncRequestIndex = 0
 
       -- DOCUMENT
-      , parseData = { ast = [], accumulator = Block.Accumulator.init 4 }
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = ""
@@ -102,7 +96,6 @@ init url key =
       , currentDocument = Just Docs.notSignedIn
       , printingState = PrintWaiting
       , documentDeleteState = WaitingForDeleteAction
-      , language = Lang.MiniLaTeX
       , publicDocuments = []
       , deleteDocumentState = WaitingForDeleteAction
       }
@@ -282,17 +275,17 @@ update msg model =
             let
                 data =
                     if model.foundIdIndex == 0 then
-                        let
-                            foundIds_ =
-                                Expression.ASTTools.findIdsMatchingText model.searchSourceText model.parseData.ast |> List.map fixId_
-
-                            id_ =
-                                List.head foundIds_ |> Maybe.withDefault "(nothing)"
-                        in
-                        { foundIds = foundIds_
+                        --let
+                        --    foundIds_ =
+                        --        Expression.ASTTools.findIdsMatchingText model.searchSourceText model.parseData.ast |> List.map fixId_
+                        --
+                        --    id_ =
+                        --        List.head foundIds_ |> Maybe.withDefault "(nothing)"
+                        --in
+                        { foundIds = []
                         , foundIdIndex = 1
-                        , cmd = View.Utility.setViewportForElement (id_ ++ ".0")
-                        , selectedId = id_
+                        , cmd = View.Utility.setViewportForElement ("id_" ++ ".0")
+                        , selectedId = " id_"
                         , searchCount = 0
                         }
 
@@ -337,7 +330,8 @@ update msg model =
         Render msg_ ->
             case msg_ of
                 Render.Msg.SendMeta m ->
-                    ( { model | lineNumber = m.loc.begin.row, message = "line " ++ String.fromInt (m.loc.begin.row + 1) }, Cmd.none )
+                    -- ( { model | lineNumber = m.loc.begin.row, message = "line " ++ String.fromInt (m.loc.begin.row + 1) }, Cmd.none )
+                    ( model, Cmd.none )
 
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
@@ -401,7 +395,6 @@ update msg model =
                 Just doc ->
                     ( { model
                         | currentDocument = Just Docs.deleted
-                        , language = Markdown
                         , documents = List.filter (\d -> d.id /= doc.id) model.documents
                         , deleteDocumentState = WaitingForDeleteAction
                       }
@@ -412,16 +405,14 @@ update msg model =
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
-                , parseData = Markup.API.parse model.language model.counter (String.lines doc.content)
+
+                --, parseData = Markup.API.parse model.language model.counter (String.lines doc.content)
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
               }
             , View.Utility.setViewPortToTop
             )
-
-        SetLanguage lang ->
-            ( { model | language = lang }, Cmd.none )
 
         SetPublic doc public ->
             let
@@ -446,7 +437,8 @@ update msg model =
             ( model, Download.string fileName_ "text/markdown" markdownText )
 
         ExportToLaTeX ->
-            issueCommandIfDefined model.currentDocument model (exportToLaTeX model.language)
+            --issueCommandIfDefined model.currentDocument model (exportToLaTeX model.language)
+            ( model, Cmd.none )
 
         Export ->
             issueCommandIfDefined model.currentDocument model exportDoc
@@ -516,21 +508,21 @@ updateDoc model str =
 
         Just doc ->
             let
-                parseData =
-                    Markup.API.parse doc.language model.counter (String.lines doc.content)
-
-                newTitle =
-                    Expression.ASTTools.getItem "title" parseData.ast |> Maybe.withDefault "Untitled"
-
+                --parseData =
+                --    Markup.API.parse doc.language model.counter (String.lines doc.content)
+                --
+                --newTitle =
+                --    Abstract.getItem "title" parseData.ast |> Maybe.withDefault "Untitled"
                 newDocument =
-                    { doc | content = str, title = newTitle }
+                    { doc | content = str }
 
                 documents =
                     List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
             in
             ( { model
                 | currentDocument = Just newDocument
-                , parseData = parseData
+
+                --, parseData = parseData
                 , counter = model.counter + 1
                 , documents = documents
               }
@@ -546,14 +538,14 @@ changePrintingState printingState doc =
         Cmd.none
 
 
-exportToLaTeX : Lang.Lang -> Document.Document -> Cmd msg
-exportToLaTeX lang doc =
+exportToLaTeX : Document.Document -> Cmd msg
+exportToLaTeX doc =
     let
         laTeXText =
-            LaTeX.Export.API.export lang doc.content
+            ""
 
         fileName =
-            doc.id ++ fileExtension doc.language
+            doc.id ++ ".lo"
     in
     Download.string fileName "application/x-latex" laTeXText
 
@@ -562,22 +554,9 @@ exportDoc : Document.Document -> Cmd msg
 exportDoc doc =
     let
         fileName =
-            doc.id ++ fileExtension doc.language
+            doc.id ++ ".l0"
     in
     Download.string fileName "text/plain" doc.content
-
-
-fileExtension : Lang.Lang -> String
-fileExtension lang =
-    case lang of
-        L1 ->
-            ".l1"
-
-        MiniLaTeX ->
-            ".tex"
-
-        Markdown ->
-            ".md"
 
 
 issueCommandIfDefined : Maybe a -> Model -> (a -> Cmd msg) -> ( Model, Cmd msg )
@@ -617,7 +596,6 @@ updateFromBackend msg model =
                 | sourceText = doc.content
                 , showEditor = showEditor
                 , currentDocument = Just doc
-                , language = doc.language
                 , documents = documents
               }
             , Cmd.none

@@ -6,7 +6,6 @@ import Codec exposing (Codec)
 import Credentials
 import Dict exposing (Dict)
 import Document exposing (Document)
-import Lang.Lang exposing (Lang(..))
 import Random
 import Time
 import Types
@@ -259,31 +258,10 @@ documentCodec =
         |> Codec.field "created" .created posixCodec
         |> Codec.field "modified" .modified posixCodec
         |> Codec.field "content" .content Codec.string
-        |> Codec.field "language" .language languageCodec
         |> Codec.field "title" .title Codec.string
         |> Codec.field "public" .public Codec.bool
         |> Codec.field "author" .author (Codec.maybe Codec.string)
         |> Codec.buildObject
-
-
-languageCodec : Codec Lang
-languageCodec =
-    Codec.custom
-        (\l1 markdown minilatex value ->
-            case value of
-                L1 ->
-                    l1
-
-                Markdown ->
-                    markdown
-
-                MiniLaTeX ->
-                    minilatex
-        )
-        |> Codec.variant0 "L1" L1
-        |> Codec.variant0 "Markdown" Markdown
-        |> Codec.variant0 "MiniLaTeX" MiniLaTeX
-        |> Codec.buildCustom
 
 
 posixCodec : Codec Time.Posix

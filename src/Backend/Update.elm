@@ -138,7 +138,7 @@ getUserDocuments user usersDocumentsDict documentDict =
 
 updateAbstract : Document.Document -> AbstractDict -> AbstractDict
 updateAbstract doc dict =
-    Dict.insert doc.id (Abstract.get doc.language doc.content) dict
+    Dict.insert doc.id (Abstract.get doc.content) dict
 
 
 updateAbstractById : String -> DocumentDict -> AbstractDict -> AbstractDict

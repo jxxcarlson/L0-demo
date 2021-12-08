@@ -1,7 +1,6 @@
 module Docs exposing (deleted, docsNotFound, notSignedIn)
 
 import Document exposing (Document, empty)
-import Lang.Lang exposing (Lang(..))
 
 
 notSignedIn : Document
@@ -10,7 +9,6 @@ notSignedIn =
         | content = welcomeText
         , id = "id-sys-1"
         , publicId = "public-sys-1"
-        , language = MiniLaTeX
     }
 
 
@@ -20,7 +18,6 @@ deleted =
         | content = deletedText
         , id = "id-sys-2"
         , publicId = "public-sys-2"
-        , language = Markdown
     }
 
 
