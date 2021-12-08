@@ -133,16 +133,16 @@ abstract g s exprList =
 link g s exprList =
     let
         args =
-            exprList |> ASTTools.exprListToStringList |> List.filter (\t -> String.trim t /= "") |> Debug.log "XXX Args"
+            exprList |> ASTTools.exprListToStringList |> List.filter (\t -> String.trim t /= "")
 
         n =
             List.length args
 
         label =
-            List.take (n - 1) args |> String.join " " |> Debug.log "XXX Label"
+            List.take (n - 1) args |> String.join " "
 
         url =
-            List.drop (n - 1) args |> String.join "" |> Debug.log "XXX URL"
+            List.drop (n - 1) args |> String.join ""
     in
     link_ url label
 
