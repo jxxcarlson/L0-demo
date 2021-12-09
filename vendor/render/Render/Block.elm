@@ -83,6 +83,7 @@ blockDict =
         , ( "heading", heading )
         , ( "title", title )
         , ( "subtitle", subtitle )
+        , ( "item", item )
         ]
 
 
@@ -159,3 +160,11 @@ renderCode count args str =
 removeFirstLine : String -> String
 removeFirstLine str =
     str |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
+
+
+item count settings args exprs =
+    Element.row [ Element.alignTop ]
+        [ Element.el [ Font.size 18, Element.alignTop, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
+        , Element.paragraph [ Render.Settings.leftIndentation ]
+            (renderWithDefault "| indent" count settings exprs)
+        ]
