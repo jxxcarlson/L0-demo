@@ -11,7 +11,7 @@ import Parser.Expr exposing (Expr(..))
 import Render.Math
 import Render.Msg exposing (MarkupMsg(..))
 import Render.Settings exposing (Settings)
-import Utility
+import Render.Utility as Utility
 
 
 render : Int -> Settings -> Expr -> Element MarkupMsg

@@ -1,10 +1,10 @@
 module Render.Block exposing (render)
 
-import Block.Block exposing (BlockType(..), L0BlockE(..))
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
 import Element.Font as Font
+import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr)
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
