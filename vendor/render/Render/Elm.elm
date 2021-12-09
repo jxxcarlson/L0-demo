@@ -1,6 +1,5 @@
 module Render.Elm exposing (render)
 
-import ASTTools
 import Dict exposing (Dict)
 import Element exposing (Element, alignLeft, alignRight, centerX, column, el, newTabLink, px, spacing)
 import Element.Background as Background
@@ -8,6 +7,7 @@ import Element.Events as Events
 import Element.Font as Font
 import Html.Attributes
 import Parser.Expr exposing (Expr(..))
+import Render.ASTTools as ASTTools
 import Render.Math
 import Render.Msg exposing (MarkupMsg(..))
 import Render.Settings exposing (Settings)
