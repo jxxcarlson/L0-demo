@@ -1,6 +1,5 @@
 module Parser.Expression exposing
-    ( Expr(..)
-    , State
+    ( State
     , parse
     , parse_
     , run
@@ -8,6 +7,7 @@ module Parser.Expression exposing
 
 import Either exposing (Either(..))
 import List.Extra
+import Parser.Expr exposing (Expr(..))
 import Parser.Match as M
 import Parser.Symbol as Symbol exposing (Symbol(..))
 import Parser.Token as Token exposing (Meta, Token(..), TokenType(..))
@@ -15,13 +15,6 @@ import Parser.Token as Token exposing (Meta, Token(..), TokenType(..))
 
 
 -- TYPES
-
-
-type Expr
-    = Expr String (List Expr) Meta
-    | Text String Meta
-    | Verbatim String String Meta
-    | Error String
 
 
 type alias State =

@@ -1,7 +1,8 @@
 module Block.Block exposing (BlockType(..), L0BlockE(..), l0Empty, toBlock, toL0Block, toL0BlockE)
 
 import Either exposing (Either(..))
-import Parser.Expression exposing (Expr(..))
+import Parser.Expr exposing (Expr)
+import Parser.Expression
 import Tree.Blocks exposing (Block)
 
 

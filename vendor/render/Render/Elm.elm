@@ -7,7 +7,7 @@ import Element.Background as Background
 import Element.Events as Events
 import Element.Font as Font
 import Html.Attributes
-import Parser.Expression exposing (Expr(..))
+import Parser.Expr exposing (Expr(..))
 import Render.Math
 import Render.Msg exposing (MarkupMsg(..))
 import Render.Settings exposing (Settings)

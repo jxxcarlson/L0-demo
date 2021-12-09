@@ -5,7 +5,7 @@ import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
 import Element.Font as Font
-import Parser.Expression exposing (Expr)
+import Parser.Expr exposing (Expr)
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
 import Render.Msg exposing (MarkupMsg)

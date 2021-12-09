@@ -1,7 +1,7 @@
 module ASTTools exposing (exprListToStringList, stringValueOfList)
 
 import Maybe.Extra
-import Parser.Expression exposing (Expr(..))
+import Parser.Expr exposing (Expr(..))
 
 
 exprListToStringList : List Expr -> List String
