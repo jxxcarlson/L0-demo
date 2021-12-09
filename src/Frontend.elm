@@ -89,7 +89,7 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = welcome
-      , ast = L0.parse 0 Document.defaultSettings welcome
+      , ast = L0.parse welcome
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -376,7 +376,7 @@ update msg model =
             in
             ( { model
                 | sourceText = str
-                , ast = L0.parse model.counter Document.defaultSettings str
+                , ast = L0.parse str
                 , debounce = debounce
               }
             , cmd
@@ -418,7 +418,7 @@ update msg model =
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
-                , ast = L0.parse model.counter Document.defaultSettings doc.content
+                , ast = L0.parse doc.content
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1

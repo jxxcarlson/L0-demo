@@ -11,6 +11,7 @@ import Html.Attributes as HtmlAttr exposing (attribute)
 import Html.Events
 import Json.Decode
 import L0
+import Render.L0
 import Render.Msg
 import Render.Settings
 import String.Extra
@@ -390,7 +391,7 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    (L0.renderFromAST model.counter Document.defaultSettings model.ast
+                    (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast
                         |> List.map (E.map Render)
                     )
                 ]
