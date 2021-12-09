@@ -88,11 +88,16 @@ markupDict =
         , ( "cite", \g s exprList -> cite g s exprList )
         , ( "table", \g s exprList -> table g s exprList )
         , ( "image", \g s exprList -> image g s exprList )
+        , ( "tag", invisible )
 
         -- MiniLaTeX stuff
         , ( "term", \g s exprList -> term g s exprList )
         , ( "emph", \g s exprList -> emph g s exprList )
         ]
+
+
+invisible g s exprList =
+    Element.none
 
 
 verbatimDict =
