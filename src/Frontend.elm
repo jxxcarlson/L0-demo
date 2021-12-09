@@ -619,7 +619,7 @@ updateFromBackend msg model =
 
         -- ADMIN
         SendBackupData data ->
-            ( { model | message = "Backup data: " ++ String.fromInt (String.length data) ++ " chars" }, Download.string "l0-lab-demo.json" "text/json" data )
+            ( { model | message = "Backup data: " ++ String.fromInt (String.length data) ++ " chars" }, Download.string "l0-lab-demo    .json" "text/json" data )
 
         StatusReport items ->
             ( { model | statusReport = items }, Cmd.none )
