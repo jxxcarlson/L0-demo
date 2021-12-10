@@ -70,7 +70,7 @@ prepareTOC count settings ast =
         spaceBelow k =
             Element.el [ Element.paddingEach { bottom = k, top = 0, left = 0, right = 0 } ] (Element.text " ")
     in
-    if List.isEmpty toc then
+    if List.length toc < 2 then
         title :: subtitle :: []
 
     else
