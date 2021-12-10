@@ -30,7 +30,7 @@ app =
         { init = init
         , update = update
         , updateFromFrontend = updateFromFrontend
-        , subscriptions = \m -> Time.every (5 * 1000) Tick
+        , subscriptions = \m -> Time.every (30 * 1000) Tick
         }
 
 
