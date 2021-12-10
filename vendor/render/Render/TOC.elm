@@ -41,9 +41,12 @@ viewTocItem count settings (L0BlockE { args, content }) =
 prepareTOC : Int -> Render.Settings.Settings -> L0.AST -> List (Element MarkupMsg)
 prepareTOC count settings ast =
     let
+        rawToc =
+            Render.ASTTools.tableOfContents ast
+
         toc =
             Element.el [ Font.bold, Font.size 18 ] (Element.text "Contents")
-                :: (Render.ASTTools.tableOfContents ast |> List.map (viewTocItem count settings))
+                :: (rawToc |> List.map (viewTocItem count settings))
 
         headings =
             getHeadings ast
@@ -70,7 +73,7 @@ prepareTOC count settings ast =
         spaceBelow k =
             Element.el [ Element.paddingEach { bottom = k, top = 0, left = 0, right = 0 } ] (Element.text " ")
     in
-    if List.length toc < 2 then
+    if List.length rawToc < 2 then
         title :: subtitle :: []
 
     else
