@@ -413,7 +413,7 @@ viewTOC model =
             :: []
 
     else
-        [ E.none ]
+        [ viewTitle model.counter model.title ]
 
 
 renderTableOfContents : FrontendModel -> Element FrontendMsg
