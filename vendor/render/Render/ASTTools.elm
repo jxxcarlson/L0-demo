@@ -1,22 +1,37 @@
-module Render.ASTTools exposing (exprListToStringList, filterBlocksByArgs, stringValueOfList, tableOfContents, title)
+module Render.ASTTools exposing
+    ( exprListToStringList
+    , filterBlocksByArgs
+    , stringValueOfList
+    , tableOfContents
+    , title
+    , toExprRecord
+    )
 
+import Either exposing (Either(..))
+import L0
 import Maybe.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr(..))
 import Tree
 
 
-title : List (Tree.Tree L0BlockE) -> List L0BlockE
+
+--
+--titleInfo : L0.AST -> { title : Maybe (List Expr), subtitle: Maybe (List Expr)   }
+--titleInfo ast =
+
+
+title : L0.AST -> List L0BlockE
 title ast =
     filterBlocksByArgs "title" ast
 
 
-tableOfContents : List (Tree.Tree L0BlockE) -> List L0BlockE
+tableOfContents : L0.AST -> List L0BlockE
 tableOfContents ast =
     filterBlocksByArgs "heading" ast
 
 
-filterBlocksByArgs : String -> List (Tree.Tree L0BlockE) -> List L0BlockE
+filterBlocksByArgs : String -> L0.AST -> List L0BlockE
 filterBlocksByArgs key ast =
     ast
         |> List.map Tree.flatten
@@ -80,3 +95,20 @@ stringValue text =
 
         Error str ->
             str
+
+
+
+-- toExprListList : List L0BlockE -> List (List Expr)
+
+
+toExprRecord : List L0BlockE -> List { content : List Expr, blockType : BlockType }
+toExprRecord blocks =
+    List.map toExprList_ blocks
+
+
+
+-- toExprList_ : L0BlockE -> List Expr
+
+
+toExprList_ (L0BlockE { blockType, content }) =
+    { content = content |> Either.toList |> List.concat, blockType = blockType }

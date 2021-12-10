@@ -1,4 +1,4 @@
-module Render.Block exposing (render, visibleTitle)
+module Render.Block exposing (render)
 
 import Dict exposing (Dict)
 import Either exposing (Either(..))
@@ -6,10 +6,12 @@ import Element exposing (Element)
 import Element.Font as Font
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr)
+import Render.ASTTools as ASTTools
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
 import Render.Msg exposing (MarkupMsg)
 import Render.Settings exposing (Settings)
+import Render.Utility
 
 
 render : Int -> Settings -> L0BlockE -> Element MarkupMsg
@@ -81,8 +83,8 @@ blockDict =
     Dict.fromList
         [ ( "indent", indented )
         , ( "heading", heading )
-        , ( "title", title )
-        , ( "subtitle", subtitle )
+        , ( "title", \_ _ _ _ -> Element.none )
+        , ( "subtitle", \_ _ _ _ -> Element.none )
         , ( "item", item )
         ]
 
@@ -93,24 +95,6 @@ verbatimDict =
         [ ( "math", renderDisplayMath )
         , ( "code", renderCode )
         ]
-
-
-title count settings args exprs =
-    Element.none
-
-
-visibleTitle count settings args exprs =
-    Element.paragraph [ Font.size (round Render.Settings.maxHeadingFontSize) ] (renderWithDefault "| heading" count settings exprs)
-
-
-subtitle count settings args exprs =
-    Element.paragraph
-        [ Font.size (Render.Settings.maxHeadingFontSize / sqrt 3 |> round)
-
-        --, Font.italic
-        , Font.color (Element.rgb 0.4 0.4 0.4)
-        ]
-        (renderWithDefault "| heading" count settings exprs)
 
 
 heading count settings args exprs =
@@ -127,7 +111,16 @@ heading count settings args exprs =
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round
     in
-    Element.paragraph [ Font.size fontSize ] (renderWithDefault "| heading" count settings exprs)
+    -- Element.paragraph [ Font.size fontSize ] (renderWithDefault "| heading" count settings exprs)
+    Element.link
+        [ Font.size fontSize
+        , Render.Utility.makeId exprs
+        ]
+        { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (renderWithDefault "| heading" count settings exprs) }
+
+
+verticalPadding top bottom =
+    Element.paddingEach { top = top, bottom = bottom, left = 0, right = 0 }
 
 
 renderWithDefault : String -> Int -> Settings -> List Expr -> List (Element MarkupMsg)

@@ -18,6 +18,7 @@ import Render.Elm
 import Render.L0
 import Render.Msg
 import Render.Settings
+import Render.TOC
 import String.Extra
 import Types exposing (..)
 import View.Button as Button
@@ -395,69 +396,10 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    (viewTOC model ++ (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast |> List.map (E.map Render)))
+                    ((Render.TOC.view model.counter model.ast |> E.map Render)
+                        :: (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast |> List.map (E.map Render))
+                    )
                 ]
-
-
-viewTOC : FrontendModel -> List (Element FrontendMsg)
-viewTOC model =
-    let
-        toc =
-            List.map (viewTocItem model.counter Render.Settings.defaultSettings) model.tableOfContents
-    in
-    if List.length toc > 1 then
-        viewTitle model.counter model.title
-            :: E.el [ Font.bold, Font.size 18 ] (E.text "Contents")
-            :: renderTableOfContents model
-            :: E.el [ E.height (E.px 24) ] (E.text " ")
-            :: []
-
-    else
-        [ viewTitle model.counter model.title ]
-
-
-renderTableOfContents : FrontendModel -> Element FrontendMsg
-renderTableOfContents model =
-    E.column [ E.spacing 8 ]
-        (List.map (viewTocItem model.counter Render.Settings.defaultSettings) model.tableOfContents)
-
-
-viewTitle : Int -> List L0BlockE -> Element FrontendMsg
-viewTitle count blocks =
-    case List.head blocks of
-        Nothing ->
-            E.none
-
-        Just (L0BlockE { content }) ->
-            case content of
-                Left _ ->
-                    E.none
-
-                Right realContent ->
-                    E.paragraph [ Font.size (round Render.Settings.maxHeadingFontSize) ] (List.map (Render.Elm.render count Document.defaultSettings >> E.map Render) realContent)
-
-
-viewTocItem : Int -> Render.Settings.Settings -> L0BlockE -> Element FrontendMsg
-viewTocItem count settings (L0BlockE { args, content }) =
-    case content of
-        Left _ ->
-            E.none
-
-        Right exprs ->
-            E.paragraph [ tocIndent args ] (List.map (Render.Elm.render count settings >> E.map Render) exprs)
-
-
-tocIndent args =
-    E.paddingEach { left = tocIndentAux args, right = 0, top = 0, bottom = 0 }
-
-
-tocIndentAux args =
-    case List.head args of
-        Nothing ->
-            0
-
-        Just str ->
-            String.toInt str |> Maybe.withDefault 0 |> (\x -> 12 * x)
 
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
