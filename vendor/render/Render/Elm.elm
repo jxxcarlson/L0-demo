@@ -88,7 +88,7 @@ markupDict =
         , ( "cite", \g s exprList -> cite g s exprList )
         , ( "table", \g s exprList -> table g s exprList )
         , ( "image", \g s exprList -> image g s exprList )
-        , ( "tag", invisible )
+        , ( "tags", invisible )
 
         -- MiniLaTeX stuff
         , ( "term", \g s exprList -> term g s exprList )

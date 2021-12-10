@@ -85,6 +85,9 @@ blockDict =
         , ( "heading", heading )
         , ( "title", \_ _ _ _ -> Element.none )
         , ( "subtitle", \_ _ _ _ -> Element.none )
+        , ( "author", \_ _ _ _ -> Element.none )
+        , ( "date", \_ _ _ _ -> Element.none )
+        , ( "abstract", abstract )
         , ( "item", item )
         ]
 
@@ -135,6 +138,11 @@ renderWithDefault default count settings exprs =
 indented count settings args exprs =
     Element.paragraph [ Render.Settings.leftIndentation ]
         (renderWithDefault "| indent" count settings exprs)
+
+
+abstract count settings args exprs =
+    Element.paragraph [ Render.Settings.leftIndentation, Font.italic ]
+        (renderWithDefault "| abstract" count settings exprs)
 
 
 renderDisplayMath count settings args str =
