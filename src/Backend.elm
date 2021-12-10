@@ -30,7 +30,7 @@ app =
         { init = init
         , update = update
         , updateFromFrontend = updateFromFrontend
-        , subscriptions = \m -> Time.every (10 * 1000) Tick
+        , subscriptions = \m -> Time.every (5 * 1000) Tick
         }
 
 
@@ -136,7 +136,7 @@ updateFromFrontend sessionId clientId msg model =
                     Token.get authorIdTokenData.seed
 
                 title =
-                    Abstract.getItem "title" doc_.content
+                    Abstract.getElement "title" doc_.content
 
                 doc =
                     { doc_
@@ -348,13 +348,6 @@ publicLink publicId =
 
 updateAbstracts : Model -> Model
 updateAbstracts model =
-    let
-        ids =
-            Dict.keys model.documentDict
-
-        abstractDict =
-            List.foldl (\id runningAbstractDict -> putAbstract id model.documentDict runningAbstractDict) model.abstractDict ids
-    in
     { model | abstractDict = Backend.Update.updateAbstracts model.documentDict model.abstractDict }
 
 
@@ -428,12 +421,20 @@ searchForPublicDocuments key model =
 
 searchForUserDocuments : Maybe String -> String -> Model -> List Document.Document
 searchForUserDocuments maybeUsername key model =
-    case maybeUsername of
-        Nothing ->
-            []
-
-        Just username ->
-            searchForDocuments key model |> List.filter (\doc -> doc.author == Just username)
+    --case maybeUsername of
+    --    Nothing ->
+    --        []
+    --
+    --    Just username ->
+    --        searchForDocuments key model |> List.filter (\doc -> doc.author == Just username)
+    let
+        ids =
+            Dict.toList model.abstractDict
+                |> List.map (\( id, abstr ) -> ( abstr.digest, id ))
+                |> List.filter (\( dig, _ ) -> String.contains (String.toLower key) dig)
+                |> List.map (\( _, id ) -> id)
+    in
+    List.foldl (\id acc -> Dict.get id model.documentDict :: acc) [] ids |> Maybe.Extra.values
 
 
 searchForDocuments : String -> Model -> List Document.Document
