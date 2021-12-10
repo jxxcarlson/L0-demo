@@ -297,7 +297,8 @@ codeStyle =
 
 
 mathElement generation settings m str =
-    Render.Math.mathText generation "DUMMY_ID" Render.Math.InlineMathMode str
+    -- "width" is not used for inline math, but some string needs to be there
+    Render.Math.mathText generation "width" "DUMMY_ID" Render.Math.InlineMathMode str
 
 
 item : Int -> Settings -> List Expr -> Element MarkupMsg

@@ -32,7 +32,7 @@ newDocument model =
             Document.empty
 
         title =
-            "| title\nNew Document]\n\n"
+            "| title\nNew Document\n\n"
 
         doc =
             { emptyDoc

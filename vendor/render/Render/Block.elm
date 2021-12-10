@@ -39,7 +39,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, childr
                                     noSuchVerbatimBlock functionName str
 
                                 Just f ->
-                                    f count args str
+                                    f count settings args str
 
         OrdinaryBlock _ ->
             case content of
@@ -87,7 +87,7 @@ blockDict =
         ]
 
 
-verbatimDict : Dict String (Int -> List String -> String -> Element MarkupMsg)
+verbatimDict : Dict String (Int -> Settings -> List String -> String -> Element MarkupMsg)
 verbatimDict =
     Dict.fromList
         [ ( "math", renderDisplayMath )
@@ -140,11 +140,15 @@ indented count settings args exprs =
         (renderWithDefault "| indent" count settings exprs)
 
 
-renderDisplayMath count args str =
-    Render.Math.mathText count "id" DisplayMathMode str
+renderDisplayMath count settings args str =
+    let
+        w =
+            String.fromInt settings.width ++ "px"
+    in
+    Render.Math.mathText count w "id" DisplayMathMode str
 
 
-renderCode count args str =
+renderCode count settings args str =
     Element.column
         [ Font.color (Element.rgb255 170 0 250)
         , Font.family
