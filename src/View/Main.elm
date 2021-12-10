@@ -395,12 +395,25 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    (viewTitle model.counter model.title
-                        :: E.el [ Font.bold, Font.size 18 ] (E.text "Contents")
-                        :: renderTableOfContents model
-                        :: (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast |> List.map (E.map Render))
-                    )
+                    (viewTOC model ++ (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast |> List.map (E.map Render)))
                 ]
+
+
+viewTOC : FrontendModel -> List (Element FrontendMsg)
+viewTOC model =
+    let
+        toc =
+            List.map (viewTocItem model.counter Render.Settings.defaultSettings) model.tableOfContents
+    in
+    if List.length toc > 1 then
+        viewTitle model.counter model.title
+            :: E.el [ Font.bold, Font.size 18 ] (E.text "Contents")
+            :: renderTableOfContents model
+            :: E.el [ E.height (E.px 24) ] (E.text " ")
+            :: []
+
+    else
+        [ E.none ]
 
 
 renderTableOfContents : FrontendModel -> Element FrontendMsg
