@@ -12,6 +12,7 @@ import Document exposing (Document)
 import File exposing (File)
 import Http
 import L0
+import Parser.Block exposing (L0BlockE)
 import Random
 import Render.Msg
 import Time
@@ -50,6 +51,8 @@ type alias FrontendModel =
     -- DOCUMENT
     , sourceText : String
     , ast : L0.AST
+    , tableOfContents : List L0BlockE
+    , title : List L0BlockE
     , searchCount : Int
     , searchSourceText : String
     , lineNumber : Int

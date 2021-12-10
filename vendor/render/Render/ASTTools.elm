@@ -1,7 +1,40 @@
-module Render.ASTTools exposing (exprListToStringList, stringValueOfList)
+module Render.ASTTools exposing (exprListToStringList, filterBlocksByArgs, stringValueOfList, tableOfContents, title)
 
 import Maybe.Extra
+import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr(..))
+import Tree
+
+
+title : List (Tree.Tree L0BlockE) -> List L0BlockE
+title ast =
+    filterBlocksByArgs "title" ast
+
+
+tableOfContents : List (Tree.Tree L0BlockE) -> List L0BlockE
+tableOfContents ast =
+    filterBlocksByArgs "heading" ast
+
+
+filterBlocksByArgs : String -> List (Tree.Tree L0BlockE) -> List L0BlockE
+filterBlocksByArgs key ast =
+    ast
+        |> List.map Tree.flatten
+        |> List.concat
+        |> List.filter (matchBlock key)
+
+
+matchBlock : String -> L0BlockE -> Bool
+matchBlock key (L0BlockE { blockType }) =
+    case blockType of
+        Paragraph ->
+            False
+
+        OrdinaryBlock args ->
+            List.any (String.contains key) args
+
+        VerbatimBlock args ->
+            List.any (String.contains key) args
 
 
 exprListToStringList : List Expr -> List String

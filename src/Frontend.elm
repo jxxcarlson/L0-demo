@@ -22,6 +22,7 @@ import L0
 import Lamdera exposing (sendToBackend)
 import List.Extra
 import Process
+import Render.ASTTools
 import Render.Msg exposing (MarkupMsg(..))
 import Task
 import Types exposing (..)
@@ -90,6 +91,8 @@ init url key =
       , permissions = ReadOnly
       , sourceText = welcome
       , ast = L0.parse welcome
+      , title = Render.ASTTools.title (L0.parse welcome)
+      , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -374,9 +377,15 @@ update msg model =
                 ( debounce, cmd ) =
                     Debounce.push debounceConfig str model.debounce
             in
+            let
+                ast =
+                    L0.parse str
+            in
             ( { model
                 | sourceText = str
-                , ast = L0.parse str
+                , ast = ast
+                , title = Render.ASTTools.title ast
+                , tableOfContents = Render.ASTTools.tableOfContents ast
                 , debounce = debounce
               }
             , cmd
@@ -415,10 +424,16 @@ update msg model =
                     )
 
         SetDocumentAsCurrent permissions doc ->
+            let
+                ast =
+                    L0.parse doc.content
+            in
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
-                , ast = L0.parse doc.content
+                , ast = ast
+                , title = Render.ASTTools.title ast
+                , tableOfContents = Render.ASTTools.tableOfContents ast
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
@@ -599,9 +614,15 @@ updateFromBackend msg model =
                         CanEdit ->
                             True
             in
+            let
+                ast =
+                    L0.parse doc.content
+            in
             ( { model
                 | sourceText = doc.content
-                , ast = L0.parse doc.content
+                , ast = ast
+                , title = Render.ASTTools.title ast
+                , tableOfContents = Render.ASTTools.tableOfContents ast
                 , showEditor = showEditor
                 , currentDocument = Just doc
                 , documents = documents

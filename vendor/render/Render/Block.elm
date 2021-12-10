@@ -1,4 +1,4 @@
-module Render.Block exposing (render)
+module Render.Block exposing (render, visibleTitle)
 
 import Dict exposing (Dict)
 import Either exposing (Either(..))
@@ -96,6 +96,10 @@ verbatimDict =
 
 
 title count settings args exprs =
+    Element.none
+
+
+visibleTitle count settings args exprs =
     Element.paragraph [ Font.size (round Render.Settings.maxHeadingFontSize) ] (renderWithDefault "| heading" count settings exprs)
 
 
