@@ -591,9 +591,6 @@ updateFromBackend msg model =
                 documents =
                     Util.insertInList doc model.documents
 
-                message =
-                    "Documents: " ++ String.fromInt (List.length documents)
-
                 showEditor =
                     case access of
                         ReadOnly ->
@@ -604,6 +601,7 @@ updateFromBackend msg model =
             in
             ( { model
                 | sourceText = doc.content
+                , ast = L0.parse doc.content
                 , showEditor = showEditor
                 , currentDocument = Just doc
                 , documents = documents
