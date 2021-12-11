@@ -87,7 +87,15 @@ blockDict =
         , ( "subtitle", \_ _ _ _ -> Element.none )
         , ( "author", \_ _ _ _ -> Element.none )
         , ( "date", \_ _ _ _ -> Element.none )
-        , ( "abstract", abstract )
+        , ( "abstract", env "Abstract" )
+        , ( "theorem", env "Theorem" )
+        , ( "proposition", env "Proposition" )
+        , ( "lemma", env "Lemma" )
+        , ( "corollary", env "Corollary" )
+        , ( "problem", env "Problem" )
+        , ( "remark", env "Remark" )
+        , ( "note", env "Note" )
+        , ( "env", env_ )
         , ( "item", item )
         ]
 
@@ -140,9 +148,31 @@ indented count settings args exprs =
         (renderWithDefault "| indent" count settings exprs)
 
 
-abstract count settings args exprs =
-    Element.paragraph [ Render.Settings.leftIndentation, Font.italic ]
-        (renderWithDefault "| abstract" count settings exprs)
+env_ : Int -> Settings -> List String -> List Expr -> Element MarkupMsg
+env_ count settings args exprs =
+    case List.head args of
+        Nothing ->
+            Element.paragraph [ Font.color Render.Settings.redColor ] [ Element.text "| env (missing name!)" ]
+
+        Just name ->
+            env name count settings (List.drop 1 args) exprs
+
+
+env : String -> Int -> Settings -> List String -> List Expr -> Element MarkupMsg
+env name count settings args exprs =
+    let
+        heading_ =
+            if List.isEmpty args then
+                name
+
+            else
+                name ++ " (" ++ String.join " " args ++ ")"
+    in
+    Element.column [ Element.spacing 8 ]
+        [ Element.el [ Font.bold ] (Element.text heading_)
+        , Element.paragraph [ Font.italic ]
+            (renderWithDefault ("| " ++ name) count settings exprs)
+        ]
 
 
 renderDisplayMath count settings args str =
@@ -173,7 +203,7 @@ removeFirstLine str =
 
 item count settings args exprs =
     Element.row [ Element.alignTop ]
-        [ Element.el [ Font.size 18, Element.alignTop, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
+        [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
         , Element.paragraph [ Render.Settings.leftIndentation ]
             (renderWithDefault "| indent" count settings exprs)
         ]
