@@ -87,6 +87,7 @@ markupDict =
         , ( "table", \g s exprList -> table g s exprList )
         , ( "image", \g s exprList -> image g s exprList )
         , ( "tags", invisible )
+        , ( "vskip", vskip )
 
         -- MiniLaTeX stuff
         , ( "term", \g s exprList -> term g s exprList )
@@ -382,6 +383,15 @@ skip g s exprList =
             column [ Element.spacingXY 0 (numVal str) ] [ Element.text "" ]
     in
     macro1 f g s exprList
+
+
+vskip g s exprList =
+    let
+        h =
+            ASTTools.exprListToStringList exprList |> String.join "" |> String.toInt |> Maybe.withDefault 0
+    in
+    -- Element.column [ Element.paddingXY 0 100 ] (Element.text "-")
+    Element.column [ Element.height (Element.px h) ] [ Element.text "" ]
 
 
 strong g s exprList =
