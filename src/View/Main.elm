@@ -85,7 +85,7 @@ viewEditorAndRenderedText model =
             , E.row [ E.spacing 12 ]
                 [ -- viewEditor model (panelWidth_ model.windowWidth)
                   aceEditor model
-                , viewRendered model (panelWidth_ model.windowWidth)
+                , viewRenderedForEditor model (panelWidth_ model.windowWidth)
                 , viewMydocs model 110
                 ]
             , footer model (appWidth model.windowWidth)
@@ -402,12 +402,37 @@ viewRendered model width_ =
                 ]
 
 
+viewRenderedForEditor : Model -> Int -> Element FrontendMsg
+viewRenderedForEditor model width_ =
+    case model.currentDocument of
+        Nothing ->
+            E.none
+
+        Just doc ->
+            E.column
+                [ E.paddingEach { left = 24, right = 24, top = 32, bottom = 96 }
+                , View.Style.bgGray 1.0
+                , E.width (E.px width_)
+                , E.height (E.px (panelHeight_ model))
+                , Font.size 14
+                , E.alignTop
+                , E.scrollbarY
+                , View.Utility.elementAttribute "id" "__RENDERED_TEXT__"
+                ]
+                [ View.Utility.katexCSS
+                , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
+                    ((Render.TOC.view model.counter (renderSettings model.windowWidth) model.ast |> E.map Render)
+                        :: (Render.L0.renderFromAST model.counter (editorRenderSettings model.windowWidth) model.ast |> List.map (E.map Render))
+                    )
+                ]
+
+
 renderSettings w =
-    Render.Settings.makeSettings windowWidthScale w
+    Render.Settings.makeSettings 0.38 w
 
 
-windowWidthScale =
-    0.38
+editorRenderSettings w =
+    Render.Settings.makeSettings 0.28 w
 
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
