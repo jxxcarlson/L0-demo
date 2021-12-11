@@ -1,6 +1,8 @@
 module Render.ASTTools exposing
     ( exprListToStringList
     , filterBlocksByArgs
+    , getExprsByName
+    , getText
     , stringValueOfList
     , tableOfContents
     , title
@@ -13,6 +15,24 @@ import Maybe.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr(..))
 import Tree
+
+
+getExprsByName : String -> List Expr -> List Expr
+getExprsByName name exprs =
+    List.filter (matchExpr name) exprs
+
+
+matchExpr : String -> Expr -> Bool
+matchExpr name expr =
+    case expr of
+        Expr name2 _ _ ->
+            name == name2
+
+        Verbatim name2 _ _ ->
+            name == name2
+
+        _ ->
+            False
 
 
 

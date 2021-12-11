@@ -1,4 +1,4 @@
-module Render.L0 exposing (renderFromAST, renderFromString)
+module Render.L0 exposing (renderFromAST, renderFromString, render_)
 
 import Element exposing (Element)
 import L0 exposing (AST)
@@ -16,6 +16,11 @@ isVerbatimLine str =
 renderFromString : Int -> Settings -> String -> List (Element MarkupMsg)
 renderFromString count settings str =
     str |> L0.parse |> renderFromAST count settings
+
+
+render_ : AST -> List (Element MarkupMsg)
+render_ ast =
+    renderFromAST 0 Render.Settings.defaultSettings ast
 
 
 renderFromAST : Int -> Settings -> AST -> List (Element MarkupMsg)

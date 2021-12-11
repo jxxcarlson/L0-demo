@@ -59,9 +59,7 @@ renderMarked name generation settings exprList =
 markupDict : Dict String (Int -> Settings -> List Expr -> Element MarkupMsg)
 markupDict =
     Dict.fromList
-        [ ( "item", \g s exprList -> item g s exprList )
-        , ( "bibitem", \g s exprList -> bibitem g s exprList )
-        , ( "numberedItem", \g s exprList -> numberedItem g s exprList )
+        [ ( "bibitem", \g s exprList -> bibitem g s exprList )
         , ( "strong", \g s exprList -> strong g s exprList )
         , ( "bold", \g s exprList -> strong g s exprList )
         , ( "b", \g s exprList -> strong g s exprList )
@@ -200,6 +198,9 @@ href_ url label =
 
 image generation settings body =
     let
+        captionExpr =
+            ASTTools.getExprsByName "caption" body |> List.head
+
         arguments : List String
         arguments =
             ASTTools.exprListToStringList body
@@ -208,7 +209,7 @@ image generation settings body =
             List.head arguments |> Maybe.withDefault "no-image"
 
         dict =
-            Utility.keyValueDict (List.drop 1 arguments)
+            Utility.keyValueDict (List.drop 1 arguments) |> Dict.insert "caption" (Maybe.andThen ASTTools.getText captionExpr |> Maybe.withDefault "")
 
         description =
             Dict.get "caption" dict |> Maybe.withDefault ""

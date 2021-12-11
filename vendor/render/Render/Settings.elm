@@ -5,6 +5,7 @@ module Render.Settings exposing
     , makeSettings
     , maxHeadingFontSize
     , redColor
+    , windowWidthScale
     )
 
 import Element
@@ -34,6 +35,10 @@ makeSettings scale width =
     , showErrorMessages = False
     , selectedId = ""
     }
+
+
+windowWidthScale =
+    0.3
 
 
 maxHeadingFontSize : Float
