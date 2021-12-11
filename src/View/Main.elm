@@ -396,10 +396,18 @@ viewRendered model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    ((Render.TOC.view model.counter model.ast |> E.map Render)
-                        :: (Render.L0.renderFromAST model.counter Document.defaultSettings model.ast |> List.map (E.map Render))
+                    ((Render.TOC.view model.counter (renderSettings model.windowWidth) model.ast |> E.map Render)
+                        :: (Render.L0.renderFromAST model.counter (renderSettings model.windowWidth) model.ast |> List.map (E.map Render))
                     )
                 ]
+
+
+renderSettings w =
+    Render.Settings.makeSettings windowWidthScale w
+
+
+windowWidthScale =
+    0.38
 
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)

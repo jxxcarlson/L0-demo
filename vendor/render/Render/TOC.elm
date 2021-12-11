@@ -13,8 +13,8 @@ import Render.Settings
 import Render.Utility
 
 
-view : Int -> L0.AST -> Element Render.Msg.MarkupMsg
-view counter ast =
+view : Int -> Render.Settings.Settings -> L0.AST -> Element Render.Msg.MarkupMsg
+view counter settings ast =
     Element.column [ Element.spacing 8, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 36 } ]
         (prepareTOC counter Render.Settings.defaultSettings ast)
 
