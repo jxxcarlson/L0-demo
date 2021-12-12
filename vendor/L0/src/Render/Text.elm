@@ -1,6 +1,7 @@
 module Render.Text exposing (fromExpr, idem, print)
 
-import Parser.Expression as Expression exposing (Expr(..))
+import Parser.Expr exposing (Expr(..))
+import Parser.Expression as Expression
 
 
 idem : String -> String

@@ -4,6 +4,7 @@ import Either exposing (Either(..))
 import Element exposing (Element)
 import Element.Font as Font
 import L0
+import List.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr)
 import Render.ASTTools
@@ -30,9 +31,14 @@ viewTocItem count settings (L0BlockE { args, content }) =
                 t =
                     Render.ASTTools.stringValueOfList exprs
 
+                sectionNumber =
+                    List.Extra.getAt 1 args
+                        |> Maybe.withDefault ""
+                        |> (\s -> Element.el [] (Element.text (s ++ ". ")))
+
                 label : Element MarkupMsg
                 label =
-                    Element.paragraph [ tocIndent args ] (List.map (Render.Elm.render count settings) exprs)
+                    Element.paragraph [ tocIndent args ] (sectionNumber :: List.map (Render.Elm.render count settings) exprs)
             in
             -- Element.paragraph [ tocIndent args ] (List.map (Render.Elm.render count settings) exprs)
             Element.link [ Font.color (Element.rgb 0 0 0.8) ] { url = Render.Utility.internalLink t, label = label }

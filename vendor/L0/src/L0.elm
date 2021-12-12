@@ -35,3 +35,7 @@ parse sourceText =
         |> Tree.BlocksV.fromStringAsParagraphs isVerbatimLine
         |> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toL0BlockE Parser.BlockUtil.toBlock
         |> Result.withDefault []
+
+
+b =
+    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine

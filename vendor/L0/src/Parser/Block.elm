@@ -16,6 +16,7 @@ type L0BlockE
         { name : Maybe String
         , args : List String
         , indent : Int
+        , lineNumber : Int
         , blockType : BlockType
         , content : Either String (List Expr)
         , children : List L0BlockE

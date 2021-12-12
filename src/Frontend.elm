@@ -23,6 +23,7 @@ import Lamdera exposing (sendToBackend)
 import List.Extra
 import Process
 import Render.ASTTools
+import Render.Accumulator
 import Render.Msg exposing (MarkupMsg(..))
 import Task
 import Types exposing (..)
@@ -90,7 +91,7 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = welcome
-      , ast = L0.parse welcome
+      , ast = L0.parse welcome |> Render.Accumulator.transformAST
       , title = Render.ASTTools.title (L0.parse welcome)
       , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
@@ -290,13 +291,6 @@ update msg model =
             let
                 data =
                     if model.foundIdIndex == 0 then
-                        --let
-                        --    foundIds_ =
-                        --        Expression.ASTTools.findIdsMatchingText model.searchSourceText model.parseData.ast |> List.map fixId_
-                        --
-                        --    id_ =
-                        --        List.head foundIds_ |> Maybe.withDefault "(nothing)"
-                        --in
                         { foundIds = []
                         , foundIdIndex = 1
                         , cmd = View.Utility.setViewportForElement ("id_" ++ ".0")
@@ -379,7 +373,7 @@ update msg model =
             in
             let
                 ast =
-                    L0.parse str
+                    L0.parse str |> Render.Accumulator.transformAST
             in
             ( { model
                 | sourceText = str
@@ -426,7 +420,7 @@ update msg model =
         SetDocumentAsCurrent permissions doc ->
             let
                 ast =
-                    L0.parse doc.content
+                    L0.parse doc.content |> Render.Accumulator.transformAST
             in
             ( { model
                 | currentDocument = Just doc

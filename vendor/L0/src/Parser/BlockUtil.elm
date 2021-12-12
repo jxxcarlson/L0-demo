@@ -3,7 +3,8 @@ module Parser.BlockUtil exposing (l0Empty, toBlock, toL0Block, toL0BlockE)
 import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expression
-import Tree.Blocks exposing (Block)
+import Tree.Blocks
+import Tree.BlocksV
 
 
 type L0Block
@@ -11,6 +12,7 @@ type L0Block
         { name : Maybe String
         , args : List String
         , indent : Int
+        , lineNumber : Int
         , blockType : BlockType
         , content : String
         , children : List L0Block
@@ -22,18 +24,19 @@ l0Empty =
         { name = Nothing
         , args = []
         , indent = 0
+        , lineNumber = 0
         , blockType = Paragraph
         , content = Left "YYY"
         , children = []
         }
 
 
-toBlock : L0BlockE -> Block
-toBlock (L0BlockE { indent }) =
-    { indent = indent, content = "XXX" }
+toBlock : L0BlockE -> Tree.BlocksV.Block
+toBlock (L0BlockE { indent, lineNumber }) =
+    { indent = indent, content = "XXX", lineNumber = lineNumber }
 
 
-toL0BlockE : Block -> L0BlockE
+toL0BlockE : Tree.BlocksV.Block -> L0BlockE
 toL0BlockE block =
     let
         blockType =
@@ -45,6 +48,7 @@ toL0BlockE block =
                 { name = Nothing
                 , args = []
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = Right (Parser.Expression.parse_ block.content)
                 , blockType = blockType
                 , children = []
@@ -55,6 +59,7 @@ toL0BlockE block =
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = Right (Parser.Expression.parse_ (removeFirstLine block.content))
                 , blockType = blockType
                 , children = []
@@ -65,6 +70,7 @@ toL0BlockE block =
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = Left (removeFirstLine block.content)
                 , blockType = blockType
                 , children = []
@@ -76,7 +82,7 @@ removeFirstLine str_ =
     str_ |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
 
 
-toL0Block : Block -> L0Block
+toL0Block : Tree.BlocksV.Block -> L0Block
 toL0Block block =
     let
         blockType =
@@ -88,6 +94,7 @@ toL0Block block =
                 { name = Nothing
                 , args = []
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = block.content
                 , blockType = blockType
                 , children = []
@@ -98,6 +105,7 @@ toL0Block block =
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = block.content
                 , blockType = blockType
                 , children = []
@@ -108,13 +116,14 @@ toL0Block block =
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
+                , lineNumber = block.lineNumber
                 , content = block.content
                 , blockType = blockType
                 , children = []
                 }
 
 
-classify : Block -> BlockType
+classify : Tree.BlocksV.Block -> BlockType
 classify block =
     let
         str_ =
@@ -131,55 +140,3 @@ classify block =
 
     else
         Paragraph
-
-
-a =
-    """
-one
-two
-three
-"""
-
-
-b =
-    """
-|| a b c
-one
-two
-three
-"""
-
-
-c =
-    """
-| a b c
-one
-two
-three
-"""
-
-
-test : String -> List BlockType
-test s =
-    s
-        |> Tree.Blocks.fromStringAsParagraphs
-        |> List.map classify
-
-
-test2 : String -> List L0Block
-test2 s =
-    s
-        |> Tree.Blocks.fromStringAsParagraphs
-        |> List.map toL0Block
-
-
-str =
-    [ a, b, c ] |> String.join "\n\n"
-
-
-testResult =
-    test str
-
-
-testResult2 =
-    test2 str

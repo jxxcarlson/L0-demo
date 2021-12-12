@@ -4,6 +4,7 @@ import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
 import Element.Font as Font
+import List.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr)
 import Render.ASTTools as ASTTools
@@ -119,6 +120,11 @@ heading count settings args exprs =
                 Just level ->
                     String.toFloat level |> Maybe.withDefault 2 |> (\x -> x + 1)
 
+        sectionNumber =
+            List.Extra.getAt 1 args
+                |> Maybe.withDefault ""
+                |> (\s -> Element.el [ Font.size fontSize ] (Element.text (s ++ ". ")))
+
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round
     in
@@ -127,7 +133,7 @@ heading count settings args exprs =
         [ Font.size fontSize
         , Render.Utility.makeId exprs
         ]
-        { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (renderWithDefault "| heading" count settings exprs) }
+        { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (sectionNumber :: renderWithDefault "| heading" count settings exprs) }
 
 
 verticalPadding top bottom =
