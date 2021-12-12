@@ -98,6 +98,7 @@ blockDict =
         , ( "note", env "Note" )
         , ( "env", env_ )
         , ( "item", item )
+        , ( "numbered", numbered )
         ]
 
 
@@ -128,7 +129,6 @@ heading count settings args exprs =
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round
     in
-    -- Element.paragraph [ Font.size fontSize ] (renderWithDefault "| heading" count settings exprs)
     Element.link
         [ Font.size fontSize
         , Render.Utility.makeId exprs
@@ -211,5 +211,24 @@ item count settings args exprs =
     Element.row [ Element.alignTop ]
         [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
         , Element.paragraph [ Render.Settings.leftIndentation ]
-            (renderWithDefault "| indent" count settings exprs)
+            (renderWithDefault "| item" count settings exprs)
+        ]
+
+
+numbered count settings args exprs =
+    let
+        label =
+            List.Extra.getAt 0 args |> Maybe.withDefault ""
+    in
+    Element.row [ Element.alignTop ]
+        [ Element.el
+            [ Font.size 14
+            , Element.alignTop
+            , Element.moveRight 6
+            , Element.width (Element.px 24)
+            , Render.Settings.leftIndentation
+            ]
+            (Element.text (label ++ ". "))
+        , Element.paragraph [ Render.Settings.leftIndentation ]
+            (renderWithDefault "| numbered" count settings exprs)
         ]

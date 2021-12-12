@@ -11,6 +11,7 @@ import Tree exposing (Tree)
 
 type alias Accumulator =
     { headingIndex : Vector
+    , numberedItemIndex : Int
     }
 
 
@@ -28,6 +29,7 @@ make ast =
 init : Int -> Accumulator
 init k =
     { headingIndex = Vector.init k
+    , numberedItemIndex = 0
     }
 
 
@@ -57,6 +59,9 @@ transformBlock acc ((L0BlockE { args, blockType, children, content, indent, line
         OrdinaryBlock [ "heading", level ] ->
             L0BlockE { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, name = name }
 
+        OrdinaryBlock [ "numbered" ] ->
+            L0BlockE { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, name = name }
+
         _ ->
             block
 
@@ -69,7 +74,14 @@ updateAccumulator ((L0BlockE { blockType, content }) as block) accumulator =
                 headingIndex =
                     Vector.increment (String.toInt level |> Maybe.withDefault 0 |> (\x -> x - 1)) accumulator.headingIndex
             in
-            { accumulator | headingIndex = headingIndex }
+            { accumulator | headingIndex = headingIndex, numberedItemIndex = 0 }
+
+        OrdinaryBlock [ "numbered" ] ->
+            let
+                numberedItemIndex =
+                    accumulator.numberedItemIndex + 1
+            in
+            { accumulator | numberedItemIndex = numberedItemIndex }
 
         _ ->
-            accumulator
+            { accumulator | numberedItemIndex = 0 }
