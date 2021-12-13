@@ -1,16 +1,26 @@
 module Render.Utility exposing
     ( elementAttribute
+    , hspace
     , internalLink
     , keyValueDict
     , makeId
+    , vspace
     )
 
 import Dict exposing (Dict)
-import Element
+import Element exposing (paddingEach)
 import Html.Attributes
 import Maybe.Extra
 import Parser.Expr
 import Render.ASTTools
+
+
+vspace top bottom =
+    paddingEach { left = 0, right = 0, top = top, bottom = bottom }
+
+
+hspace left right =
+    paddingEach { left = left, right = right, top = 0, bottom = 0 }
 
 
 internalLink : String -> String

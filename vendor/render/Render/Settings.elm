@@ -1,10 +1,12 @@
 module Render.Settings exposing
     ( Settings
     , defaultSettings
+    , leftIndent
     , leftIndentation
     , makeSettings
     , maxHeadingFontSize
     , redColor
+    , topMargin
     , windowWidthScale
     )
 
@@ -44,6 +46,14 @@ windowWidthScale =
 maxHeadingFontSize : Float
 maxHeadingFontSize =
     32
+
+
+leftIndent =
+    18
+
+
+topMargin =
+    12
 
 
 leftIndentation =
