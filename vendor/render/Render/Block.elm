@@ -229,7 +229,7 @@ removeFirstLine str =
 
 
 item count settings args id exprs =
-    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id, vspace 0 Render.Settings.topMargin ]
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id, vspace 0 12 ]
         [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
         , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendId id) ]
             (renderWithDefault "| item" count settings exprs)
@@ -245,7 +245,7 @@ numbered count settings args id exprs =
         label =
             List.Extra.getAt 0 args |> Maybe.withDefault ""
     in
-    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id, vspace 0 Render.Settings.topMargin ]
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id, vspace 0 Render.Settings.topMarginForChildren ]
         [ Element.el
             [ Font.size 14
             , Element.alignTop

@@ -6,7 +6,7 @@ module Render.Settings exposing
     , makeSettings
     , maxHeadingFontSize
     , redColor
-    , topMargin
+    , topMarginForChildren
     , windowWidthScale
     )
 
@@ -52,8 +52,8 @@ leftIndent =
     18
 
 
-topMargin =
-    12
+topMarginForChildren =
+    6
 
 
 leftIndentation =

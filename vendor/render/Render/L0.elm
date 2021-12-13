@@ -44,5 +44,5 @@ unravel tree =
         Element.column []
             --  Render.Settings.leftIndentation,
             [ Tree.label tree
-            , Element.column [ Element.paddingEach { top = Render.Settings.topMargin, left = Render.Settings.leftIndent, right = 0, bottom = 0 } ] (List.map unravel children)
+            , Element.column [ Element.paddingEach { top = Render.Settings.topMarginForChildren, left = Render.Settings.leftIndent, right = 0, bottom = 0 } ] (List.map unravel children)
             ]
