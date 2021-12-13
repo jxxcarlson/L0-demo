@@ -26,10 +26,12 @@ l0Empty =
         , args = []
         , indent = 0
         , lineNumber = 0
+        , id = "0"
         , numberOfLines = 0
         , blockType = Paragraph
         , content = Left "YYY"
         , children = []
+        , sourceText = "YYY"
         }
 
 
@@ -51,10 +53,12 @@ toL0BlockE block =
                 , args = []
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
                 , content = Right (Parser.Expression.parse_ block.content)
                 , blockType = blockType
                 , children = []
+                , sourceText = block.content
                 }
 
         OrdinaryBlock args ->
@@ -63,10 +67,12 @@ toL0BlockE block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
                 , content = Right (Parser.Expression.parse_ (removeFirstLine block.content))
                 , blockType = blockType
                 , children = []
+                , sourceText = block.content
                 }
 
         VerbatimBlock args ->
@@ -75,10 +81,12 @@ toL0BlockE block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
                 , content = Left (removeFirstLine block.content)
                 , blockType = blockType
                 , children = []
+                , sourceText = block.content
                 }
 
 

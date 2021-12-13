@@ -1,4 +1,7 @@
-module L0 exposing (AST, parse)
+module L0 exposing
+    ( AST, parse
+    , b, bb
+    )
 
 {-| A Parser for the experimental L0 module. See the app folder to see how it is used.
 The Render folder in app could have been included with the parser. However, this way
@@ -39,3 +42,7 @@ parse sourceText =
 
 b =
     Tree.BlocksV.fromStringAsParagraphs isVerbatimLine
+
+
+bb =
+    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine >> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toL0BlockE Parser.BlockUtil.toBlock

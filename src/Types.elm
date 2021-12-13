@@ -198,6 +198,7 @@ type FrontendMsg
     | Saved String
     | InputSearchKey String
     | Search
+    | SearchText
     | InputAuthorId String
     | NewDocument
     | SetDocumentAsCurrent DocPermissions Document

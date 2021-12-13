@@ -133,7 +133,9 @@ heading count settings args lineNumber exprs =
     Element.link
         [ Font.size fontSize
         , Render.Utility.makeId exprs
+        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
         , Events.onClick (SendLineNumber lineNumber)
+        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
         ]
         { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (sectionNumber :: renderWithDefault "| heading" count settings exprs) }
 
@@ -152,7 +154,7 @@ renderWithDefault default count settings exprs =
 
 
 indented count settings args lineNumber exprs =
-    Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
+    Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber), Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
         (renderWithDefault "| indent" count settings exprs)
 
 
@@ -160,7 +162,7 @@ env_ : Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg
 env_ count settings args lineNumber exprs =
     case List.head args of
         Nothing ->
-            Element.paragraph [ Font.color Render.Settings.redColor, Events.onClick (SendLineNumber lineNumber) ] [ Element.text "| env (missing name!)" ]
+            Element.paragraph [ Render.Utility.elementAttribute "id" (String.fromInt lineNumber), Font.color Render.Settings.redColor, Events.onClick (SendLineNumber lineNumber) ] [ Element.text "| env (missing name!)" ]
 
         Just name ->
             env name count settings (List.drop 1 args) lineNumber exprs
@@ -176,7 +178,7 @@ env name count settings args lineNumber exprs =
             else
                 name ++ " (" ++ String.join " " args ++ ")"
     in
-    Element.column [ Element.spacing 8 ]
+    Element.column [ Element.spacing 8, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
         [ Element.el [ Font.bold, Events.onClick (SendLineNumber lineNumber) ] (Element.text heading_)
         , Element.paragraph [ Font.italic, Events.onClick (SendLineNumber lineNumber) ]
             (renderWithDefault ("| " ++ name) count settings exprs)
@@ -202,6 +204,7 @@ renderCode count settings args lineNumber str =
         , Element.spacing 8
         , Element.paddingEach { left = 24, right = 0, top = 0, bottom = 0 }
         , Events.onClick (SendLineNumber lineNumber)
+        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
         ]
         (List.map (\t -> Element.el [] (Element.text t)) (String.lines (String.trim str)))
 
@@ -212,7 +215,7 @@ removeFirstLine str =
 
 
 item count settings args lineNumber exprs =
-    Element.row [ Element.alignTop ]
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
         [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
         , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
             (renderWithDefault "| item" count settings exprs)
@@ -224,7 +227,7 @@ numbered count settings args lineNumber exprs =
         label =
             List.Extra.getAt 0 args |> Maybe.withDefault ""
     in
-    Element.row [ Element.alignTop ]
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
         [ Element.el
             [ Font.size 14
             , Element.alignTop

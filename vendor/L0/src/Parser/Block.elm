@@ -18,9 +18,11 @@ type L0BlockE
         , indent : Int
         , lineNumber : Int
         , numberOfLines : Int
+        , id : String
         , blockType : BlockType
         , content : Either String (List Expr)
         , children : List L0BlockE
+        , sourceText : String
         }
 
 

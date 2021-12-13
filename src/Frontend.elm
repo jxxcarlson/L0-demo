@@ -276,13 +276,15 @@ update msg model =
                     ( { model | message = model.message ++ ", setting viewport" }, View.Utility.setViewPortForSelectedLine element viewport )
 
                 Err _ ->
-                    ( { model | message = model.message ++ ", could not set viewport" }, Cmd.none )
+                    -- TODO: restore error message
+                    -- ( { model | message = model.message ++ ", could not set viewport" }, Cmd.none )
+                    ( model, Cmd.none )
 
         InputSearchSource str ->
             ( { model | searchSourceText = str, foundIdIndex = 0 }, Cmd.none )
 
         GetSelection str ->
-            ( { model | message = "Selection: " ++ str }, Cmd.none )
+            ( { model | message = "Selection: " ++ str |> Debug.log "SELECTION" }, Cmd.none )
 
         SendSyncLR ->
             ( { model | syncRequestIndex = model.syncRequestIndex + 1 }, Cmd.none )
@@ -291,10 +293,17 @@ update msg model =
             let
                 data =
                     if model.foundIdIndex == 0 then
-                        { foundIds = []
+                        let
+                            foundIds_ =
+                                Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast
+
+                            id_ =
+                                List.head foundIds_ |> Maybe.withDefault "(nothing)"
+                        in
+                        { foundIds = foundIds_
                         , foundIdIndex = 1
-                        , cmd = View.Utility.setViewportForElement ("id_" ++ ".0")
-                        , selectedId = " id_"
+                        , cmd = View.Utility.setViewportForElement (id_ ++ ".0")
+                        , selectedId = id_
                         , searchCount = 0
                         }
 
@@ -367,6 +376,22 @@ update msg model =
         Search ->
             ( model, sendToBackend (SearchForDocuments (model.currentUser |> Maybe.map .username) model.inputSearchKey) )
 
+        SearchText ->
+            let
+                ids =
+                    Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast |> Debug.log "@@ IDS"
+
+                ( cmd, id ) =
+                    case List.head ids of
+                        Nothing ->
+                            ( Cmd.none, "(none)" )
+
+                        Just id_ ->
+                            ( View.Utility.setViewportForElement id_, id_ )
+            in
+            ( { model | selectedId = id, searchCount = model.searchCount + 1, message = "ids: " ++ String.join ", " ids }, cmd )
+
+        -- ( model, Cmd.none )
         InputText str ->
             -- updateDoc model str
             let

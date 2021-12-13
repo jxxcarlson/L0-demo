@@ -3,6 +3,7 @@ module Render.ASTTools exposing
     , filterBlocksByArgs
     , getExprsByName
     , getText
+    , matchingIdsInAST
     , stringValueOfList
     , tableOfContents
     , title
@@ -10,7 +11,7 @@ module Render.ASTTools exposing
     )
 
 import Either exposing (Either(..))
-import L0
+import L0 exposing (AST)
 import Maybe.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr(..))
@@ -35,10 +36,18 @@ matchExpr name expr =
             False
 
 
+matchingIdsInAST : String -> AST -> List String
+matchingIdsInAST key ast =
+    ast |> List.map Tree.flatten |> List.concat |> List.filterMap (idOfMatchingBlockContent key)
 
---
---titleInfo : L0.AST -> { title : Maybe (List Expr), subtitle: Maybe (List Expr)   }
---titleInfo ast =
+
+idOfMatchingBlockContent : String -> L0BlockE -> Maybe String
+idOfMatchingBlockContent key (L0BlockE { sourceText, id }) =
+    if String.contains key sourceText then
+        Just id
+
+    else
+        Nothing
 
 
 title : L0.AST -> List L0BlockE
