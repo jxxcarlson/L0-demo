@@ -5,6 +5,7 @@ import Either exposing (Either(..))
 import Element exposing (Element)
 import Element.Events as Events
 import Element.Font as Font
+import Html.Attributes
 import List.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
 import Parser.Expr exposing (Expr)
@@ -16,17 +17,18 @@ import Render.Settings exposing (Settings)
 import Render.Utility
 
 
+htmlId str =
+    Element.htmlAttribute (Html.Attributes.id str)
+
+
 render : Int -> Settings -> L0BlockE -> Element MarkupMsg
 render count settings (L0BlockE { name, args, indent, blockType, content, lineNumber, id, children }) =
-    --let
-    --    _ =
-    --        Debug.log "ID" id
-    --in
     case blockType of
         Paragraph ->
             case content of
                 Right exprs ->
-                    List.map (Render.Elm.render count settings) exprs |> (\x -> Element.paragraph [ Events.onClick (SendId id) ] x)
+                    List.map (Render.Elm.render count settings) exprs
+                        |> (\x -> Element.paragraph [ Events.onClick (SendId id), htmlId id ] x)
 
                 Left _ ->
                     Element.none
@@ -139,7 +141,6 @@ heading count settings args id exprs =
         , Render.Utility.makeId exprs
         , Render.Utility.elementAttribute "id" id
         , Events.onClick (SendId id)
-        , Render.Utility.elementAttribute "id" id
         ]
         { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (sectionNumber :: renderWithDefault "| heading" count settings exprs) }
 

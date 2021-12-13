@@ -311,7 +311,7 @@ update msg model =
                     else
                         let
                             id_ =
-                                List.Extra.getAt model.foundIdIndex model.foundIds |> Maybe.withDefault "(nothing)"
+                                List.Extra.getAt model.foundIdIndex model.foundIds |> Maybe.withDefault "(nothing)" |> Debug.log "ID to FIND"
                         in
                         { foundIds = model.foundIds
                         , foundIdIndex = modBy (List.length model.foundIds) (model.foundIdIndex + 1)
