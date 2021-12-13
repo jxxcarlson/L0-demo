@@ -3,6 +3,7 @@ module Render.Block exposing (render)
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
+import Element.Background as Background
 import Element.Events as Events
 import Element.Font as Font
 import Html.Attributes
@@ -27,8 +28,16 @@ render count settings (L0BlockE { name, args, indent, blockType, content, lineNu
         Paragraph ->
             case content of
                 Right exprs ->
+                    let
+                        color =
+                            if id == settings.selectedId then
+                                Background.color (Element.rgb 0.9 0.9 1.0)
+
+                            else
+                                Background.color (Element.rgb 1 1 1)
+                    in
                     List.map (Render.Elm.render count settings) exprs
-                        |> (\x -> Element.paragraph [ Events.onClick (SendId id), htmlId id ] x)
+                        |> (\x -> Element.paragraph [ color, Events.onClick (SendId id), htmlId id ] x)
 
                 Left _ ->
                     Element.none

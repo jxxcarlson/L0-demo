@@ -284,7 +284,6 @@ update msg model =
             ( { model | searchSourceText = str, foundIdIndex = 0 }, Cmd.none )
 
         GetSelection str ->
-            -- ( { model | message = "Selection: " ++ str |> Debug.log "SELECTION" }, Cmd.none )
             ( { model | message = "Selection: " ++ str }, Cmd.none )
 
         SendSyncLR ->
@@ -311,7 +310,7 @@ update msg model =
                     else
                         let
                             id_ =
-                                List.Extra.getAt model.foundIdIndex model.foundIds |> Maybe.withDefault "(nothing)" |> Debug.log "ID to FIND"
+                                List.Extra.getAt model.foundIdIndex model.foundIds |> Maybe.withDefault "(nothing)"
                         in
                         { foundIds = model.foundIds
                         , foundIdIndex = modBy (List.length model.foundIds) (model.foundIdIndex + 1)
@@ -383,7 +382,6 @@ update msg model =
                 ids =
                     Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast
 
-                -- |> Debug.log "@@ IDS"
                 ( cmd, id ) =
                     case List.head ids of
                         Nothing ->

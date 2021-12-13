@@ -421,16 +421,23 @@ viewRenderedForEditor model width_ =
                 ]
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
-                    ((Render.TOC.view model.counter (renderSettings model.windowWidth) model.ast |> E.map Render)
-                        :: (Render.L0.renderFromAST model.counter (editorRenderSettings model.windowWidth) model.ast |> List.map (E.map Render))
+                    ((Render.TOC.view model.counter (renderSettings model.windowWidth |> setSelectedId model.selectedId) model.ast |> E.map Render)
+                        :: (Render.L0.renderFromAST model.counter (editorRenderSettings model.windowWidth |> setSelectedId model.selectedId) model.ast |> List.map (E.map Render))
                     )
                 ]
 
 
+setSelectedId : String -> Render.Settings.Settings -> Render.Settings.Settings
+setSelectedId id settings =
+    { settings | selectedId = id }
+
+
+renderSettings : Int -> Render.Settings.Settings
 renderSettings w =
     Render.Settings.makeSettings 0.38 w
 
 
+editorRenderSettings : Int -> Render.Settings.Settings
 editorRenderSettings w =
     Render.Settings.makeSettings 0.28 w
 
