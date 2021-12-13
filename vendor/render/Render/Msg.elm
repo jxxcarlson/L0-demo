@@ -3,5 +3,5 @@ module Render.Msg exposing (MarkupMsg(..))
 
 type MarkupMsg
     = SendMeta { begin : Int, end : Int, index : Int }
-    | SendLineNumber Int
+    | SendId String
     | GetPublicDocument String

@@ -284,7 +284,8 @@ update msg model =
             ( { model | searchSourceText = str, foundIdIndex = 0 }, Cmd.none )
 
         GetSelection str ->
-            ( { model | message = "Selection: " ++ str |> Debug.log "SELECTION" }, Cmd.none )
+            -- ( { model | message = "Selection: " ++ str |> Debug.log "SELECTION" }, Cmd.none )
+            ( { model | message = "Selection: " ++ str }, Cmd.none )
 
         SendSyncLR ->
             ( { model | syncRequestIndex = model.syncRequestIndex + 1 }, Cmd.none )
@@ -302,7 +303,7 @@ update msg model =
                         in
                         { foundIds = foundIds_
                         , foundIdIndex = 1
-                        , cmd = View.Utility.setViewportForElement (id_ ++ ".0")
+                        , cmd = View.Utility.setViewportForElement id_
                         , selectedId = id_
                         , searchCount = 0
                         }
@@ -314,7 +315,7 @@ update msg model =
                         in
                         { foundIds = model.foundIds
                         , foundIdIndex = modBy (List.length model.foundIds) (model.foundIdIndex + 1)
-                        , cmd = View.Utility.setViewportForElement (id_ ++ ".0")
+                        , cmd = View.Utility.setViewportForElement id_
                         , selectedId = id_
                         , searchCount = model.searchCount + 1
                         }
@@ -351,8 +352,8 @@ update msg model =
                     -- ( { model | lineNumber = m.loc.begin.row, message = "line " ++ String.fromInt (m.loc.begin.row + 1) }, Cmd.none )
                     ( model, Cmd.none )
 
-                Render.Msg.SendLineNumber k ->
-                    ( { model | lineNumber = k + 2, message = "Line " ++ String.fromInt (k + 3) }, Cmd.none )
+                Render.Msg.SendId id ->
+                    ( { model | message = "Id: " ++ id }, Cmd.none )
 
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
@@ -379,8 +380,9 @@ update msg model =
         SearchText ->
             let
                 ids =
-                    Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast |> Debug.log "@@ IDS"
+                    Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast
 
+                -- |> Debug.log "@@ IDS"
                 ( cmd, id ) =
                     case List.head ids of
                         Nothing ->

@@ -17,12 +17,16 @@ import Render.Utility
 
 
 render : Int -> Settings -> L0BlockE -> Element MarkupMsg
-render count settings (L0BlockE { name, args, indent, blockType, content, lineNumber, children }) =
+render count settings (L0BlockE { name, args, indent, blockType, content, lineNumber, id, children }) =
+    --let
+    --    _ =
+    --        Debug.log "ID" id
+    --in
     case blockType of
         Paragraph ->
             case content of
                 Right exprs ->
-                    List.map (Render.Elm.render count settings) exprs |> (\x -> Element.paragraph [ Events.onClick (SendLineNumber lineNumber) ] x)
+                    List.map (Render.Elm.render count settings) exprs |> (\x -> Element.paragraph [ Events.onClick (SendId id) ] x)
 
                 Left _ ->
                     Element.none
@@ -43,7 +47,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, lineNu
                                     noSuchVerbatimBlock functionName str
 
                                 Just f ->
-                                    f count settings args lineNumber str
+                                    f count settings args id str
 
         OrdinaryBlock _ ->
             case content of
@@ -61,7 +65,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, lineNu
                                     noSuchOrdinaryBlock count settings functionName exprs
 
                                 Just f ->
-                                    f count settings args lineNumber exprs
+                                    f count settings args id exprs
 
 
 noSuchVerbatimBlock : String -> String -> Element MarkupMsg
@@ -80,7 +84,7 @@ noSuchOrdinaryBlock count settings functionName exprs =
         ]
 
 
-blockDict : Dict String (Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg)
+blockDict : Dict String (Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg)
 blockDict =
     Dict.fromList
         [ ( "indent", indented )
@@ -103,7 +107,7 @@ blockDict =
         ]
 
 
-verbatimDict : Dict String (Int -> Settings -> List String -> Int -> String -> Element MarkupMsg)
+verbatimDict : Dict String (Int -> Settings -> List String -> String -> String -> Element MarkupMsg)
 verbatimDict =
     Dict.fromList
         [ ( "math", renderDisplayMath )
@@ -111,7 +115,7 @@ verbatimDict =
         ]
 
 
-heading count settings args lineNumber exprs =
+heading count settings args id exprs =
     -- level 1 is reserved for titles
     let
         headingLevel =
@@ -133,9 +137,9 @@ heading count settings args lineNumber exprs =
     Element.link
         [ Font.size fontSize
         , Render.Utility.makeId exprs
-        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
-        , Events.onClick (SendLineNumber lineNumber)
-        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
+        , Render.Utility.elementAttribute "id" id
+        , Events.onClick (SendId id)
+        , Render.Utility.elementAttribute "id" id
         ]
         { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (sectionNumber :: renderWithDefault "| heading" count settings exprs) }
 
@@ -153,23 +157,23 @@ renderWithDefault default count settings exprs =
         List.map (Render.Elm.render count settings) exprs
 
 
-indented count settings args lineNumber exprs =
-    Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber), Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
+indented count settings args id exprs =
+    Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendId id), Render.Utility.elementAttribute "id" id ]
         (renderWithDefault "| indent" count settings exprs)
 
 
-env_ : Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg
-env_ count settings args lineNumber exprs =
+env_ : Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg
+env_ count settings args id exprs =
     case List.head args of
         Nothing ->
-            Element.paragraph [ Render.Utility.elementAttribute "id" (String.fromInt lineNumber), Font.color Render.Settings.redColor, Events.onClick (SendLineNumber lineNumber) ] [ Element.text "| env (missing name!)" ]
+            Element.paragraph [ Render.Utility.elementAttribute "id" id, Font.color Render.Settings.redColor, Events.onClick (SendId id) ] [ Element.text "| env (missing name!)" ]
 
         Just name ->
-            env name count settings (List.drop 1 args) lineNumber exprs
+            env name count settings (List.drop 1 args) id exprs
 
 
-env : String -> Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg
-env name count settings args lineNumber exprs =
+env : String -> Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg
+env name count settings args id exprs =
     let
         heading_ =
             if List.isEmpty args then
@@ -178,23 +182,23 @@ env name count settings args lineNumber exprs =
             else
                 name ++ " (" ++ String.join " " args ++ ")"
     in
-    Element.column [ Element.spacing 8, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
-        [ Element.el [ Font.bold, Events.onClick (SendLineNumber lineNumber) ] (Element.text heading_)
-        , Element.paragraph [ Font.italic, Events.onClick (SendLineNumber lineNumber) ]
+    Element.column [ Element.spacing 8, Render.Utility.elementAttribute "id" id ]
+        [ Element.el [ Font.bold, Events.onClick (SendId id) ] (Element.text heading_)
+        , Element.paragraph [ Font.italic, Events.onClick (SendId id) ]
             (renderWithDefault ("| " ++ name) count settings exprs)
         ]
 
 
-renderDisplayMath count settings args lineNumber str =
+renderDisplayMath count settings args id str =
     let
         w =
             String.fromInt settings.width ++ "px"
     in
-    Element.column [ Events.onClick (SendLineNumber lineNumber) ]
+    Element.column [ Events.onClick (SendId id) ]
         [ Render.Math.mathText count w "id" DisplayMathMode str ]
 
 
-renderCode count settings args lineNumber str =
+renderCode count settings args id str =
     Element.column
         [ Font.color (Element.rgb255 170 0 250)
         , Font.family
@@ -203,8 +207,8 @@ renderCode count settings args lineNumber str =
             ]
         , Element.spacing 8
         , Element.paddingEach { left = 24, right = 0, top = 0, bottom = 0 }
-        , Events.onClick (SendLineNumber lineNumber)
-        , Render.Utility.elementAttribute "id" (String.fromInt lineNumber)
+        , Events.onClick (SendId id)
+        , Render.Utility.elementAttribute "id" id
         ]
         (List.map (\t -> Element.el [] (Element.text t)) (String.lines (String.trim str)))
 
@@ -214,20 +218,20 @@ removeFirstLine str =
     str |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
 
 
-item count settings args lineNumber exprs =
-    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
+item count settings args id exprs =
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id ]
         [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
-        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
+        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendId id) ]
             (renderWithDefault "| item" count settings exprs)
         ]
 
 
-numbered count settings args lineNumber exprs =
+numbered count settings args id exprs =
     let
         label =
             List.Extra.getAt 0 args |> Maybe.withDefault ""
     in
-    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" (String.fromInt lineNumber) ]
+    Element.row [ Element.alignTop, Render.Utility.elementAttribute "id" id ]
         [ Element.el
             [ Font.size 14
             , Element.alignTop
@@ -236,6 +240,6 @@ numbered count settings args lineNumber exprs =
             , Render.Settings.leftIndentation
             ]
             (Element.text (label ++ ". "))
-        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
+        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendId id) ]
             (renderWithDefault "| numbered" count settings exprs)
         ]
