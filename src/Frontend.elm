@@ -353,7 +353,8 @@ update msg model =
                     ( model, Cmd.none )
 
                 Render.Msg.SendId id ->
-                    ( { model | message = "Id: " ++ id }, Cmd.none )
+                    -- TODO: the below (using id also for line number) is not a great idea.
+                    ( { model | message = "Id: " ++ id, lineNumber = String.toInt id |> Maybe.withDefault 0 |> (\x -> x + 1) }, Cmd.none )
 
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
