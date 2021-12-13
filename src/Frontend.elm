@@ -343,7 +343,7 @@ update msg model =
                     ( model, Cmd.none )
 
                 Render.Msg.SendLineNumber k ->
-                    ( { model | lineNumber = k, message = "Line " ++ String.fromInt k }, Cmd.none )
+                    ( { model | lineNumber = k + 2, message = "Line " ++ String.fromInt (k + 3) }, Cmd.none )
 
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
