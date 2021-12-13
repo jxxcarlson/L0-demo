@@ -342,6 +342,9 @@ update msg model =
                     -- ( { model | lineNumber = m.loc.begin.row, message = "line " ++ String.fromInt (m.loc.begin.row + 1) }, Cmd.none )
                     ( model, Cmd.none )
 
+                Render.Msg.SendLineNumber k ->
+                    ( { model | lineNumber = k, message = "Line " ++ String.fromInt k }, Cmd.none )
+
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
 
