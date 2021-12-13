@@ -21,7 +21,7 @@ view counter settings ast =
 
 
 viewTocItem : Int -> Render.Settings.Settings -> L0BlockE -> Element Render.Msg.MarkupMsg
-viewTocItem count settings (L0BlockE { args, content }) =
+viewTocItem count settings (L0BlockE { args, content, lineNumber }) =
     case content of
         Left _ ->
             Element.none
@@ -29,7 +29,7 @@ viewTocItem count settings (L0BlockE { args, content }) =
         Right exprs ->
             let
                 t =
-                    Render.ASTTools.stringValueOfList exprs
+                    String.fromInt lineNumber
 
                 sectionNumber =
                     List.Extra.getAt 1 args
@@ -40,7 +40,6 @@ viewTocItem count settings (L0BlockE { args, content }) =
                 label =
                     Element.paragraph [ tocIndent args ] (sectionNumber :: List.map (Render.Elm.render count settings) exprs)
             in
-            -- Element.paragraph [ tocIndent args ] (List.map (Render.Elm.render count settings) exprs)
             Element.link [ Font.color (Element.rgb 0 0 0.8) ] { url = Render.Utility.internalLink t, label = label }
 
 
