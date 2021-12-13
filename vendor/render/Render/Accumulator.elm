@@ -54,13 +54,13 @@ transformAccumulateTree tree acc =
 
 
 transformBlock : Accumulator -> L0BlockE -> L0BlockE
-transformBlock acc ((L0BlockE { args, blockType, children, content, indent, lineNumber, name }) as block) =
+transformBlock acc ((L0BlockE { args, blockType, children, content, indent, lineNumber, numberOfLines, name }) as block) =
     case blockType of
         OrdinaryBlock [ "heading", level ] ->
-            L0BlockE { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, name = name }
+            L0BlockE { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name }
 
         OrdinaryBlock [ "numbered" ] ->
-            L0BlockE { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, name = name }
+            L0BlockE { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name }
 
         _ ->
             block

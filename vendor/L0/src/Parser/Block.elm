@@ -17,6 +17,7 @@ type L0BlockE
         , args : List String
         , indent : Int
         , lineNumber : Int
+        , numberOfLines : Int
         , blockType : BlockType
         , content : Either String (List Expr)
         , children : List L0BlockE

@@ -3,6 +3,7 @@ module Render.Block exposing (render)
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
+import Element.Events as Events
 import Element.Font as Font
 import List.Extra
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
@@ -10,18 +11,18 @@ import Parser.Expr exposing (Expr)
 import Render.ASTTools as ASTTools
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
-import Render.Msg exposing (MarkupMsg)
+import Render.Msg exposing (MarkupMsg(..))
 import Render.Settings exposing (Settings)
 import Render.Utility
 
 
 render : Int -> Settings -> L0BlockE -> Element MarkupMsg
-render count settings (L0BlockE { name, args, indent, blockType, content, children }) =
+render count settings (L0BlockE { name, args, indent, blockType, content, lineNumber, children }) =
     case blockType of
         Paragraph ->
             case content of
                 Right exprs ->
-                    List.map (Render.Elm.render count settings) exprs |> (\x -> Element.paragraph [] x)
+                    List.map (Render.Elm.render count settings) exprs |> (\x -> Element.paragraph [ Events.onClick (SendLineNumber lineNumber) ] x)
 
                 Left _ ->
                     Element.none
@@ -42,7 +43,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, childr
                                     noSuchVerbatimBlock functionName str
 
                                 Just f ->
-                                    f count settings args str
+                                    f count settings args lineNumber str
 
         OrdinaryBlock _ ->
             case content of
@@ -60,7 +61,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, childr
                                     noSuchOrdinaryBlock count settings functionName exprs
 
                                 Just f ->
-                                    f count settings args exprs
+                                    f count settings args lineNumber exprs
 
 
 noSuchVerbatimBlock : String -> String -> Element MarkupMsg
@@ -79,15 +80,15 @@ noSuchOrdinaryBlock count settings functionName exprs =
         ]
 
 
-blockDict : Dict String (Int -> Settings -> List String -> List Expr -> Element MarkupMsg)
+blockDict : Dict String (Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg)
 blockDict =
     Dict.fromList
         [ ( "indent", indented )
         , ( "heading", heading )
-        , ( "title", \_ _ _ _ -> Element.none )
-        , ( "subtitle", \_ _ _ _ -> Element.none )
-        , ( "author", \_ _ _ _ -> Element.none )
-        , ( "date", \_ _ _ _ -> Element.none )
+        , ( "title", \_ _ _ _ _ -> Element.none )
+        , ( "subtitle", \_ _ _ _ _ -> Element.none )
+        , ( "author", \_ _ _ _ _ -> Element.none )
+        , ( "date", \_ _ _ _ _ -> Element.none )
         , ( "abstract", env "Abstract" )
         , ( "theorem", env "Theorem" )
         , ( "proposition", env "Proposition" )
@@ -102,7 +103,7 @@ blockDict =
         ]
 
 
-verbatimDict : Dict String (Int -> Settings -> List String -> String -> Element MarkupMsg)
+verbatimDict : Dict String (Int -> Settings -> List String -> Int -> String -> Element MarkupMsg)
 verbatimDict =
     Dict.fromList
         [ ( "math", renderDisplayMath )
@@ -110,7 +111,7 @@ verbatimDict =
         ]
 
 
-heading count settings args exprs =
+heading count settings args lineNumber exprs =
     -- level 1 is reserved for titles
     let
         headingLevel =
@@ -132,6 +133,7 @@ heading count settings args exprs =
     Element.link
         [ Font.size fontSize
         , Render.Utility.makeId exprs
+        , Events.onClick (SendLineNumber lineNumber)
         ]
         { url = Render.Utility.internalLink "TITLE", label = Element.paragraph [] (sectionNumber :: renderWithDefault "| heading" count settings exprs) }
 
@@ -149,23 +151,23 @@ renderWithDefault default count settings exprs =
         List.map (Render.Elm.render count settings) exprs
 
 
-indented count settings args exprs =
-    Element.paragraph [ Render.Settings.leftIndentation ]
+indented count settings args lineNumber exprs =
+    Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
         (renderWithDefault "| indent" count settings exprs)
 
 
-env_ : Int -> Settings -> List String -> List Expr -> Element MarkupMsg
-env_ count settings args exprs =
+env_ : Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg
+env_ count settings args lineNumber exprs =
     case List.head args of
         Nothing ->
-            Element.paragraph [ Font.color Render.Settings.redColor ] [ Element.text "| env (missing name!)" ]
+            Element.paragraph [ Font.color Render.Settings.redColor, Events.onClick (SendLineNumber lineNumber) ] [ Element.text "| env (missing name!)" ]
 
         Just name ->
-            env name count settings (List.drop 1 args) exprs
+            env name count settings (List.drop 1 args) lineNumber exprs
 
 
-env : String -> Int -> Settings -> List String -> List Expr -> Element MarkupMsg
-env name count settings args exprs =
+env : String -> Int -> Settings -> List String -> Int -> List Expr -> Element MarkupMsg
+env name count settings args lineNumber exprs =
     let
         heading_ =
             if List.isEmpty args then
@@ -175,21 +177,22 @@ env name count settings args exprs =
                 name ++ " (" ++ String.join " " args ++ ")"
     in
     Element.column [ Element.spacing 8 ]
-        [ Element.el [ Font.bold ] (Element.text heading_)
-        , Element.paragraph [ Font.italic ]
+        [ Element.el [ Font.bold, Events.onClick (SendLineNumber lineNumber) ] (Element.text heading_)
+        , Element.paragraph [ Font.italic, Events.onClick (SendLineNumber lineNumber) ]
             (renderWithDefault ("| " ++ name) count settings exprs)
         ]
 
 
-renderDisplayMath count settings args str =
+renderDisplayMath count settings args lineNumber str =
     let
         w =
             String.fromInt settings.width ++ "px"
     in
-    Render.Math.mathText count w "id" DisplayMathMode str
+    Element.column [ Events.onClick (SendLineNumber lineNumber) ]
+        [ Render.Math.mathText count w "id" DisplayMathMode str ]
 
 
-renderCode count settings args str =
+renderCode count settings args lineNumber str =
     Element.column
         [ Font.color (Element.rgb255 170 0 250)
         , Font.family
@@ -198,6 +201,7 @@ renderCode count settings args str =
             ]
         , Element.spacing 8
         , Element.paddingEach { left = 24, right = 0, top = 0, bottom = 0 }
+        , Events.onClick (SendLineNumber lineNumber)
         ]
         (List.map (\t -> Element.el [] (Element.text t)) (String.lines (String.trim str)))
 
@@ -207,15 +211,15 @@ removeFirstLine str =
     str |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
 
 
-item count settings args exprs =
+item count settings args lineNumber exprs =
     Element.row [ Element.alignTop ]
         [ Element.el [ Font.size 18, Element.alignTop, Element.moveRight 6, Element.width (Element.px 24), Render.Settings.leftIndentation ] (Element.text "•")
-        , Element.paragraph [ Render.Settings.leftIndentation ]
+        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
             (renderWithDefault "| item" count settings exprs)
         ]
 
 
-numbered count settings args exprs =
+numbered count settings args lineNumber exprs =
     let
         label =
             List.Extra.getAt 0 args |> Maybe.withDefault ""
@@ -229,6 +233,6 @@ numbered count settings args exprs =
             , Render.Settings.leftIndentation
             ]
             (Element.text (label ++ ". "))
-        , Element.paragraph [ Render.Settings.leftIndentation ]
+        , Element.paragraph [ Render.Settings.leftIndentation, Events.onClick (SendLineNumber lineNumber) ]
             (renderWithDefault "| numbered" count settings exprs)
         ]

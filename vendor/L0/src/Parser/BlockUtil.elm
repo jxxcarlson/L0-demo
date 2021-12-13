@@ -13,6 +13,7 @@ type L0Block
         , args : List String
         , indent : Int
         , lineNumber : Int
+        , numberOfLines : Int
         , blockType : BlockType
         , content : String
         , children : List L0Block
@@ -25,6 +26,7 @@ l0Empty =
         , args = []
         , indent = 0
         , lineNumber = 0
+        , numberOfLines = 0
         , blockType = Paragraph
         , content = Left "YYY"
         , children = []
@@ -32,8 +34,8 @@ l0Empty =
 
 
 toBlock : L0BlockE -> Tree.BlocksV.Block
-toBlock (L0BlockE { indent, lineNumber }) =
-    { indent = indent, content = "XXX", lineNumber = lineNumber }
+toBlock (L0BlockE { indent, lineNumber, numberOfLines }) =
+    { indent = indent, content = "XXX", lineNumber = lineNumber, numberOfLines = numberOfLines }
 
 
 toL0BlockE : Tree.BlocksV.Block -> L0BlockE
@@ -49,6 +51,7 @@ toL0BlockE block =
                 , args = []
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = Right (Parser.Expression.parse_ block.content)
                 , blockType = blockType
                 , children = []
@@ -60,6 +63,7 @@ toL0BlockE block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = Right (Parser.Expression.parse_ (removeFirstLine block.content))
                 , blockType = blockType
                 , children = []
@@ -71,6 +75,7 @@ toL0BlockE block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = Left (removeFirstLine block.content)
                 , blockType = blockType
                 , children = []
@@ -95,6 +100,7 @@ toL0Block block =
                 , args = []
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = block.content
                 , blockType = blockType
                 , children = []
@@ -106,6 +112,7 @@ toL0Block block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = block.content
                 , blockType = blockType
                 , children = []
@@ -117,6 +124,7 @@ toL0Block block =
                 , args = List.drop 1 args
                 , indent = block.indent
                 , lineNumber = block.lineNumber
+                , numberOfLines = block.numberOfLines
                 , content = block.content
                 , blockType = blockType
                 , children = []
