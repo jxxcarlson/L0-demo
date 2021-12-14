@@ -205,13 +205,13 @@ renderDisplayMath count settings args id str =
             String.fromInt settings.width ++ "px"
 
         lines =
-            String.lines str |> Debug.log "LINES"
+            String.lines str
 
         n =
             List.length lines
 
         lastLine =
-            List.Extra.getAt (n - 1) lines |> Debug.log "LAST LINE"
+            List.Extra.getAt (n - 1) lines
     in
     if lastLine == Just "$$" then
         Element.column [ Events.onClick (SendId id) ]
