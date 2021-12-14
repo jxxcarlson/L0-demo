@@ -203,9 +203,27 @@ renderDisplayMath count settings args id str =
     let
         w =
             String.fromInt settings.width ++ "px"
+
+        lines =
+            String.lines str |> Debug.log "LINES"
+
+        n =
+            List.length lines
+
+        lastLine =
+            List.Extra.getAt (n - 1) lines |> Debug.log "LAST LINE"
     in
-    Element.column [ Events.onClick (SendId id) ]
-        [ Render.Math.mathText count w "id" DisplayMathMode str ]
+    if lastLine == Just "$$" then
+        Element.column [ Events.onClick (SendId id) ]
+            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" (List.take (n - 1) lines)) ]
+
+    else if lastLine == Just "$" then
+        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.redColor ]
+            (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.text "$ - another $?" ])
+
+    else
+        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.redColor ]
+            (List.map Element.text ("$$" :: lines) ++ [ Element.text "$$??" ])
 
 
 renderCode count settings args id str =

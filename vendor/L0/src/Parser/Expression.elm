@@ -311,10 +311,11 @@ recoverFromError state =
                     , tokenIndex = meta.index
                 }
 
+        -- missing right bracket
         (LB _) :: (S fName meta) :: rest ->
             Loop
                 { state
-                    | committed = errorMessage ("[@2" ++ fName ++ errorSuffix rest) :: state.committed
+                    | committed = errorMessage ("[" ++ fName ++ errorSuffix rest) :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
                 }
