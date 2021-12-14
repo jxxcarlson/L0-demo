@@ -68,10 +68,6 @@ run state =
 
 nextStep : State -> Step State State
 nextStep state =
-    let
-        _ =
-            Debug.log "STACK" state.stack
-    in
     case List.Extra.getAt state.tokenIndex state.tokens of
         Nothing ->
             if List.isEmpty state.stack then
