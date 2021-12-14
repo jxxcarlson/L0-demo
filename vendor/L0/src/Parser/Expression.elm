@@ -68,6 +68,10 @@ run state =
 
 nextStep : State -> Step State State
 nextStep state =
+    let
+        _ =
+            Debug.log "STACK" state.stack
+    in
     case List.Extra.getAt state.tokenIndex state.tokens of
         Nothing ->
             if List.isEmpty state.stack then
@@ -315,6 +319,14 @@ recoverFromError state =
             Loop
                 { state
                     | committed = errorMessage ("[" ++ fName ++ errorSuffix rest) :: state.committed
+                    , stack = []
+                    , tokenIndex = meta.index + 1
+                }
+
+        (LB _) :: (W " " meta) :: rest ->
+            Loop
+                { state
+                    | committed = errorMessage "[ - no space after right bracket!" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
                 }
