@@ -328,6 +328,14 @@ recoverFromError state =
                     , numberOfTokens = 0
                 }
 
+        (RB meta) :: rest ->
+            Loop
+                { state
+                    | committed = errorMessage "]?" :: state.committed
+                    , stack = []
+                    , tokenIndex = meta.index + 1
+                }
+
         (MathToken meta) :: rest ->
             let
                 content =
