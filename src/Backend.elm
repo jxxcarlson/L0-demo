@@ -114,6 +114,7 @@ updateFromFrontend sessionId clientId msg model =
                         , Cmd.batch
                             [ sendToFrontend clientId (SendDocuments <| Backend.Update.getUserDocuments userData.user model.usersDocumentsDict model.documentDict)
                             , sendToFrontend clientId (SendUser userData.user)
+                            , sendToFrontend clientId (SendMessage <| "Success! your are signed in and your documents are now available")
                             ]
                         )
 
