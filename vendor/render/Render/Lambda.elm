@@ -1,4 +1,4 @@
-module Render.Lambda exposing (Lambda, apply, expand, extract, insert)
+module Render.Lambda exposing (Lambda, apply, expand, extract, insert, subst)
 
 import Dict exposing (Dict)
 import Parser.Expr exposing (Expr(..))
@@ -14,7 +14,7 @@ extract expr_ =
         Expr "lambda" ((Text argString _) :: expr :: []) _ ->
             case String.words argString of
                 name :: rest ->
-                    Just { name = name, vars = rest, body = expr }
+                    Just { name = name, vars = List.map (\x -> " " ++ x) rest, body = expr }
 
                 _ ->
                     Nothing
@@ -58,7 +58,8 @@ subst : Expr -> String -> Expr -> Expr
 subst a var body =
     case body of
         Text v meta ->
-            if v == var then
+            if String.trim v == String.trim var then
+                -- the trimming is a temporary hack.  Need to adjust the parser
                 a
 
             else

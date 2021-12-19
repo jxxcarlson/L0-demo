@@ -109,6 +109,7 @@ markupDict =
         -- MiniLaTeX stuff
         , ( "term", \g s exprList -> term g s exprList )
         , ( "emph", \g s exprList -> emph g s exprList )
+        , ( "group", \g s exprList -> identityFunction g s exprList )
         ]
 
 
@@ -123,6 +124,10 @@ verbatimDict =
 
 
 -- FUNCTIONS
+
+
+identityFunction g s exprList =
+    Element.paragraph [] (List.map (render g s) exprList)
 
 
 abstract g s exprList =

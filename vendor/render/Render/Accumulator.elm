@@ -73,7 +73,23 @@ transformBlock acc ((L0BlockE { args, blockType, children, content, indent, line
             L0BlockE { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
 
         _ ->
-            block
+            expand acc.environment block
+
+
+expand : Dict String Lambda -> L0BlockE -> L0BlockE
+expand dict ((L0BlockE { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
+    L0BlockE
+        { args = args
+        , blockType = blockType
+        , children = children
+        , content = Either.map (List.map (Lambda.expand dict)) content
+        , indent = indent
+        , lineNumber = lineNumber
+        , numberOfLines = numberOfLines
+        , name = name
+        , id = id
+        , sourceText = sourceText
+        }
 
 
 updateAccumulator : L0BlockE -> Accumulator -> Accumulator
