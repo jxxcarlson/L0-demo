@@ -295,6 +295,7 @@ isReducible tokens =
 recoverFromError : State -> Step State State
 recoverFromError state =
     case List.reverse state.stack of
+        -- brackets with no intervening text
         (LB _) :: (RB meta) :: rest ->
             Loop
                 { state
@@ -303,10 +304,11 @@ recoverFromError state =
                     , tokenIndex = meta.index + 1
                 }
 
+        -- consecutive left brackets
         (LB _) :: (LB meta) :: rest ->
             Loop
                 { state
-                    | committed = errorMessage "[@1" :: state.committed
+                    | committed = errorMessage "[" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index
                 }

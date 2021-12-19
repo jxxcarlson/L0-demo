@@ -104,6 +104,7 @@ blockDict =
         , ( "subtitle", \_ _ _ _ _ -> Element.none )
         , ( "author", \_ _ _ _ _ -> Element.none )
         , ( "date", \_ _ _ _ _ -> Element.none )
+        , ( "defs", \_ _ _ _ _ -> Element.none )
         , ( "abstract", env "Abstract" )
         , ( "theorem", env "Theorem" )
         , ( "proposition", env "Proposition" )
@@ -214,16 +215,16 @@ renderDisplayMath count settings args id str =
             List.Extra.getAt (n - 1) lines
     in
     if lastLine == Just "$$" then
-        Element.column [ Events.onClick (SendId id) ]
+        Element.column [ Events.onClick (SendId id), Element.width (Element.px settings.width), Element.centerX ]
             [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" (List.take (n - 1) lines)) ]
 
     else if lastLine == Just "$" then
-        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.redColor ]
-            (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.text "$ - another $?" ])
+        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
+            (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.paragraph [] [ Element.text "$", Element.el [ Font.color Render.Settings.redColor ] (Element.text " - another $?") ] ])
 
     else
-        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.redColor ]
-            (List.map Element.text ("$$" :: lines) ++ [ Element.text "$$??" ])
+        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
+            (List.map Element.text ("$$" :: lines) ++ [ Element.el [ Font.color Render.Settings.redColor ] (Element.text "$$??") ])
 
 
 renderCode count settings args id str =

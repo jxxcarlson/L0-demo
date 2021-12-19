@@ -3,16 +3,29 @@ module Parser.Token exposing
     , Token(..)
     , TokenType(..)
     , codeParser
+    , idem
+    , idemTest
     , init
     , mathParser
     , nextStep
     , run
+    , run1
     , toString
     , type_
     )
 
 import Parser.Advanced as Parser exposing (DeadEnd, Parser)
 import Parser.Tools as PT exposing (Context, Problem)
+
+
+idem : String -> String
+idem str =
+    str |> run |> toString
+
+
+idemTest : String -> Bool
+idemTest str =
+    str == idem str
 
 
 
@@ -39,6 +52,8 @@ type alias State a =
     , tokenIndex : Int
     , sourceLength : Int
     , tokens : List a
+    , lastToken : Maybe Token
+    , lastTokenType : Maybe TokenType
     , mode : Mode
     }
 
@@ -82,6 +97,31 @@ type_ token =
 
         TokenError _ _ ->
             TTokenError
+
+
+getMeta : Token -> Meta
+getMeta token =
+    case token of
+        LB m ->
+            m
+
+        RB m ->
+            m
+
+        S _ m ->
+            m
+
+        W _ m ->
+            m
+
+        MathToken m ->
+            m
+
+        CodeToken m ->
+            m
+
+        TokenError _ m ->
+            m
 
 
 stringValue : Token -> String
@@ -141,11 +181,16 @@ length token =
 
 init : String -> State a
 init str =
-    { source = str, scanpointer = 0, sourceLength = String.length str, tokens = [], tokenIndex = 0, mode = Normal }
+    { source = str, scanpointer = 0, sourceLength = String.length str, tokens = [], lastToken = Nothing, lastTokenType = Nothing, tokenIndex = 0, mode = Normal }
 
 
 type alias TokenParser =
     Parser Context Problem Token
+
+
+run1 : String -> List Token
+run1 source =
+    loop (init source) nextStep1
 
 
 run : String -> List Token
@@ -171,6 +216,40 @@ get state start input =
             TokenError errorList { begin = start, end = start + 1, index = state.tokenIndex }
 
 
+nextStep1 : State Token -> Step (State Token) (List Token)
+nextStep1 state =
+    if state.scanpointer >= state.sourceLength then
+        Done state.tokens
+
+    else
+        let
+            token =
+                get state state.scanpointer (String.dropLeft state.scanpointer state.source)
+
+            newScanPointer =
+                state.scanpointer + length token + 1
+
+            ( newToken, mergeStatus ) =
+                mergeTokens state.lastToken token
+
+            tokens =
+                case mergeStatus of
+                    TokensUnchanged ->
+                        token :: state.tokens
+
+                    TokensMerged ->
+                        newToken :: List.drop 1 state.tokens
+        in
+        Loop
+            { state
+                | tokens = token :: state.tokens
+                , lastToken = Just token
+                , scanpointer = newScanPointer
+                , tokenIndex = state.tokenIndex + 1
+                , mode = newMode token state.mode
+            }
+
+
 nextStep : State Token -> Step (State Token) (List Token)
 nextStep state =
     if state.scanpointer >= state.sourceLength then
@@ -183,14 +262,73 @@ nextStep state =
 
             newScanPointer =
                 state.scanpointer + length token + 1
+
+            ( newToken, mergeStatus ) =
+                mergeTokens state.lastToken token
+
+            tokens =
+                case mergeStatus of
+                    TokensUnchanged ->
+                        token :: state.tokens
+
+                    TokensMerged ->
+                        newToken :: List.drop 1 state.tokens
+
+            lastToken =
+                if List.member state.lastTokenType [ Nothing, Just TLB, Just TRB ] then
+                    Nothing
+
+                else
+                    Just newToken
         in
         Loop
             { state
-                | tokens = token :: state.tokens
+                | tokens = tokens
+                , lastToken = lastToken
+                , lastTokenType = Just (type_ token)
                 , scanpointer = newScanPointer
                 , tokenIndex = state.tokenIndex + 1
                 , mode = newMode token state.mode
             }
+
+
+isTextToken : Token -> Bool
+isTextToken token =
+    List.member (type_ token) [ TW, TS ]
+
+
+type MergeStatus
+    = TokensUnchanged
+    | TokensMerged
+
+
+mergeTokens : Maybe Token -> Token -> ( Token, MergeStatus )
+mergeTokens lastToken_ token =
+    case lastToken_ of
+        Nothing ->
+            ( token, TokensUnchanged )
+
+        Just lastToken ->
+            if isTextToken lastToken && isTextToken token then
+                ( mergeTokensAux lastToken token, TokensMerged )
+
+            else
+                ( token, TokensUnchanged )
+
+
+mergeTokensAux : Token -> Token -> Token
+mergeTokensAux lastToken currentToken =
+    let
+        lastTokenMeta =
+            getMeta lastToken
+
+        currentTokenMeta =
+            getMeta currentToken
+
+        meta =
+            { begin = lastTokenMeta.begin, end = currentTokenMeta.end, index = currentTokenMeta.index }
+    in
+    S (stringValue lastToken ++ stringValue currentToken) meta
 
 
 newMode : Token -> Mode -> Mode

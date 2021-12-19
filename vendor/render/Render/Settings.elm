@@ -1,5 +1,6 @@
 module Render.Settings exposing
     ( Settings
+    , blueColor
     , defaultSettings
     , leftIndent
     , leftIndentation
@@ -62,3 +63,7 @@ leftIndentation =
 
 redColor =
     Element.rgb 0.7 0 0
+
+
+blueColor =
+    Element.rgb 0 0 0.9

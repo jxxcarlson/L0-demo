@@ -4,7 +4,11 @@ module Render.Accumulator exposing
     , transformAST
     )
 
+import Dict exposing (Dict)
+import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), L0BlockE(..))
+import Parser.Expr exposing (Expr(..))
+import Render.Lambda as Lambda exposing (Lambda)
 import Render.Vector as Vector exposing (Vector)
 import Tree exposing (Tree)
 
@@ -12,7 +16,13 @@ import Tree exposing (Tree)
 type alias Accumulator =
     { headingIndex : Vector
     , numberedItemIndex : Int
+    , environment : Dict String Lambda
     }
+
+
+getLambda : String -> Dict String ( List String, Expr ) -> Maybe { name : String, args : List String, expr : Expr }
+getLambda name environment =
+    Dict.get name environment |> Maybe.map (\( args, expr ) -> { name = name, args = args, expr = expr })
 
 
 transformAST : List (Tree L0BlockE) -> List (Tree L0BlockE)
@@ -30,6 +40,7 @@ init : Int -> Accumulator
 init k =
     { headingIndex = Vector.init k
     , numberedItemIndex = 0
+    , environment = Dict.empty
     }
 
 
@@ -42,7 +53,6 @@ transformAccumulateTree tree acc =
     let
         transformer : Accumulator -> L0BlockE -> ( Accumulator, L0BlockE )
         transformer =
-            -- \acc_ block_ -> ( updateAccumulator block_ acc_, transformBlock acc_ block_ )
             \acc_ block_ ->
                 let
                     newAcc =
@@ -82,6 +92,15 @@ updateAccumulator ((L0BlockE { blockType, content }) as block) accumulator =
                     accumulator.numberedItemIndex + 1
             in
             { accumulator | numberedItemIndex = numberedItemIndex }
+
+        -- insert definitions of lambdas
+        OrdinaryBlock [ "defs" ] ->
+            case content of
+                Left _ ->
+                    accumulator
+
+                Right exprs ->
+                    { accumulator | environment = List.foldl (\lambda dict -> Lambda.insert (Lambda.extract lambda) dict) accumulator.environment exprs }
 
         _ ->
             { accumulator | numberedItemIndex = 0 }
