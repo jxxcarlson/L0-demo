@@ -23,7 +23,7 @@ import Lamdera exposing (sendToBackend)
 import List.Extra
 import Process
 import Render.ASTTools
-import Render.Accumulator
+import Render.Acc
 import Render.Msg exposing (L0Msg(..))
 import Task
 import Types exposing (..)
@@ -91,7 +91,7 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = welcome
-      , ast = L0.parse welcome |> Render.Accumulator.transformAST
+      , ast = L0.parse welcome |> Render.Acc.transformST
       , title = Render.ASTTools.title (L0.parse welcome)
       , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
@@ -402,7 +402,7 @@ update msg model =
             in
             let
                 ast =
-                    L0.parse str |> Render.Accumulator.transformAST
+                    L0.parse str |> Render.Acc.transformST
             in
             ( { model
                 | sourceText = str
@@ -449,7 +449,7 @@ update msg model =
         SetDocumentAsCurrent permissions doc ->
             let
                 ast =
-                    L0.parse doc.content |> Render.Accumulator.transformAST
+                    L0.parse doc.content |> Render.Acc.transformST
             in
             ( { model
                 | currentDocument = Just doc
@@ -643,7 +643,7 @@ updateFromBackend msg model =
             in
             ( { model
                 | sourceText = doc.content
-                , ast = ast
+                , ast = ast |> Render.Acc.transformST
                 , title = Render.ASTTools.title ast
                 , tableOfContents = Render.ASTTools.tableOfContents ast
                 , showEditor = showEditor

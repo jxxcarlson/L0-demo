@@ -2,7 +2,7 @@ module Render.L0 exposing (renderFromAST, renderFromString, render_)
 
 import Element exposing (Element)
 import L0 exposing (SyntaxTree)
-import Render.Accumulator as Accumulator exposing (Accumulator)
+import Render.Acc as Accumulator exposing (Accumulator)
 import Render.Block
 import Render.Msg exposing (L0Msg)
 import Render.Settings exposing (Settings)

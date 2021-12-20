@@ -36,7 +36,7 @@ parse : String -> SyntaxTree
 parse sourceText =
     sourceText
         |> Tree.BlocksV.fromStringAsParagraphs isVerbatimLine
-        |> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toL0BlockE Parser.BlockUtil.toBlock
+        |> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toExpressionBlock Parser.BlockUtil.toBlock
         |> Result.withDefault []
 
 
@@ -45,4 +45,4 @@ b =
 
 
 bb =
-    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine >> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toL0BlockE Parser.BlockUtil.toBlock
+    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine >> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toExpressionBlock Parser.BlockUtil.toBlock

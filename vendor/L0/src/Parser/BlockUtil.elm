@@ -1,4 +1,4 @@
-module Parser.BlockUtil exposing (l0Empty, toBlock, toL0Block, toL0BlockE)
+module Parser.BlockUtil exposing (l0Empty, toBlock, toExpressionBlock, toL0Block)
 
 import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
@@ -40,8 +40,8 @@ toBlock (ExpressionBlock { indent, lineNumber, numberOfLines }) =
     { indent = indent, content = "XXX", lineNumber = lineNumber, numberOfLines = numberOfLines }
 
 
-toL0BlockE : Tree.BlocksV.Block -> ExpressionBlock
-toL0BlockE block =
+toExpressionBlock : Tree.BlocksV.Block -> ExpressionBlock
+toExpressionBlock block =
     let
         blockType =
             classify block
