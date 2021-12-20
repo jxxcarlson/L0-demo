@@ -1,10 +1,10 @@
 module Render.L0 exposing (renderFromAST, renderFromString, render_)
 
 import Element exposing (Element)
-import L0 exposing (AST)
+import L0 exposing (SyntaxTree)
 import Render.Accumulator as Accumulator exposing (Accumulator)
 import Render.Block
-import Render.Msg exposing (MarkupMsg)
+import Render.Msg exposing (L0Msg)
 import Render.Settings exposing (Settings)
 import Tree exposing (Tree)
 
@@ -14,17 +14,17 @@ isVerbatimLine str =
     String.left 2 str == "||"
 
 
-renderFromString : Int -> Settings -> String -> List (Element MarkupMsg)
+renderFromString : Int -> Settings -> String -> List (Element L0Msg)
 renderFromString count settings str =
     str |> L0.parse |> renderFromAST count settings
 
 
-render_ : AST -> List (Element MarkupMsg)
+render_ : SyntaxTree -> List (Element L0Msg)
 render_ ast =
     renderFromAST 0 Render.Settings.defaultSettings ast
 
 
-renderFromAST : Int -> Settings -> AST -> List (Element MarkupMsg)
+renderFromAST : Int -> Settings -> SyntaxTree -> List (Element L0Msg)
 renderFromAST count settings ast =
     ast
         |> List.map (Tree.map (Render.Block.render count settings))
@@ -33,7 +33,7 @@ renderFromAST count settings ast =
 
 {-| Comment on this!
 -}
-unravel : Tree (Element MarkupMsg) -> Element MarkupMsg
+unravel : Tree (Element L0Msg) -> Element L0Msg
 unravel tree =
     let
         children =

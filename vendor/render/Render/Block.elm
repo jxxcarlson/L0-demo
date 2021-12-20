@@ -8,12 +8,12 @@ import Element.Events as Events
 import Element.Font as Font
 import Html.Attributes
 import List.Extra
-import Parser.Block exposing (BlockType(..), L0BlockE(..))
+import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr)
 import Render.ASTTools as ASTTools
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
-import Render.Msg exposing (MarkupMsg(..))
+import Render.Msg exposing (L0Msg(..))
 import Render.Settings exposing (Settings)
 import Render.Utility
 
@@ -22,8 +22,8 @@ htmlId str =
     Element.htmlAttribute (Html.Attributes.id str)
 
 
-render : Int -> Settings -> L0BlockE -> Element MarkupMsg
-render count settings (L0BlockE { name, args, indent, blockType, content, lineNumber, id, children }) =
+render : Int -> Settings -> ExpressionBlock -> Element L0Msg
+render count settings (ExpressionBlock { name, args, indent, blockType, content, lineNumber, id, children }) =
     case blockType of
         Paragraph ->
             case content of
@@ -79,7 +79,7 @@ render count settings (L0BlockE { name, args, indent, blockType, content, lineNu
                                     f count settings args id exprs
 
 
-noSuchVerbatimBlock : String -> String -> Element MarkupMsg
+noSuchVerbatimBlock : String -> String -> Element L0Msg
 noSuchVerbatimBlock functionName content =
     Element.column [ Element.spacing 4 ]
         [ Element.paragraph [ Font.color (Element.rgb255 180 0 0) ] [ Element.text <| "|| " ++ functionName ++ " ?? " ]
@@ -87,7 +87,7 @@ noSuchVerbatimBlock functionName content =
         ]
 
 
-noSuchOrdinaryBlock : Int -> Settings -> String -> List Expr -> Element MarkupMsg
+noSuchOrdinaryBlock : Int -> Settings -> String -> List Expr -> Element L0Msg
 noSuchOrdinaryBlock count settings functionName exprs =
     Element.column [ Element.spacing 4 ]
         [ Element.paragraph [ Font.color (Element.rgb255 180 0 0) ] [ Element.text <| "| " ++ functionName ++ " ?? " ]
@@ -95,7 +95,7 @@ noSuchOrdinaryBlock count settings functionName exprs =
         ]
 
 
-blockDict : Dict String (Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg)
+blockDict : Dict String (Int -> Settings -> List String -> String -> List Expr -> Element L0Msg)
 blockDict =
     Dict.fromList
         [ ( "indent", indented )
@@ -119,7 +119,7 @@ blockDict =
         ]
 
 
-verbatimDict : Dict String (Int -> Settings -> List String -> String -> String -> Element MarkupMsg)
+verbatimDict : Dict String (Int -> Settings -> List String -> String -> String -> Element L0Msg)
 verbatimDict =
     Dict.fromList
         [ ( "math", renderDisplayMath )
@@ -159,7 +159,7 @@ verticalPadding top bottom =
     Element.paddingEach { top = top, bottom = bottom, left = 0, right = 0 }
 
 
-renderWithDefault : String -> Int -> Settings -> List Expr -> List (Element MarkupMsg)
+renderWithDefault : String -> Int -> Settings -> List Expr -> List (Element L0Msg)
 renderWithDefault default count settings exprs =
     if List.isEmpty exprs then
         [ Element.el [ Font.color Render.Settings.redColor, Font.size 14 ] (Element.text default) ]
@@ -173,7 +173,7 @@ indented count settings args id exprs =
         (renderWithDefault "| indent" count settings exprs)
 
 
-env_ : Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg
+env_ : Int -> Settings -> List String -> String -> List Expr -> Element L0Msg
 env_ count settings args id exprs =
     case List.head args of
         Nothing ->
@@ -183,7 +183,7 @@ env_ count settings args id exprs =
             env name count settings (List.drop 1 args) id exprs
 
 
-env : String -> Int -> Settings -> List String -> String -> List Expr -> Element MarkupMsg
+env : String -> Int -> Settings -> List String -> String -> List Expr -> Element L0Msg
 env name count settings args id exprs =
     let
         heading_ =

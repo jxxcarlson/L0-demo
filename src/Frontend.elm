@@ -24,7 +24,7 @@ import List.Extra
 import Process
 import Render.ASTTools
 import Render.Accumulator
-import Render.Msg exposing (MarkupMsg(..))
+import Render.Msg exposing (L0Msg(..))
 import Task
 import Types exposing (..)
 import Url exposing (Url)

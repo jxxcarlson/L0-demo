@@ -1,7 +1,7 @@
 module Parser.BlockUtil exposing (l0Empty, toBlock, toL0Block, toL0BlockE)
 
 import Either exposing (Either(..))
-import Parser.Block exposing (BlockType(..), L0BlockE(..))
+import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expression
 import Tree.Blocks
 import Tree.BlocksV
@@ -21,7 +21,7 @@ type L0Block
 
 
 l0Empty =
-    L0BlockE
+    ExpressionBlock
         { name = Nothing
         , args = []
         , indent = 0
@@ -35,12 +35,12 @@ l0Empty =
         }
 
 
-toBlock : L0BlockE -> Tree.BlocksV.Block
-toBlock (L0BlockE { indent, lineNumber, numberOfLines }) =
+toBlock : ExpressionBlock -> Tree.BlocksV.Block
+toBlock (ExpressionBlock { indent, lineNumber, numberOfLines }) =
     { indent = indent, content = "XXX", lineNumber = lineNumber, numberOfLines = numberOfLines }
 
 
-toL0BlockE : Tree.BlocksV.Block -> L0BlockE
+toL0BlockE : Tree.BlocksV.Block -> ExpressionBlock
 toL0BlockE block =
     let
         blockType =
@@ -48,7 +48,7 @@ toL0BlockE block =
     in
     case blockType of
         Paragraph ->
-            L0BlockE
+            ExpressionBlock
                 { name = Nothing
                 , args = []
                 , indent = block.indent
@@ -62,7 +62,7 @@ toL0BlockE block =
                 }
 
         OrdinaryBlock args ->
-            L0BlockE
+            ExpressionBlock
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
@@ -76,7 +76,7 @@ toL0BlockE block =
                 }
 
         VerbatimBlock args ->
-            L0BlockE
+            ExpressionBlock
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent

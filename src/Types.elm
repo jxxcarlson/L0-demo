@@ -12,7 +12,7 @@ import Document exposing (Document)
 import File exposing (File)
 import Http
 import L0
-import Parser.Block exposing (L0BlockE)
+import Parser.Block exposing (ExpressionBlock)
 import Random
 import Render.Msg
 import Time
@@ -50,9 +50,9 @@ type alias FrontendModel =
 
     -- DOCUMENT
     , sourceText : String
-    , ast : L0.AST
-    , tableOfContents : List L0BlockE
-    , title : List L0BlockE
+    , ast : L0.SyntaxTree
+    , tableOfContents : List ExpressionBlock
+    , title : List ExpressionBlock
     , searchCount : Int
     , searchSourceText : String
     , lineNumber : Int
@@ -207,7 +207,7 @@ type FrontendMsg
     | AskForDocumentByAuthorId
     | DeleteDocument
     | SetDeleteDocumentState DocumentDeleteState
-    | Render Render.Msg.MarkupMsg
+    | Render Render.Msg.L0Msg
       -- Export
     | ExportToMarkdown
     | ExportToLaTeX

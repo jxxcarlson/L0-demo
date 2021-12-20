@@ -11,9 +11,9 @@ module Render.ASTTools exposing
     )
 
 import Either exposing (Either(..))
-import L0 exposing (AST)
+import L0 exposing (SyntaxTree)
 import Maybe.Extra
-import Parser.Block exposing (BlockType(..), L0BlockE(..))
+import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
 import Tree
 
@@ -36,13 +36,13 @@ matchExpr name expr =
             False
 
 
-matchingIdsInAST : String -> AST -> List String
+matchingIdsInAST : String -> SyntaxTree -> List String
 matchingIdsInAST key ast =
     ast |> List.map Tree.flatten |> List.concat |> List.filterMap (idOfMatchingBlockContent key)
 
 
-idOfMatchingBlockContent : String -> L0BlockE -> Maybe String
-idOfMatchingBlockContent key (L0BlockE { sourceText, id }) =
+idOfMatchingBlockContent : String -> ExpressionBlock -> Maybe String
+idOfMatchingBlockContent key (ExpressionBlock { sourceText, id }) =
     if String.contains key sourceText then
         Just id
 
@@ -50,17 +50,17 @@ idOfMatchingBlockContent key (L0BlockE { sourceText, id }) =
         Nothing
 
 
-title : L0.AST -> List L0BlockE
+title : L0.SyntaxTree -> List ExpressionBlock
 title ast =
     filterBlocksByArgs "title" ast
 
 
-tableOfContents : L0.AST -> List L0BlockE
+tableOfContents : L0.SyntaxTree -> List ExpressionBlock
 tableOfContents ast =
     filterBlocksByArgs "heading" ast
 
 
-filterBlocksByArgs : String -> L0.AST -> List L0BlockE
+filterBlocksByArgs : String -> L0.SyntaxTree -> List ExpressionBlock
 filterBlocksByArgs key ast =
     ast
         |> List.map Tree.flatten
@@ -68,8 +68,8 @@ filterBlocksByArgs key ast =
         |> List.filter (matchBlock key)
 
 
-matchBlock : String -> L0BlockE -> Bool
-matchBlock key (L0BlockE { blockType }) =
+matchBlock : String -> ExpressionBlock -> Bool
+matchBlock key (ExpressionBlock { blockType }) =
     case blockType of
         Paragraph ->
             False
@@ -130,7 +130,7 @@ stringValue text =
 -- toExprListList : List L0BlockE -> List (List Expr)
 
 
-toExprRecord : List L0BlockE -> List { content : List Expr, blockType : BlockType }
+toExprRecord : List ExpressionBlock -> List { content : List Expr, blockType : BlockType }
 toExprRecord blocks =
     List.map toExprList_ blocks
 
@@ -139,5 +139,5 @@ toExprRecord blocks =
 -- toExprList_ : L0BlockE -> List Expr
 
 
-toExprList_ (L0BlockE { blockType, content }) =
+toExprList_ (ExpressionBlock { blockType, content }) =
     { content = content |> Either.toList |> List.concat, blockType = blockType }

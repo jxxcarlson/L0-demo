@@ -12,7 +12,7 @@ import Html.Attributes as HtmlAttr exposing (attribute)
 import Html.Events
 import Json.Decode
 import L0
-import Parser.Block exposing (L0BlockE(..))
+import Parser.Block exposing (ExpressionBlock(..))
 import Parser.Expr exposing (Expr)
 import Render.Elm
 import Render.L0

@@ -1,4 +1,7 @@
-module Parser.Block exposing (BlockType(..), L0BlockE(..))
+module Parser.Block exposing
+    ( BlockType(..)
+    , ExpressionBlock(..)
+    )
 
 {-| Types of blocks.
 
@@ -11,8 +14,8 @@ import Parser.Expr exposing (Expr)
 
 
 {-| -}
-type L0BlockE
-    = L0BlockE
+type ExpressionBlock
+    = ExpressionBlock
         { name : Maybe String
         , args : List String
         , indent : Int
@@ -21,7 +24,7 @@ type L0BlockE
         , id : String
         , blockType : BlockType
         , content : Either String (List Expr)
-        , children : List L0BlockE
+        , children : List ExpressionBlock
         , sourceText : String
         }
 

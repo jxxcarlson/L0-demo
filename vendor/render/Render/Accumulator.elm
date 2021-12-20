@@ -6,7 +6,7 @@ module Render.Accumulator exposing
 
 import Dict exposing (Dict)
 import Either exposing (Either(..))
-import Parser.Block exposing (BlockType(..), L0BlockE(..))
+import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
 import Render.Lambda as Lambda exposing (Lambda)
 import Render.Vector as Vector exposing (Vector)
@@ -25,12 +25,12 @@ getLambda name environment =
     Dict.get name environment |> Maybe.map (\( args, expr ) -> { name = name, args = args, expr = expr })
 
 
-transformAST : List (Tree L0BlockE) -> List (Tree L0BlockE)
+transformAST : List (Tree ExpressionBlock) -> List (Tree ExpressionBlock)
 transformAST ast =
     ast |> make |> Tuple.second
 
 
-make : List (Tree L0BlockE) -> ( Accumulator, List (Tree L0BlockE) )
+make : List (Tree ExpressionBlock) -> ( Accumulator, List (Tree ExpressionBlock) )
 make ast =
     List.foldl (\tree ( acc_, ast_ ) -> transformAccumulateTree tree acc_ |> mapper ast_) ( init 4, [] ) ast
         |> (\( acc_, ast_ ) -> ( acc_, List.reverse ast_ ))
@@ -48,10 +48,10 @@ mapper ast_ ( acc_, tree_ ) =
     ( acc_, tree_ :: ast_ )
 
 
-transformAccumulateTree : Tree L0BlockE -> Accumulator -> ( Accumulator, Tree L0BlockE )
+transformAccumulateTree : Tree ExpressionBlock -> Accumulator -> ( Accumulator, Tree ExpressionBlock )
 transformAccumulateTree tree acc =
     let
-        transformer : Accumulator -> L0BlockE -> ( Accumulator, L0BlockE )
+        transformer : Accumulator -> ExpressionBlock -> ( Accumulator, ExpressionBlock )
         transformer =
             \acc_ block_ ->
                 let
@@ -63,22 +63,22 @@ transformAccumulateTree tree acc =
     Tree.mapAccumulate transformer acc tree
 
 
-transformBlock : Accumulator -> L0BlockE -> L0BlockE
-transformBlock acc ((L0BlockE { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
+transformBlock : Accumulator -> ExpressionBlock -> ExpressionBlock
+transformBlock acc ((ExpressionBlock { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
     case blockType of
         OrdinaryBlock [ "heading", level ] ->
-            L0BlockE { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
+            ExpressionBlock { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
 
         OrdinaryBlock [ "numbered" ] ->
-            L0BlockE { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
+            ExpressionBlock { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
 
         _ ->
             expand acc.environment block
 
 
-expand : Dict String Lambda -> L0BlockE -> L0BlockE
-expand dict ((L0BlockE { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
-    L0BlockE
+expand : Dict String Lambda -> ExpressionBlock -> ExpressionBlock
+expand dict ((ExpressionBlock { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
+    ExpressionBlock
         { args = args
         , blockType = blockType
         , children = children
@@ -92,8 +92,8 @@ expand dict ((L0BlockE { args, blockType, children, content, indent, lineNumber,
         }
 
 
-updateAccumulator : L0BlockE -> Accumulator -> Accumulator
-updateAccumulator ((L0BlockE { blockType, content }) as block) accumulator =
+updateAccumulator : ExpressionBlock -> Accumulator -> Accumulator
+updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulator =
     case blockType of
         OrdinaryBlock [ "heading", level ] ->
             let
