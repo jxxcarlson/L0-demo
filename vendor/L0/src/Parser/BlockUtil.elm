@@ -7,8 +7,8 @@ import Tree.Blocks
 import Tree.BlocksV
 
 
-type L0Block
-    = L0Block
+type Block
+    = Block
         { name : Maybe String
         , args : List String
         , indent : Int
@@ -16,7 +16,7 @@ type L0Block
         , numberOfLines : Int
         , blockType : BlockType
         , content : String
-        , children : List L0Block
+        , children : List Block
         }
 
 
@@ -95,7 +95,7 @@ removeFirstLine str_ =
     str_ |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
 
 
-toL0Block : Tree.BlocksV.Block -> L0Block
+toL0Block : Tree.BlocksV.Block -> Block
 toL0Block block =
     let
         blockType =
@@ -103,7 +103,7 @@ toL0Block block =
     in
     case blockType of
         Paragraph ->
-            L0Block
+            Block
                 { name = Nothing
                 , args = []
                 , indent = block.indent
@@ -115,7 +115,7 @@ toL0Block block =
                 }
 
         OrdinaryBlock args ->
-            L0Block
+            Block
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
@@ -127,7 +127,7 @@ toL0Block block =
                 }
 
         VerbatimBlock args ->
-            L0Block
+            Block
                 { name = List.head args
                 , args = List.drop 1 args
                 , indent = block.indent
