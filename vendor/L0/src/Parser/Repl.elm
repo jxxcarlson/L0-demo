@@ -5,4 +5,4 @@ import Parser.Simple
 
 
 p str =
-    str |> Parser.Expression.parse_ |> List.map Parser.Simple.simplify
+    str |> Parser.Expression.parse |> List.map Parser.Simple.simplify

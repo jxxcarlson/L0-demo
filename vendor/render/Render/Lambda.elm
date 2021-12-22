@@ -1,4 +1,4 @@
-module Render.Lambda exposing (Lambda, apply, expand, extract, insert, subst)
+module Render.Lambda exposing (Lambda, apply, expand, extract, insert, subst, toString)
 
 import Dict exposing (Dict)
 import Parser.Expr exposing (Expr(..))
@@ -101,3 +101,26 @@ apply lambda expr =
 
                 _ ->
                     expr
+
+
+toString : (Expr -> String) -> Lambda -> String
+toString exprToString lambda =
+    [ "\\newcommand{\\"
+    , lambda.name
+    , "}["
+    , String.fromInt (List.length lambda.vars)
+    , "]{"
+    , lambda.body |> exprToString |> mapArgs lambda.vars
+    , "}    "
+    ]
+        |> String.join ""
+
+
+mapArgs : List String -> String -> String
+mapArgs args str =
+    List.foldl (\f acc -> f acc) str (List.indexedMap (\n arg -> mapArg n arg) args)
+
+
+mapArg : Int -> String -> String -> String
+mapArg n arg str =
+    String.replace arg (String.fromInt n) str

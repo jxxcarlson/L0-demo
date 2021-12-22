@@ -7,7 +7,7 @@ import Parser.Expression as Expression
 idem : String -> String
 idem str =
     str
-        |> Expression.parse
+        |> Expression.parseToState
         |> .committed
         |> print
 

@@ -3,7 +3,6 @@ module Parser.BlockUtil exposing (l0Empty, toBlock, toExpressionBlock, toL0Block
 import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expression
-import Tree.Blocks
 import Tree.BlocksV
 
 
@@ -55,7 +54,7 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse_ block.content)
+                , content = Right (Parser.Expression.parse block.content)
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content
@@ -69,7 +68,7 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse_ (removeFirstLine block.content))
+                , content = Right (Parser.Expression.parse (removeFirstLine block.content))
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content

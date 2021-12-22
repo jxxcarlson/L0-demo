@@ -42,7 +42,7 @@ tokenize str =
 
 parse : String -> StateS
 parse str =
-    Expression.parse str |> toStateS
+    Expression.parseToState str |> toStateS
 
 
 toStateS : State -> StateS

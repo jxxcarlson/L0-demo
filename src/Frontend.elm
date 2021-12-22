@@ -24,7 +24,9 @@ import List.Extra
 import Process
 import Render.ASTTools
 import Render.Acc
+import Render.LaTeX as LaTeX
 import Render.Msg exposing (L0Msg(..))
+import Render.Settings as Settings
 import Task
 import Types exposing (..)
 import Url exposing (Url)
@@ -487,8 +489,14 @@ update msg model =
             ( model, Download.string fileName_ "text/markdown" markdownText )
 
         ExportToLaTeX ->
-            --issueCommandIfDefined model.currentDocument model (exportToLaTeX model.language)
-            ( model, Cmd.none )
+            let
+                textToExport =
+                    LaTeX.export Settings.defaultSettings model.ast
+
+                fileName =
+                    (model.currentDocument |> Maybe.map .title |> Maybe.withDefault "doc") ++ ".tex"
+            in
+            ( model, Download.string fileName "application/x-latex" textToExport )
 
         Export ->
             issueCommandIfDefined model.currentDocument model exportDoc

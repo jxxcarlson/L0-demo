@@ -1,8 +1,7 @@
 module Parser.Expression exposing
     ( State
     , parse
-    , parse_
-    , run
+    , parseToState
     )
 
 import Either exposing (Either(..))
@@ -31,6 +30,17 @@ type alias State =
 -- STATE FOR THE PARSER
 
 
+initWithTokens : List Token -> State
+initWithTokens tokens =
+    { step = 0
+    , tokens = List.reverse tokens
+    , numberOfTokens = List.length tokens
+    , tokenIndex = 0
+    , committed = []
+    , stack = []
+    }
+
+
 init : String -> State
 init str =
     let
@@ -47,17 +57,35 @@ init str =
 
 
 
+-- Exposed functions
+
+
+parse : String -> List Expr
+parse str =
+    str
+        |> Token.run
+        |> parseTokenList
+
+
+parseToState : String -> State
+parseToState str =
+    str
+        |> Token.run
+        |> parseTokenListToState
+
+
+
 -- PARSER
 
 
-parse_ : String -> List Expr
-parse_ str =
-    parse str |> .committed
+parseTokenListToState : List Token -> State
+parseTokenListToState tokens =
+    tokens |> initWithTokens |> run
 
 
-parse : String -> State
-parse str =
-    run (init str)
+parseTokenList : List Token -> List Expr
+parseTokenList tokens =
+    parseTokenListToState tokens |> .committed
 
 
 run : State -> State
