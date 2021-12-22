@@ -195,7 +195,7 @@ ilink g s exprList =
 image generation settings body =
     let
         captionExpr =
-            ASTTools.getExprsByName "caption" body |> List.head
+            ASTTools.filterOnName "caption" body |> List.head
 
         arguments : List String
         arguments =

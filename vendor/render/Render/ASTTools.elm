@@ -1,7 +1,7 @@
 module Render.ASTTools exposing
     ( exprListToStringList
     , filterBlocksByArgs
-    , getExprsByName
+    , filterOnName
     , getText
     , matchingIdsInAST
     , stringValueOfList
@@ -18,8 +18,8 @@ import Parser.Expr exposing (Expr(..))
 import Tree
 
 
-getExprsByName : String -> List Expr -> List Expr
-getExprsByName name exprs =
+filterOnName : String -> List Expr -> List Expr
+filterOnName name exprs =
     List.filter (matchExpr name) exprs
 
 
