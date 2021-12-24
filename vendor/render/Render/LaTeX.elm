@@ -42,17 +42,18 @@ rawExport settings ast =
 
 
 type Status
-    = InsideList
-    | OutSideList
+    = InsideItemizedList
+    | OutsideList
+    | InsideNumberedList
 
 
 encloseLists : List ExpressionBlock -> List ExpressionBlock
 encloseLists blocks =
-    loop { status = OutSideList, inputList = blocks, outputList = [] } nextStep |> List.reverse
+    loop { status = OutsideList, inputList = blocks, outputList = [], itemNumber = 0 } nextStep |> List.reverse
 
 
 type alias State =
-    { status : Status, inputList : List ExpressionBlock, outputList : List ExpressionBlock }
+    { status : Status, inputList : List ExpressionBlock, outputList : List ExpressionBlock, itemNumber : Int }
 
 
 nextStep : State -> Step State (List ExpressionBlock)
@@ -65,29 +66,51 @@ nextStep state =
             Loop (nextState block state)
 
 
-beginBlock : ExpressionBlock
-beginBlock =
+beginItemizedBlock : ExpressionBlock
+beginItemizedBlock =
     ExpressionBlock { args = [], blockType = OrdinaryBlock [ "beginBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "beginBlock", numberOfLines = 2, sourceText = "| beginBlock\nitemize" }
 
 
-endBlock : ExpressionBlock
-endBlock =
+endItemizedBlock : ExpressionBlock
+endItemizedBlock =
     ExpressionBlock { args = [], blockType = OrdinaryBlock [ "endBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "endBlock", numberOfLines = 2, sourceText = "| endBlock\nitemize" }
+
+
+beginNumberedBlock : ExpressionBlock
+beginNumberedBlock =
+    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "beginNumberedBlock" ], children = [], content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "beginNumberedBlock", numberOfLines = 2, sourceText = "| beginBlock\nitemize" }
+
+
+endNumberedBlock : ExpressionBlock
+endNumberedBlock =
+    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "endNumberedBlock" ], children = [], content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "endNumberedBlock", numberOfLines = 2, sourceText = "| endBlock\nitemize" }
 
 
 nextState : ExpressionBlock -> State -> State
 nextState ((ExpressionBlock { name }) as block) state =
     case ( state.status, name ) of
-        ( OutSideList, Just "item" ) ->
-            { state | status = InsideList, outputList = block :: beginBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+        -- ITEMIZED LIST
+        ( OutsideList, Just "item" ) ->
+            { state | status = InsideItemizedList, itemNumber = 1, outputList = block :: beginItemizedBlock :: state.outputList, inputList = List.drop 1 state.inputList }
 
-        ( InsideList, Just "item" ) ->
-            { state | outputList = block :: state.outputList, inputList = List.drop 1 state.inputList }
+        ( InsideItemizedList, Just "item" ) ->
+            { state | outputList = block :: state.outputList, itemNumber = state.itemNumber + 1, inputList = List.drop 1 state.inputList }
 
-        ( InsideList, _ ) ->
-            { state | status = OutSideList, outputList = block :: endBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+        ( InsideItemizedList, _ ) ->
+            { state | status = OutsideList, itemNumber = 0, outputList = block :: endItemizedBlock :: state.outputList, inputList = List.drop 1 state.inputList }
 
-        ( OutSideList, _ ) ->
+        -- NUMBERED LIST
+        ( OutsideList, Just "numbered" ) ->
+            { state | status = InsideNumberedList, itemNumber = 1, outputList = block :: beginNumberedBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+
+        ( InsideNumberedList, Just "numbered" ) ->
+            { state | outputList = block :: state.outputList, itemNumber = state.itemNumber + 1, inputList = List.drop 1 state.inputList }
+
+        ( InsideNumberedList, _ ) ->
+            { state | status = OutsideList, itemNumber = 0, outputList = block :: endNumberedBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+
+        --- OUTSIDE
+        ( OutsideList, _ ) ->
             { state | outputList = block :: state.outputList, inputList = List.drop 1 state.inputList }
 
 
@@ -250,8 +273,11 @@ blockDict =
         , ( "date", \sett args body -> "" )
         , ( "heading", \sett args body -> heading args body )
         , ( "item", \_ _ body -> macro1 "item" body )
+        , ( "numbered", \_ _ body -> macro1 "item" body )
         , ( "beginBlock", \_ _ _ -> "\\begin{itemize}" )
         , ( "endBlock", \_ _ _ -> "\\end{itemize}" )
+        , ( "beginNumberedBlock", \_ _ _ -> "\\begin{enumerate}" )
+        , ( "endNumberedBlock", \_ _ _ -> "\\end{enumerate}" )
         ]
 
 
