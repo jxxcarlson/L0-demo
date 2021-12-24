@@ -351,6 +351,9 @@ macro1 name arg =
     else if name == "group" then
         arg
 
+    else if name == "tags" then
+        ""
+
     else
         case Dict.get name functionDict of
             Nothing ->
