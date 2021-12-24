@@ -22,12 +22,88 @@ export settings ast =
         ++ "\n\n\\end{document}\n"
 
 
+
+--rawExport : Settings -> SyntaxTree -> String
+--rawExport settings ast =
+--    ast
+--        |> List.map (Tree.map (exportBlock settings))
+--        |> List.map unravel
+--        |> String.join "\n\n"
+
+
 rawExport : Settings -> SyntaxTree -> String
 rawExport settings ast =
     ast
-        |> List.map (Tree.map (exportBlock settings))
-        |> List.map unravel
+        |> List.map Tree.flatten
+        |> List.concat
+        |> encloseLists
+        |> List.map (exportBlock settings)
         |> String.join "\n\n"
+
+
+type Status
+    = InsideList
+    | OutSideList
+
+
+encloseLists : List ExpressionBlock -> List ExpressionBlock
+encloseLists blocks =
+    loop { status = OutSideList, inputList = blocks, outputList = [] } nextStep |> List.reverse
+
+
+type alias State =
+    { status : Status, inputList : List ExpressionBlock, outputList : List ExpressionBlock }
+
+
+nextStep : State -> Step State (List ExpressionBlock)
+nextStep state =
+    case List.head state.inputList of
+        Nothing ->
+            Done state.outputList
+
+        Just block ->
+            Loop (nextState block state)
+
+
+beginBlock : ExpressionBlock
+beginBlock =
+    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "beginBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "beginBlock", numberOfLines = 2, sourceText = "| beginBlock\nitemize" }
+
+
+endBlock : ExpressionBlock
+endBlock =
+    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "endBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "endBlock", numberOfLines = 2, sourceText = "| endBlock\nitemize" }
+
+
+nextState : ExpressionBlock -> State -> State
+nextState ((ExpressionBlock { name }) as block) state =
+    case ( state.status, name ) of
+        ( OutSideList, Just "item" ) ->
+            { state | status = InsideList, outputList = block :: beginBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+
+        ( InsideList, Just "item" ) ->
+            { state | outputList = block :: state.outputList, inputList = List.drop 1 state.inputList }
+
+        ( InsideList, _ ) ->
+            { state | status = OutSideList, outputList = block :: endBlock :: state.outputList, inputList = List.drop 1 state.inputList }
+
+        ( OutSideList, _ ) ->
+            { state | outputList = block :: state.outputList, inputList = List.drop 1 state.inputList }
+
+
+type Step state a
+    = Loop state
+    | Done a
+
+
+loop : state -> (state -> Step state a) -> a
+loop s f =
+    case f s of
+        Loop s_ ->
+            loop s_ f
+
+        Done b ->
+            b
 
 
 exportBlock : Settings -> ExpressionBlock -> String
@@ -170,9 +246,12 @@ blockDict =
     Dict.fromList
         [ ( "title", \sett args body -> "" )
         , ( "subtitle", \sett args body -> "" )
-        , ( "author", \sett args body -> "" )
+        , ( "author", \sett argfbegs body -> "" )
         , ( "date", \sett args body -> "" )
         , ( "heading", \sett args body -> heading args body )
+        , ( "item", \_ _ body -> macro1 "item" body )
+        , ( "beginBlock", \_ _ _ -> "\\begin{itemize}" )
+        , ( "endBlock", \_ _ _ -> "\\end{itemize}" )
         ]
 
 
