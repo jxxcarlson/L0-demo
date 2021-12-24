@@ -251,6 +251,7 @@ type ToBackend
     | SaveDocument (Maybe User) Document
     | GetDocumentByAuthorId String
     | GetDocumentByPublicId String
+    | GetDocumentById String
     | CreateDocument (Maybe User) Document
     | StealDocument User String
     | SearchForDocuments (Maybe String) String

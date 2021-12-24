@@ -266,6 +266,20 @@ updateFromFrontend sessionId clientId msg model =
                                 ]
                             )
 
+        GetDocumentById id ->
+            case Dict.get id model.documentDict of
+                Nothing ->
+                    ( model, sendToFrontend clientId (SendMessage "No document for that docId") )
+
+                Just doc ->
+                    ( model
+                    , Cmd.batch
+                        [ sendToFrontend clientId (SendDocument ReadOnly doc)
+                        , sendToFrontend clientId (SetShowEditor False)
+                        , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id))
+                        ]
+                    )
+
         GetPublicDocuments ->
             ( model, sendToFrontend clientId (GotPublicDocuments (searchForPublicDocuments "" model)) )
 

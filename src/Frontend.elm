@@ -144,6 +144,9 @@ urlAction path =
             "/p/" ->
                 sendToBackend (GetDocumentByPublicId id)
 
+            "/i/" ->
+                sendToBackend (GetDocumentById id)
+
             "/a/" ->
                 sendToBackend (GetDocumentByAuthorId id)
 
