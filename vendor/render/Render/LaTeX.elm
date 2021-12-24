@@ -151,7 +151,7 @@ ilink s exprs =
         args =
             getTwoArgs exprs
     in
-    [ "\\href{", "https://l0-lab.lamdera.app/i/", args.second, "}{", args.first, "}" ] |> String.join ""
+    [ "\\href{", "https://l0-lab-demo.lamdera.app/i/", args.second, "}{", args.first, "}" ] |> String.join ""
 
 
 functionDict : Dict String String
