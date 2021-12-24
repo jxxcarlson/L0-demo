@@ -6,6 +6,7 @@ import L0 exposing (SyntaxTree)
 import List.Extra
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
+import Render.ASTTools as ASTTools
 import Render.Lambda as Lambda
 import Render.Settings exposing (Settings)
 import Tree exposing (Tree)
@@ -13,7 +14,12 @@ import Tree exposing (Tree)
 
 export : Settings -> SyntaxTree -> String
 export settings ast =
-    preamble "James Carlson" "Whatever" "Today" ++ "\n\n" ++ rawExport settings ast ++ "\n\n\\end{document}\n"
+    preamble (ASTTools.extractTextFromSyntaxTreeByKey "title" ast)
+        (ASTTools.extractTextFromSyntaxTreeByKey "author" ast)
+        (ASTTools.extractTextFromSyntaxTreeByKey "date" ast)
+        ++ "\n\n"
+        ++ rawExport settings ast
+        ++ "\n\n\\end{document}\n"
 
 
 rawExport : Settings -> SyntaxTree -> String

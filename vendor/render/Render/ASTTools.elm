@@ -1,5 +1,6 @@
 module Render.ASTTools exposing
     ( exprListToStringList
+    , extractTextFromSyntaxTreeByKey
     , filterBlocksByArgs
     , filterOnName
     , getText
@@ -53,6 +54,10 @@ idOfMatchingBlockContent key (ExpressionBlock { sourceText, id }) =
 title : L0.SyntaxTree -> List ExpressionBlock
 title ast =
     filterBlocksByArgs "title" ast
+
+
+extractTextFromSyntaxTreeByKey key syntaxTree =
+    syntaxTree |> filterBlocksByArgs key |> expressionBlockToText
 
 
 tableOfContents : L0.SyntaxTree -> List ExpressionBlock
@@ -124,6 +129,11 @@ stringValue text =
 
         Error str ->
             str
+
+
+expressionBlockToText : List ExpressionBlock -> String
+expressionBlockToText =
+    toExprRecord >> List.map .content >> List.concat >> List.filterMap getText >> String.join " "
 
 
 
