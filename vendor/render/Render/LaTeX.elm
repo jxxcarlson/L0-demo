@@ -105,6 +105,55 @@ blockNames =
         ]
 
 
+macroDict : Dict String (Settings -> List Expr -> String)
+macroDict =
+    Dict.fromList
+        [ ( "link", link )
+        , ( "ilink", ilink )
+        ]
+
+
+getArgs : List Expr -> List String
+getArgs =
+    ASTTools.exprListToStringList >> List.map String.words >> List.concat >> List.filter (\x -> x /= "")
+
+
+getTwoArgs : List Expr -> { first : String, second : String }
+getTwoArgs exprs =
+    let
+        args =
+            getArgs exprs
+
+        n =
+            List.length args
+
+        first =
+            List.take (n - 1) args |> String.join " "
+
+        second =
+            List.drop (n - 1) args |> String.join ""
+    in
+    { first = first, second = second }
+
+
+link : Settings -> List Expr -> String
+link s exprs =
+    let
+        args =
+            getTwoArgs exprs
+    in
+    [ "\\href{", args.second, "}{", args.first, "}" ] |> String.join ""
+
+
+ilink : Settings -> List Expr -> String
+ilink s exprs =
+    let
+        args =
+            getTwoArgs exprs
+    in
+    [ "\\href{", "https://l0-lab.lamdera.app/p/", args.second, "}{", args.first, "}" ] |> String.join ""
+
+
 functionDict : Dict String String
 functionDict =
     Dict.fromList
@@ -163,6 +212,32 @@ secondArg args =
             arg
 
 
+{-| For one-element functions
+-}
+f1 : Settings -> List Expr -> (String -> String) -> String
+f1 s exprList f =
+    case ASTTools.exprListToStringList exprList of
+        -- TODO: temporary fix: parse is producing the args in reverse order
+        arg1 :: _ ->
+            f arg1
+
+        _ ->
+            "f1 : Invalid arguments"
+
+
+{-| For two-element functions
+-}
+f2 : Int -> Settings -> List Expr -> (String -> String -> String) -> String
+f2 element s exprList g =
+    case ASTTools.exprListToStringList exprList of
+        -- TODO: temporary fix: parse is producing the args in reverse order
+        arg1 :: arg2 :: _ ->
+            g arg1 arg2
+
+        _ ->
+            "Invalid arguments"
+
+
 macro1 : String -> String -> String
 macro1 name arg =
     if name == "math" then
@@ -198,7 +273,12 @@ exportExpr settings expr =
                         "Error extracting lambda"
 
             else
-                macro1 name (List.map (exportExpr settings) exps_ |> String.join " ")
+                case Dict.get name macroDict of
+                    Just f ->
+                        f settings exps_
+
+                    Nothing ->
+                        macro1 name (List.map (exportExpr settings) exps_ |> String.join " ")
 
         Text str _ ->
             str
@@ -312,7 +392,7 @@ preamble title author date =
 \\newcommand{\\italic}[1]{{\\sl #1}}
 \\newcommand{\\strong}[1]{{\\bf #1}}
 \\newcommand{\\subheading}[1]{{\\bf #1}\\par}
-\\newcommand{\\xlink}[2]{\\href{{https://minilatex.lamdera.app/g/#1}}{#2}}
+\\newcommand{\\ilink}[2]{\\href{{https://l0-lab.lamdera.app/p/#1}}{#2}}
 \\newcommand{\\red}[1]{\\textcolor{red}{#1}}
 \\newcommand{\\blue}[1]{\\textcolor{blue}{#1}}
 \\newcommand{\\violet}[1]{\\textcolor{violet}{#1}}

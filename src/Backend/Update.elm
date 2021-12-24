@@ -120,8 +120,8 @@ setupUser model clientId username transitPassword =
         Ok authDict ->
             ( { model | randomSeed = tokenData.seed, authenticationDict = authDict, usersDocumentsDict = Dict.insert user.id [] model.usersDocumentsDict }
             , Cmd.batch
-                [ sendToFrontend clientId (SendMessage "Success! You have set up your account")
-                , sendToFrontend clientId (SendUser user)
+                [ sendToFrontend clientId (SendUser user)
+                , sendToFrontend clientId (SendMessage "Success! You have set up your account")
                 ]
             )
 
