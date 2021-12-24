@@ -322,6 +322,9 @@ preamble title author date =
 \\newcommand{\\note}[2]{\\textcolor{blue}{#1}{\\hl{#1}}}
 \\newcommand{\\strike}[1]{\\st{#1}}
 \\newcommand{\\term}[1]{{\\sl #1}}
+\\newcommand{\\dollarSign}[0]{{\\$}}
+
+\\newcommand{\\backTick}[0]{\\`{}}
 \\newtheorem{remark}{Remark}
 \\newcommand{\\comment}[1]{}
 \\newcommand{\\innertableofcontents}{}
@@ -355,6 +358,9 @@ preamble title author date =
 
 \\definecolor{mypink1}{rgb}{0.858, 0.188, 0.478}
 \\definecolor{mypink2}{RGB}{219, 48, 122}
+
+
+%% NEWCOMMAND
 
 \\newcommand{\\fontRGB}[4]{
     \\definecolor{mycolor}{RGB}{#1, #2, #3}

@@ -112,6 +112,10 @@ markupDict =
         , ( "term", \g s exprList -> term g s exprList )
         , ( "emph", \g s exprList -> emph g s exprList )
         , ( "group", \g s exprList -> identityFunction g s exprList )
+
+        --
+        , ( "dollarSign", \_ _ _ -> Element.el [] (Element.text "$") )
+        , ( "backTick", \_ _ _ -> Element.el [] (Element.text "`") )
         ]
 
 
