@@ -9,6 +9,7 @@ import Parser.Expr exposing (Expr(..))
 import Render.ASTTools as ASTTools
 import Render.Lambda as Lambda
 import Render.Settings exposing (Settings)
+import Render.Utility as Utility
 import Tree exposing (Tree)
 
 
@@ -283,7 +284,7 @@ blockDict =
 
 heading : List String -> String -> String
 heading args body =
-    case secondArg args of
+    case Utility.getArg "4" 0 args of
         "1" ->
             macro1 "section" body
 
@@ -295,16 +296,6 @@ heading args body =
 
         _ ->
             macro1 "subheading" body
-
-
-firstArg : List String -> String
-firstArg args =
-    case List.head args of
-        Nothing ->
-            "Error: expecting something here"
-
-        Just arg ->
-            arg
 
 
 secondArg : List String -> String

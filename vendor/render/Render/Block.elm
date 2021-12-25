@@ -133,18 +133,32 @@ heading count settings args id exprs =
         headingLevel =
             case List.head args of
                 Nothing ->
-                    2
+                    3
 
                 Just level ->
                     String.toFloat level |> Maybe.withDefault 2 |> (\x -> x + 1)
 
         sectionNumber =
-            List.Extra.getAt 1 args
-                |> Maybe.withDefault ""
-                |> (\s -> Element.el [ Font.size fontSize ] (Element.text (s ++ ". ")))
+            case List.Extra.getAt 1 args of
+                Just "-" ->
+                    Element.none
+
+                Just s ->
+                    Element.el [ Font.size fontSize ] (Element.text (s ++ ". "))
+
+                Nothing ->
+                    Element.none
 
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round
+
+        body =
+            case Render.Utility.getArg "+" 2 args of
+                "-" ->
+                    renderWithDefault "| heading" count settings exprs
+
+                _ ->
+                    sectionNumber :: renderWithDefault "| heading" count settings exprs
     in
     Element.link
         [ Font.size fontSize

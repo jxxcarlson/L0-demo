@@ -1,5 +1,6 @@
 module Render.Utility exposing
     ( elementAttribute
+    , getArg
     , hspace
     , internalLink
     , keyValueDict
@@ -10,9 +11,20 @@ module Render.Utility exposing
 import Dict exposing (Dict)
 import Element exposing (paddingEach)
 import Html.Attributes
+import List.Extra
 import Maybe.Extra
 import Parser.Expr
 import Render.ASTTools
+
+
+getArg : String -> Int -> List String -> String
+getArg default index args =
+    case List.Extra.getAt index args of
+        Nothing ->
+            default
+
+        Just a ->
+            a
 
 
 vspace top bottom =
