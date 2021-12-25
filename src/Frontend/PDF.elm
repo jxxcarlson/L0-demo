@@ -44,7 +44,7 @@ generatePdf document =
                 |> List.map (\(ExpressionBlock { content }) -> Either.toList content)
                 |> List.concat
                 |> List.concat
-                |> ASTTools.filterOnName "image"
+                |> ASTTools.filterExpressionsOnName "image"
                 |> List.map (ASTTools.getText >> Maybe.map String.trim)
                 |> Maybe.Extra.values
 
