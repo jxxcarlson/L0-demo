@@ -19,7 +19,8 @@ view : Int -> Render.Settings.Settings -> L0.SyntaxTree -> Element Render.Msg.L0
 view counter settings ast =
     case ast |> List.map Tree.flatten |> List.concat |> Render.ASTTools.filterBlocksOnName "makeTableOfContents" of
         [] ->
-            Element.none
+            Element.column [ Element.spacing 8, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 36 } ]
+                (prepareFrontMatter counter Render.Settings.defaultSettings ast)
 
         _ ->
             Element.column [ Element.spacing 8, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 36 } ]
@@ -89,6 +90,37 @@ prepareTOC count settings ast =
 
     else
         title :: subtitle :: spaceBelow 8 :: toc
+
+
+prepareFrontMatter : Int -> Render.Settings.Settings -> L0.SyntaxTree -> List (Element L0Msg)
+prepareFrontMatter count settings ast =
+    let
+        headings =
+            getHeadings ast
+
+        titleSize =
+            Font.size (round Render.Settings.maxHeadingFontSize)
+
+        subtitleSize =
+            Font.size (round (0.7 * Render.Settings.maxHeadingFontSize))
+
+        idAttr =
+            Render.Utility.elementAttribute "id" "title"
+
+        title =
+            headings.title
+                |> Maybe.map (List.map (Render.Elm.render count settings) >> Element.paragraph [ titleSize, idAttr ])
+                |> Maybe.withDefault Element.none
+
+        subtitle =
+            headings.subtitle
+                |> Maybe.map (List.map (Render.Elm.render count settings) >> Element.paragraph [ subtitleSize, Font.color (Element.rgb 0.4 0.4 0.4) ])
+                |> Maybe.withDefault Element.none
+
+        spaceBelow k =
+            Element.el [ Element.paddingEach { bottom = k, top = 0, left = 0, right = 0 } ] (Element.text " ")
+    in
+    title :: subtitle :: []
 
 
 tocLink : String -> List Expr -> Element L0Msg
