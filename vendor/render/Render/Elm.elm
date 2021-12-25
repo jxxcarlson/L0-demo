@@ -116,7 +116,6 @@ markupDict =
         --
         , ( "dollarSign", \_ _ _ -> Element.el [] (Element.text "$") )
         , ( "backTick", \_ _ _ -> Element.el [] (Element.text "`") )
-        , ( "makeTableOfContents", \_ _ _ -> Element.none )
         ]
 
 

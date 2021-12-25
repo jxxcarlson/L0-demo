@@ -105,6 +105,7 @@ blockDict =
         , ( "author", \_ _ _ _ _ -> Element.none )
         , ( "date", \_ _ _ _ _ -> Element.none )
         , ( "defs", \_ _ _ _ _ -> Element.none )
+        , ( "makeTableOfContents", \_ _ _ _ _ -> Element.none )
         , ( "abstract", env "Abstract" )
         , ( "theorem", env "Theorem" )
         , ( "proposition", env "Proposition" )
