@@ -424,7 +424,7 @@ update msg model =
                 , ast = syntaxTree
                 , title = Render.ASTTools.title syntaxTree
                 , tableOfContents = Render.ASTTools.tableOfContents syntaxTree
-                , message = String.join ", " messages |> Debug.log "Errors"
+                , message = String.join ", " messages
                 , debounce = debounce
               }
             , cmd
