@@ -69,9 +69,9 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
+                , content = Right (Parser.Expression.parse block.content)
 
-                --, content = Right (Parser.Expression.parse block.content)
-                , content = Right state.committed
+                --, content = Right state.committed
                 , messages = state.messages
                 , blockType = blockType
                 , children = []
@@ -86,9 +86,9 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
+                , content = Right (Parser.Expression.parse (removeFirstLine block.content))
 
-                -- , content = Right (Parser.Expression.parse (removeFirstLine block.content))
-                , content = Right state.committed
+                --, content = Right state.committed
                 , messages = state.messages
                 , blockType = blockType
                 , children = []
@@ -103,9 +103,9 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
+                , content = Left (removeFirstLine block.content)
 
-                -- content = Left (removeFirstLine block.content)
-                , content = Right state.committed
+                --, content = Right state.committed
                 , messages = state.messages
                 , blockType = blockType
                 , children = []

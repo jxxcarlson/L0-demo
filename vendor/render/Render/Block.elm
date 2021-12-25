@@ -153,13 +153,13 @@ heading count settings args id exprs =
         fontSize =
             Render.Settings.maxHeadingFontSize / sqrt headingLevel |> round
 
-        body =
-            case Render.Utility.getArg "+" 2 args of
-                "-" ->
-                    renderWithDefault "| heading" count settings exprs
-
-                _ ->
-                    sectionNumber :: renderWithDefault "| heading" count settings exprs
+        --body =
+        --    case Render.Utility.getArg "+" 2 args of
+        --        "-" ->
+        --            renderWithDefault "| heading" count settings exprs
+        --
+        --        _ ->
+        --            sectionNumber :: renderWithDefault "| heading" count settings exprs
     in
     Element.link
         [ Font.size fontSize
