@@ -1,7 +1,9 @@
-module Render.L0 exposing (renderFromAST, renderFromString, render_)
+module Render.L0 exposing (getMessages, renderFromAST, renderFromString, render_)
 
 import Element exposing (Element)
 import L0 exposing (SyntaxTree)
+import Parser.Block exposing (ExpressionBlock(..))
+import Parser.BlockUtil as BlockUtil
 import Render.Acc as Accumulator exposing (Accumulator)
 import Render.Block
 import Render.Msg exposing (L0Msg)
@@ -29,6 +31,15 @@ renderFromAST count settings ast =
     ast
         |> List.map (Tree.map (Render.Block.render count settings))
         |> List.map unravel
+
+
+getMessages : SyntaxTree -> List String
+getMessages syntaxTree =
+    syntaxTree
+        |> List.map Tree.flatten
+        |> List.concat
+        |> List.map BlockUtil.getMessages
+        |> List.concat
 
 
 {-| Comment on this!

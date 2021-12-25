@@ -69,22 +69,70 @@ nextStep state =
 
 beginItemizedBlock : ExpressionBlock
 beginItemizedBlock =
-    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "beginBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "beginBlock", numberOfLines = 2, sourceText = "| beginBlock\nitemize" }
+    ExpressionBlock
+        { args = []
+        , blockType = OrdinaryBlock [ "beginBlock" ]
+        , children = []
+        , content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ]
+        , messages = []
+        , id = "0"
+        , indent = 1
+        , lineNumber = 0
+        , name = Just "beginBlock"
+        , numberOfLines = 2
+        , sourceText = "| beginBlock\nitemize"
+        }
 
 
 endItemizedBlock : ExpressionBlock
 endItemizedBlock =
-    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "endBlock" ], children = [], content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "endBlock", numberOfLines = 2, sourceText = "| endBlock\nitemize" }
+    ExpressionBlock
+        { args = []
+        , blockType = OrdinaryBlock [ "endBlock" ]
+        , children = []
+        , content = Right [ Text "itemize" { begin = 0, end = 7, index = 0 } ]
+        , messages = []
+        , id = "0"
+        , indent = 1
+        , lineNumber = 0
+        , name = Just "endBlock"
+        , numberOfLines = 2
+        , sourceText = "| endBlock\nitemize"
+        }
 
 
 beginNumberedBlock : ExpressionBlock
 beginNumberedBlock =
-    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "beginNumberedBlock" ], children = [], content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "beginNumberedBlock", numberOfLines = 2, sourceText = "| beginBlock\nitemize" }
+    ExpressionBlock
+        { args = []
+        , blockType = OrdinaryBlock [ "beginNumberedBlock" ]
+        , children = []
+        , content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ]
+        , messages = []
+        , id = "0"
+        , indent = 1
+        , lineNumber = 0
+        , name = Just "beginNumberedBlock"
+        , numberOfLines = 2
+        , sourceText = "| beginBlock\nitemize"
+        }
 
 
 endNumberedBlock : ExpressionBlock
 endNumberedBlock =
-    ExpressionBlock { args = [], blockType = OrdinaryBlock [ "endNumberedBlock" ], children = [], content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ], id = "0", indent = 1, lineNumber = 0, name = Just "endNumberedBlock", numberOfLines = 2, sourceText = "| endBlock\nitemize" }
+    ExpressionBlock
+        { args = []
+        , blockType = OrdinaryBlock [ "endNumberedBlock" ]
+        , children = []
+        , content = Right [ Text "enumerate" { begin = 0, end = 7, index = 0 } ]
+        , messages = []
+        , id = "0"
+        , indent = 1
+        , lineNumber = 0
+        , name = Just "endNumberedBlock"
+        , numberOfLines = 2
+        , sourceText = "| endBlock\nitemize"
+        }
 
 
 nextState : ExpressionBlock -> State -> State

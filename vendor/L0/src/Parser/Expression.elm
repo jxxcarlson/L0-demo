@@ -23,6 +23,7 @@ type alias State =
     , tokenIndex : Int
     , committed : List Expr
     , stack : List Token
+    , messages : List String
     }
 
 
@@ -38,6 +39,7 @@ initWithTokens tokens =
     , tokenIndex = 0
     , committed = []
     , stack = []
+    , messages = []
     }
 
 
@@ -53,6 +55,7 @@ init str =
     , tokenIndex = 0
     , committed = []
     , stack = []
+    , messages = []
     }
 
 
@@ -330,6 +333,7 @@ recoverFromError state =
                     | committed = errorMessage "[?]" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
+                    , messages = "Brackets need to enclose something" :: state.messages
                 }
 
         -- consecutive left brackets
@@ -339,6 +343,7 @@ recoverFromError state =
                     | committed = errorMessage "[" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index
+                    , messages = "You have consecutive left brackets" :: state.messages
                 }
 
         -- missing right bracket
@@ -348,6 +353,7 @@ recoverFromError state =
                     | committed = errorMessage ("[" ++ fName ++ errorSuffix rest) :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
+                    , messages = "Missing right bracket" :: state.messages
                 }
 
         -- space after left bracket
@@ -357,6 +363,7 @@ recoverFromError state =
                     | committed = errorMessage "[ - delete space after this bracket " :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
+                    , messages = "You need to have a space after the '|'" :: state.messages
                 }
 
         -- left bracket with nothing after it.
@@ -367,6 +374,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = 0
                     , numberOfTokens = 0
+                    , messages = "That left bracket needs something after it" :: state.messages
                 }
 
         -- extra right bracket
@@ -376,6 +384,7 @@ recoverFromError state =
                     | committed = errorMessage " extra ]?" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
+                    , messages = "Extra right bracket(s)" :: state.messages
                 }
 
         -- dollar sign with no closing dollar sign
@@ -397,6 +406,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
+                    , messages = "opening dollar sign needs to be matched with a closing one" :: state.messages
                 }
 
         -- backtick with no closing backtick
@@ -418,6 +428,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
+                    , messages = "opening backtick needs to be matched with a closing one" :: state.messages
                 }
 
         _ ->

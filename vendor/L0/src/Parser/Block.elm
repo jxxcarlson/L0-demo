@@ -24,6 +24,7 @@ type ExpressionBlock
         , id : String
         , blockType : BlockType
         , content : Either String (List Expr)
+        , messages : List String
         , children : List ExpressionBlock
         , sourceText : String
         }

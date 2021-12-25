@@ -1,4 +1,10 @@
-module Parser.BlockUtil exposing (l0Empty, toBlock, toExpressionBlock, toL0Block)
+module Parser.BlockUtil exposing
+    ( getMessages
+    , l0Empty
+    , toBlock
+    , toExpressionBlock
+    , toL0Block
+    )
 
 import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
@@ -29,9 +35,15 @@ l0Empty =
         , numberOfLines = 0
         , blockType = Paragraph
         , content = Left "YYY"
+        , messages = []
         , children = []
         , sourceText = "YYY"
         }
+
+
+getMessages : ExpressionBlock -> List String
+getMessages ((ExpressionBlock { messages }) as block) =
+    messages
 
 
 toBlock : ExpressionBlock -> Tree.BlocksV.Block
@@ -44,6 +56,9 @@ toExpressionBlock block =
     let
         blockType =
             classify block
+
+        state =
+            Parser.Expression.parseToState block.content
     in
     case blockType of
         Paragraph ->
@@ -54,7 +69,10 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse block.content)
+
+                --, content = Right (Parser.Expression.parse block.content)
+                , content = Right state.committed
+                , messages = state.messages
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content
@@ -68,7 +86,10 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse (removeFirstLine block.content))
+
+                -- , content = Right (Parser.Expression.parse (removeFirstLine block.content))
+                , content = Right state.committed
+                , messages = state.messages
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content
@@ -82,7 +103,10 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Left (removeFirstLine block.content)
+
+                -- content = Left (removeFirstLine block.content)
+                , content = Right state.committed
+                , messages = state.messages
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content

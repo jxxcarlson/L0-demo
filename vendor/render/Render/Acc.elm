@@ -64,25 +64,50 @@ transformAccumulateTree tree acc =
 
 
 transformBlock : Accumulator -> ExpressionBlock -> ExpressionBlock
-transformBlock acc ((ExpressionBlock { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
+transformBlock acc ((ExpressionBlock { args, blockType, children, content, messages, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
     case blockType of
         OrdinaryBlock [ "heading", level ] ->
-            ExpressionBlock { args = args ++ [ Vector.toString acc.headingIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
+            ExpressionBlock
+                { args = args ++ [ Vector.toString acc.headingIndex ]
+                , blockType = blockType
+                , children = children
+                , content = content
+                , messages = messages
+                , indent = indent
+                , lineNumber = lineNumber
+                , numberOfLines = numberOfLines
+                , name = name
+                , id = id
+                , sourceText = sourceText
+                }
 
         OrdinaryBlock [ "numbered" ] ->
-            ExpressionBlock { args = args ++ [ String.fromInt acc.numberedItemIndex ], blockType = blockType, children = children, content = content, indent = indent, lineNumber = lineNumber, numberOfLines = numberOfLines, name = name, id = id, sourceText = sourceText }
+            ExpressionBlock
+                { args = args ++ [ String.fromInt acc.numberedItemIndex ]
+                , blockType = blockType
+                , children = children
+                , content = content
+                , messages = messages
+                , indent = indent
+                , lineNumber = lineNumber
+                , numberOfLines = numberOfLines
+                , name = name
+                , id = id
+                , sourceText = sourceText
+                }
 
         _ ->
             expand acc.environment block
 
 
 expand : Dict String Lambda -> ExpressionBlock -> ExpressionBlock
-expand dict ((ExpressionBlock { args, blockType, children, content, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
+expand dict ((ExpressionBlock { args, blockType, children, content, messages, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
     ExpressionBlock
         { args = args
         , blockType = blockType
         , children = children
         , content = Either.map (List.map (Lambda.expand dict)) content
+        , messages = messages
         , indent = indent
         , lineNumber = lineNumber
         , numberOfLines = numberOfLines

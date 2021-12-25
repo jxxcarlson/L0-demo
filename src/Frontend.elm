@@ -21,13 +21,17 @@ import Html exposing (Html)
 import L0
 import Lamdera exposing (sendToBackend)
 import List.Extra
+import Parser.Block exposing (ExpressionBlock)
+import Parser.BlockUtil as BlockUtil
 import Process
 import Render.ASTTools
 import Render.Acc
+import Render.L0 as L0
 import Render.LaTeX as LaTeX
 import Render.Msg exposing (L0Msg(..))
 import Render.Settings as Settings
 import Task
+import Tree exposing (Tree)
 import Types exposing (..)
 import Url exposing (Url)
 import UrlManager
@@ -406,14 +410,21 @@ update msg model =
                     Debounce.push debounceConfig str model.debounce
             in
             let
-                ast =
+                syntaxTree : List (Tree ExpressionBlock)
+                syntaxTree =
                     L0.parse str |> Render.Acc.transformST
+
+                messages : List String
+                messages =
+                    L0.getMessages
+                        syntaxTree
             in
             ( { model
                 | sourceText = str
-                , ast = ast
-                , title = Render.ASTTools.title ast
-                , tableOfContents = Render.ASTTools.tableOfContents ast
+                , ast = syntaxTree
+                , title = Render.ASTTools.title syntaxTree
+                , tableOfContents = Render.ASTTools.tableOfContents syntaxTree
+                , message = String.join ", " messages |> Debug.log "Errors"
                 , debounce = debounce
               }
             , cmd
