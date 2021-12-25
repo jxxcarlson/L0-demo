@@ -12,12 +12,18 @@ import Render.Elm
 import Render.Msg exposing (L0Msg(..))
 import Render.Settings
 import Render.Utility
+import Tree
 
 
 view : Int -> Render.Settings.Settings -> L0.SyntaxTree -> Element Render.Msg.L0Msg
 view counter settings ast =
-    Element.column [ Element.spacing 8, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 36 } ]
-        (prepareTOC counter Render.Settings.defaultSettings ast)
+    case ast |> List.map Tree.flatten |> List.concat |> Render.ASTTools.filterBlocksOnName "makeTableOfContents" of
+        [] ->
+            Element.none
+
+        _ ->
+            Element.column [ Element.spacing 8, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 36 } ]
+                (prepareTOC counter Render.Settings.defaultSettings ast)
 
 
 viewTocItem : Int -> Render.Settings.Settings -> ExpressionBlock -> Element Render.Msg.L0Msg

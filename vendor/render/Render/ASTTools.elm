@@ -2,7 +2,8 @@ module Render.ASTTools exposing
     ( exprListToStringList
     , extractTextFromSyntaxTreeByKey
     , filterBlocksByArgs
-    , filterOnName
+    , filterBlocksOnName
+    , filterExpressionsOnName
     , getText
     , matchingIdsInAST
     , stringValueOfList
@@ -19,13 +20,23 @@ import Parser.Expr exposing (Expr(..))
 import Tree
 
 
-filterOnName : String -> List Expr -> List Expr
-filterOnName name exprs =
-    List.filter (matchExpr name) exprs
+filterExpressionsOnName : String -> List Expr -> List Expr
+filterExpressionsOnName name exprs =
+    List.filter (matchExprOnName name) exprs
 
 
-matchExpr : String -> Expr -> Bool
-matchExpr name expr =
+filterBlocksOnName : String -> List ExpressionBlock -> List ExpressionBlock
+filterBlocksOnName name blocks =
+    List.filter (matchBlockOnName name) blocks
+
+
+matchBlockOnName : String -> ExpressionBlock -> Bool
+matchBlockOnName key (ExpressionBlock { name }) =
+    Just key == name
+
+
+matchExprOnName : String -> Expr -> Bool
+matchExprOnName name expr =
     case expr of
         Expr name2 _ _ ->
             name == name2
