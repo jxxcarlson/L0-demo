@@ -17,7 +17,7 @@ import Tree
 
 view : Int -> Render.Settings.Settings -> L0.SyntaxTree -> Element Render.Msg.L0Msg
 view counter settings ast =
-    case ast |> List.map Tree.flatten |> List.concat |> Render.ASTTools.filterBlocksOnName "makeTableOfContents" |> Debug.log "FILTERED" of
+    case ast |> List.map Tree.flatten |> List.concat |> Render.ASTTools.filterBlocksOnName "makeTableOfContents" of
         [] ->
             Element.none
 
