@@ -214,11 +214,15 @@ reduceState state =
         state
 
 
+{-| remove first and last token
+-}
 unbracket : List a -> List a
 unbracket list =
     List.drop 1 (List.take (List.length list - 1) list)
 
 
+{-| areBracketed tokns == True iff tokens are derived from "[ ... ]"
+-}
 areBracketed : List Token -> Bool
 areBracketed tokens =
     List.map Token.type_ (List.take 1 tokens)
@@ -235,14 +239,15 @@ eval tokens =
                 unbracket tokens
         in
         case List.head args of
+            -- The reversed token list if of the form [LB name EXPRS RB], so return [Expr name (evalList EXPRS)]
             Just (S name meta) ->
                 [ Expr name (evalList (List.drop 1 args)) meta ]
 
             Nothing ->
-                [ errorMessage "[ ]?" ]
+                [ errorMessage "[ ](1)?" ]
 
             _ ->
-                [ errorMessage <| "[" ++ Token.toString args ++ "]?" ]
+                [ errorMessage <| "[" ++ Token.toString args ++ "](2) ?" ]
 
     else
         []
@@ -471,20 +476,22 @@ recoverFromError1 state =
                         , tokenIndex = 0
                         , numberOfTokens = List.length newStack
                         , committed = errorMessage "[" :: state.committed
+                        , messages = ("Unmatched brackets: added " ++ String.fromInt k ++ " right brackets") :: state.messages
                     }
 
     else
         Done
             { state
                 | committed =
-                    braceError k
+                    bracketError k
                         -- :: Expr "blue" [ Text (" " ++ Token.toString state.tokens) dummyLoc ] dummyLoc
                         :: state.committed
+                , messages = bracketErrorAsString k :: state.messages
             }
 
 
-braceError : Int -> Expr
-braceError k =
+bracketError : Int -> Expr
+bracketError k =
     if k < 0 then
         let
             brackets =
@@ -498,6 +505,15 @@ braceError k =
                 List.repeat k "[" |> String.join ""
         in
         errorMessage <| " " ++ brackets ++ " << Too many left brackets (" ++ String.fromInt k ++ ")"
+
+
+bracketErrorAsString : Int -> String
+bracketErrorAsString k =
+    if k < 0 then
+        "Too many right brackets (" ++ String.fromInt -k ++ ")"
+
+    else
+        "Too many left brackets (" ++ String.fromInt k ++ ")"
 
 
 

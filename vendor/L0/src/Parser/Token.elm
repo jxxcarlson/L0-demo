@@ -2,14 +2,10 @@ module Parser.Token exposing
     ( Meta
     , Token(..)
     , TokenType(..)
-    , codeParser
     , idem
     , idemTest
     , init
-    , mathParser
-    , nextStep
     , run
-    , run1
     , toString
     , type_
     )
