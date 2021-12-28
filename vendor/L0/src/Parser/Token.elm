@@ -11,6 +11,7 @@ module Parser.Token exposing
     )
 
 import Parser.Advanced as Parser exposing (DeadEnd, Parser)
+import Parser.Helpers exposing (Step(..), loop)
 import Parser.Tools as PT exposing (Context, Problem)
 
 
@@ -184,11 +185,6 @@ type alias TokenParser =
     Parser Context Problem Token
 
 
-run1 : String -> List Token
-run1 source =
-    loop (init source) nextStep1
-
-
 run : String -> List Token
 run source =
     loop (init source) nextStep
@@ -210,40 +206,6 @@ get state start input =
 
         Err errorList ->
             TokenError errorList { begin = start, end = start + 1, index = state.tokenIndex }
-
-
-nextStep1 : State Token -> Step (State Token) (List Token)
-nextStep1 state =
-    if state.scanpointer >= state.sourceLength then
-        Done state.tokens
-
-    else
-        let
-            token =
-                get state state.scanpointer (String.dropLeft state.scanpointer state.source)
-
-            newScanPointer =
-                state.scanpointer + length token + 1
-
-            ( newToken, mergeStatus ) =
-                mergeTokens state.lastToken token
-
-            tokens =
-                case mergeStatus of
-                    TokensUnchanged ->
-                        token :: state.tokens
-
-                    TokensMerged ->
-                        newToken :: List.drop 1 state.tokens
-        in
-        Loop
-            { state
-                | tokens = token :: state.tokens
-                , lastToken = Just token
-                , scanpointer = newScanPointer
-                , tokenIndex = state.tokenIndex + 1
-                , mode = newMode token state.mode
-            }
 
 
 nextStep : State Token -> Step (State Token) (List Token)
@@ -460,22 +422,3 @@ codeParser : Int -> Int -> TokenParser
 codeParser start index =
     PT.text (\c -> c == '`') (\_ -> False)
         |> Parser.map (\_ -> CodeToken { begin = start, end = start, index = index })
-
-
-
--- HELPERS
-
-
-type Step state a
-    = Loop state
-    | Done a
-
-
-loop : state -> (state -> Step state a) -> a
-loop s f =
-    case f s of
-        Loop s_ ->
-            loop s_ f
-
-        Done b ->
-            b
