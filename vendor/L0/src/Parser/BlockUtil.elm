@@ -96,6 +96,36 @@ toExpressionBlock block =
                 }
 
         VerbatimBlock args ->
+            let
+                rawContent =
+                    removeFirstLine block.content
+
+                messages =
+                    case blockType of
+                        VerbatimBlock [ "math" ] ->
+                            if String.endsWith "$$" rawContent then
+                                state.messages
+
+                            else
+                                "You need to close this math expression with '$$'" :: state.messages
+
+                        VerbatimBlock [ "code" ] ->
+                            if String.endsWith "```" rawContent then
+                                state.messages
+
+                            else
+                                "You need to close this code block with triple backticks" :: []
+
+                        _ ->
+                            state.messages
+
+                content =
+                    if blockType == VerbatimBlock [ "code" ] then
+                        Left (String.replace "```" "" rawContent)
+
+                    else
+                        Left rawContent
+            in
             ExpressionBlock
                 { name = List.head args
                 , args = List.drop 1 args
@@ -103,10 +133,10 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Left (removeFirstLine block.content)
+                , content = content
 
                 --, content = Right state.committed
-                , messages = state.messages
+                , messages = messages
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content
@@ -176,6 +206,9 @@ classify block =
 
     else if String.left 2 str_ == "$$" then
         VerbatimBlock [ "math" ]
+
+    else if String.left 3 str_ == "```" then
+        VerbatimBlock [ "code" ]
 
     else
         Paragraph
