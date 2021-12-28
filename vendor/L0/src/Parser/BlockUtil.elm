@@ -79,6 +79,24 @@ toExpressionBlock block =
                 }
 
         OrdinaryBlock args ->
+            let
+                ( firstLine, rawContent_ ) =
+                    split block.content
+
+                messages =
+                    if rawContent_ == "" then
+                        ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") :: state.messages
+
+                    else
+                        state.messages
+
+                rawContent =
+                    if rawContent_ == "" then
+                        firstLine ++ "\n[red Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
+
+                    else
+                        rawContent_
+            in
             ExpressionBlock
                 { name = List.head args
                 , args = List.drop 1 args
@@ -86,10 +104,10 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse (removeFirstLine block.content))
+                , content = Right (Parser.Expression.parse rawContent)
 
                 --, content = Right state.committed
-                , messages = state.messages
+                , messages = messages
                 , blockType = blockType
                 , children = []
                 , sourceText = block.content
@@ -97,8 +115,8 @@ toExpressionBlock block =
 
         VerbatimBlock args ->
             let
-                rawContent =
-                    removeFirstLine block.content
+                ( _, rawContent ) =
+                    split block.content
 
                 messages =
                     case blockType of
@@ -143,9 +161,15 @@ toExpressionBlock block =
                 }
 
 
-removeFirstLine : String -> String
-removeFirstLine str_ =
-    str_ |> String.trim |> String.lines |> List.drop 1 |> String.join "\n"
+{-| Split into first line and all the rest
+-}
+split : String -> ( String, String )
+split str_ =
+    let
+        lines =
+            str_ |> String.trim |> String.lines
+    in
+    ( List.head lines |> Maybe.withDefault "", lines |> List.drop 1 |> String.join "\n" )
 
 
 toL0Block : Tree.BlocksV.Block -> Block
