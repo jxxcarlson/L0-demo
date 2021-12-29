@@ -9,7 +9,7 @@ import Data
 import Debounce exposing (Debounce)
 import Dict exposing (Dict)
 import Document exposing (Document)
-import Element exposing (Element)
+import Element
 import File exposing (File)
 import Http
 import L0
@@ -54,7 +54,7 @@ type alias FrontendModel =
     -- DOCUMENT
     , sourceText : String
     , ast : L0.SyntaxTree
-    , editRecord : Render.DifferentialCompiler.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock) (Tree.Tree (Element L0Msg))
+    , editRecord : Render.DifferentialCompiler.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock) (Tree.Tree (Element.Element L0Msg))
     , tableOfContents : List ExpressionBlock
     , title : List ExpressionBlock
     , searchCount : Int
