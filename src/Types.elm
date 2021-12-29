@@ -15,7 +15,7 @@ import Http
 import L0
 import Parser.Block exposing (ExpressionBlock, IntermediateBlock)
 import Random
-import Render.DifferentialCompiler
+import Render.DifferentialParser
 import Render.Msg exposing (L0Msg)
 import Time
 import Tree
@@ -54,7 +54,7 @@ type alias FrontendModel =
     -- DOCUMENT
     , sourceText : String
     , ast : L0.SyntaxTree
-    , editRecord : Render.DifferentialCompiler.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock) (Tree.Tree (Element.Element L0Msg))
+    , editRecord : Render.DifferentialParser.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock)
     , tableOfContents : List ExpressionBlock
     , title : List ExpressionBlock
     , searchCount : Int

@@ -27,7 +27,7 @@ import Process
 import Render.ASTTools
 import Render.Acc
 import Render.Block
-import Render.DifferentialCompiler
+import Render.DifferentialParser
 import Render.L0 as L0
 import Render.LaTeX as LaTeX
 import Render.Msg exposing (L0Msg(..))
@@ -100,7 +100,7 @@ init url key =
       , permissions = ReadOnly
       , sourceText = welcome
       , ast = L0.parse welcome |> Render.Acc.transformST
-      , editRecord = Render.DifferentialCompiler.init chunker parser renderer welcome
+      , editRecord = Render.DifferentialParser.init chunker parser welcome
       , title = Render.ASTTools.title (L0.parse welcome)
       , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
@@ -426,7 +426,7 @@ update msg model =
             in
             let
                 editRecord =
-                    Render.DifferentialCompiler.update chunker parser renderer model.editRecord str
+                    Render.DifferentialParser.update chunker parser model.editRecord str
 
                 syntaxTree : List (Tree ExpressionBlock)
                 syntaxTree =
