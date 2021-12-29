@@ -17,7 +17,7 @@ import Parser.Tools as PT exposing (Context, Problem)
 
 idem : String -> String
 idem str =
-    str |> run |> toString
+    str |> run |> List.reverse |> toString
 
 
 idemTest : String -> Bool

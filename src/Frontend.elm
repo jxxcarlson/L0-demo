@@ -26,6 +26,8 @@ import Parser.BlockUtil as BlockUtil
 import Process
 import Render.ASTTools
 import Render.Acc
+import Render.Block
+import Render.DifferentialCompiler
 import Render.L0 as L0
 import Render.LaTeX as LaTeX
 import Render.Msg exposing (L0Msg(..))
@@ -98,6 +100,7 @@ init url key =
       , permissions = ReadOnly
       , sourceText = welcome
       , ast = L0.parse welcome |> Render.Acc.transformST
+      , editRecord = Render.DifferentialCompiler.init chunker parser renderer welcome
       , title = Render.ASTTools.title (L0.parse welcome)
       , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
@@ -164,6 +167,18 @@ urlAction path =
 urlIsForGuest : Url -> Bool
 urlIsForGuest url =
     String.left 2 url.path == "/g"
+
+
+chunker =
+    L0.parseToIntermediate
+
+
+parser =
+    Tree.map BlockUtil.toExpressionBlockFromIntermediateBlock
+
+
+renderer =
+    Tree.map (Render.Block.render 0 Settings.defaultSettings)
 
 
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
@@ -410,9 +425,12 @@ update msg model =
                     Debounce.push debounceConfig str model.debounce
             in
             let
+                editRecord =
+                    Render.DifferentialCompiler.update chunker parser renderer model.editRecord str
+
                 syntaxTree : List (Tree ExpressionBlock)
                 syntaxTree =
-                    L0.parse str |> Render.Acc.transformST
+                    editRecord.parsed |> Render.Acc.transformST
 
                 messages : List String
                 messages =

@@ -9,13 +9,16 @@ import Data
 import Debounce exposing (Debounce)
 import Dict exposing (Dict)
 import Document exposing (Document)
+import Element exposing (Element)
 import File exposing (File)
 import Http
 import L0
-import Parser.Block exposing (ExpressionBlock)
+import Parser.Block exposing (ExpressionBlock, IntermediateBlock)
 import Random
-import Render.Msg
+import Render.DifferentialCompiler
+import Render.Msg exposing (L0Msg)
 import Time
+import Tree
 import Url exposing (Url)
 import User exposing (User)
 
@@ -51,6 +54,7 @@ type alias FrontendModel =
     -- DOCUMENT
     , sourceText : String
     , ast : L0.SyntaxTree
+    , editRecord : Render.DifferentialCompiler.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock) (Tree.Tree (Element L0Msg))
     , tableOfContents : List ExpressionBlock
     , title : List ExpressionBlock
     , searchCount : Int

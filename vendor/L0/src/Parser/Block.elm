@@ -1,6 +1,6 @@
 module Parser.Block exposing
     ( BlockType(..)
-    , ExpressionBlock(..)
+    , ExpressionBlock(..), IntermediateBlock(..)
     )
 
 {-| Types of blocks.
@@ -9,8 +9,9 @@ module Parser.Block exposing
 
 -}
 
-import Either exposing (Either)
+import Either exposing (Either(..))
 import Parser.Expr exposing (Expr)
+import Parser.Expression
 
 
 {-| -}
@@ -26,6 +27,23 @@ type ExpressionBlock
         , content : Either String (List Expr)
         , messages : List String
         , children : List ExpressionBlock
+        , sourceText : String
+        }
+
+
+{-| -}
+type IntermediateBlock
+    = IntermediateBlock
+        { name : Maybe String
+        , args : List String
+        , indent : Int
+        , lineNumber : Int
+        , numberOfLines : Int
+        , id : String
+        , blockType : BlockType
+        , content : String
+        , messages : List String
+        , children : List IntermediateBlock
         , sourceText : String
         }
 
