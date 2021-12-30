@@ -40,6 +40,7 @@ rawExport settings ast =
         |> encloseLists
         |> List.map (exportBlock settings)
         |> String.join "\n\n"
+        |> String.replace "_" "\\_"
 
 
 type Status
@@ -320,6 +321,7 @@ blockDict =
         , ( "subtitle", \sett args body -> "" )
         , ( "author", \sett argfbegs body -> "" )
         , ( "date", \sett args body -> "" )
+        , ( "makeTableOfContents", \sett args body -> "" )
         , ( "heading", \sett args body -> heading args body )
         , ( "item", \_ _ body -> macro1 "item" body )
         , ( "numbered", \_ _ body -> macro1 "item" body )
@@ -332,7 +334,7 @@ blockDict =
 
 heading : List String -> String -> String
 heading args body =
-    case Utility.getArg "4" 0 args of
+    case Utility.getArg "4" 1 args of
         "1" ->
             macro1 "section" body
 

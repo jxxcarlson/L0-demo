@@ -246,16 +246,16 @@ eval tokens =
                 unbracket tokens
         in
         case List.head args of
-            -- The reversed token list if of the form [LB name EXPRS RB], so return [Expr name (evalList EXPRS)]
+            -- The reversed token list is of the form [LB name EXPRS RB], so return [Expr name (evalList EXPRS)]
             Just (S name meta) ->
                 [ Expr name (evalList (List.drop 1 args)) meta ]
 
             Nothing ->
                 -- this happens with input of "[]"
-                [ errorMessageInvisible "[ ] is illegal - put something between the brackets", errorMessage "[??]" ]
+                [ errorMessageInvisible "[ ] not legal - you need something between the brackets", errorMessage "[??]" ]
 
             _ ->
-                [ errorMessageInvisible "[  or [   ] is illegal, try [something ...]", errorMessage <| "[" ++ Token.toString args ++ "?? ]" ]
+                [ errorMessageInvisible "[  or [   ] not legal, try [something ...]", errorMessage <| "[" ++ Token.toString args ++ "?? ]" ]
 
     else
         []
@@ -385,7 +385,7 @@ recoverFromError state =
                 }
 
         -- left bracket with nothing after it.  // OK
-        (LB _) :: [] ->
+        (LB meta) :: [] ->
             Done
                 { state
                     | committed = errorMessage "[...?" :: state.committed
