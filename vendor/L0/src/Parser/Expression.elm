@@ -7,7 +7,7 @@ module Parser.Expression exposing
 import Either exposing (Either(..))
 import List.Extra
 import Parser.Expr exposing (Expr(..))
-import Parser.Helpers as Helpers
+import Parser.Helpers as Helpers exposing (Step(..), loop)
 import Parser.Match as M
 import Parser.Symbol as Symbol exposing (Symbol(..))
 import Parser.Token as Token exposing (Meta, Token(..), TokenType(..))
@@ -25,6 +25,7 @@ type alias State =
     , committed : List Expr
     , stack : List Token
     , messages : List String
+    , lineNumber : Int
     }
 
 
@@ -32,8 +33,8 @@ type alias State =
 -- STATE FOR THE PARSER
 
 
-initWithTokens : List Token -> State
-initWithTokens tokens =
+initWithTokens : Int -> List Token -> State
+initWithTokens lineNumber tokens =
     { step = 0
     , tokens = List.reverse tokens
     , numberOfTokens = List.length tokens
@@ -41,6 +42,7 @@ initWithTokens tokens =
     , committed = []
     , stack = []
     , messages = []
+    , lineNumber = lineNumber
     }
 
 
@@ -57,6 +59,7 @@ init str =
     , committed = []
     , stack = []
     , messages = []
+    , lineNumber = 0
     }
 
 
@@ -64,32 +67,32 @@ init str =
 -- Exposed functions
 
 
-parse : String -> List Expr
-parse str =
+parse : Int -> String -> List Expr
+parse lineNumber str =
     str
         |> Token.run
-        |> parseTokenList
+        |> parseTokenList lineNumber
 
 
-parseToState : String -> State
-parseToState str =
+parseToState : Int -> String -> State
+parseToState lineNumber str =
     str
         |> Token.run
-        |> parseTokenListToState
+        |> parseTokenListToState lineNumber
 
 
 
 -- PARSER
 
 
-parseTokenListToState : List Token -> State
-parseTokenListToState tokens =
-    tokens |> initWithTokens |> run
+parseTokenListToState : Int -> List Token -> State
+parseTokenListToState lineNumber tokens =
+    tokens |> initWithTokens lineNumber |> run
 
 
-parseTokenList : List Token -> List Expr
-parseTokenList tokens =
-    parseTokenListToState tokens |> .committed
+parseTokenList : Int -> List Token -> List Expr
+parseTokenList lineNumber tokens =
+    parseTokenListToState lineNumber tokens |> .committed
 
 
 run : State -> State
@@ -200,9 +203,9 @@ reduceState state =
     if M.reducible symbols then
         case List.head symbols of
             Just L ->
-                case eval (state.stack |> List.reverse) of
+                case eval state.lineNumber (state.stack |> List.reverse) of
                     (Expr "invisible" [ Text message _ ] _) :: rest ->
-                        { state | stack = [], committed = rest ++ state.committed, messages = Helpers.prependMessage message state.messages }
+                        { state | stack = [], committed = rest ++ state.committed, messages = Helpers.prependMessage state.lineNumber message state.messages }
 
                     whatever ->
                         { state | stack = [], committed = whatever ++ state.committed }
@@ -238,8 +241,8 @@ areBracketed tokens =
         == [ TRB ]
 
 
-eval : List Token -> List Expr
-eval tokens =
+eval : Int -> List Token -> List Expr
+eval lineNumber tokens =
     if areBracketed tokens then
         let
             args =
@@ -248,51 +251,55 @@ eval tokens =
         case List.head args of
             -- The reversed token list is of the form [LB name EXPRS RB], so return [Expr name (evalList EXPRS)]
             Just (S name meta) ->
-                [ Expr name (evalList (List.drop 1 args)) meta ]
+                [ Expr name (evalList lineNumber (List.drop 1 args)) meta ]
 
             Nothing ->
                 -- this happens with input of "[]"
-                [ errorMessageInvisible "[ ] not legal - you need something between the brackets", errorMessage "[??]" ]
+                [ errorMessageInvisible lineNumber "[ ] not legal - you need something between the brackets", errorMessage "[??]" ]
 
             _ ->
-                [ errorMessageInvisible "[  or [   ] not legal, try [something ...]", errorMessage <| "[" ++ Token.toString args ++ "?? ]" ]
+                [ errorMessageInvisible lineNumber "[  or [   ] not legal, try [something ...]", errorMessage <| "[" ++ Token.toString args ++ "?? ]" ]
 
     else
         []
 
 
-evalList : List Token -> List Expr
-evalList tokens =
+evalList : Int -> List Token -> List Expr
+evalList lineNumber tokens =
     case List.head tokens of
         Just token ->
             case Token.type_ token of
                 TLB ->
                     case M.match (Symbol.convertTokens2 tokens) of
                         Nothing ->
-                            [ errorMessageInvisible "Error on match", Text "error on match" dummyLoc ]
+                            [ errorMessageInvisible lineNumber "Error on match", Text "error on match" dummyLoc ]
 
                         Just k ->
                             let
                                 ( a, b ) =
                                     M.splitAt (k + 1) tokens
                             in
-                            eval a ++ evalList b
+                            eval lineNumber a ++ evalList lineNumber b
 
                 _ ->
                     case exprOfToken token of
                         Just expr ->
-                            expr :: evalList (List.drop 1 tokens)
+                            expr :: evalList lineNumber (List.drop 1 tokens)
 
                         Nothing ->
-                            [ errorMessageInvisible "Error converting token", Text "error converting Token" dummyLoc ]
+                            [ errorMessageInvisible lineNumber "Error converting token", Text "error converting Token" dummyLoc ]
 
         _ ->
             []
 
 
-errorMessageInvisible : String -> Expr
-errorMessageInvisible message =
-    Expr "invisible" [ Text message dummyLoc ] dummyLoc
+errorMessageInvisible : Int -> String -> Expr
+errorMessageInvisible lineNumber message =
+    let
+        m =
+            message ++ " (line " ++ String.fromInt lineNumber ++ ")"
+    in
+    Expr "invisible" [ Text m dummyLoc ] dummyLoc
 
 
 errorMessage : String -> Expr
@@ -351,7 +358,7 @@ recoverFromError state =
                     | committed = errorMessage "[?]" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = Helpers.prependMessage "Brackets need to enclose something" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "Brackets need to enclose something" state.messages
                 }
 
         -- consecutive left brackets
@@ -361,7 +368,7 @@ recoverFromError state =
                     | committed = errorMessage "[" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index
-                    , messages = Helpers.prependMessage "You have consecutive left brackets" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "You have consecutive left brackets" state.messages
                 }
 
         -- missing right bracket // OK
@@ -371,7 +378,7 @@ recoverFromError state =
                     | committed = errorMessage (errorSuffix rest) :: errorMessage2 ("[" ++ fName) :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = Helpers.prependMessage "Missing right bracket" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "Missing right bracket" state.messages
                 }
 
         -- space after left bracket // OK
@@ -381,7 +388,7 @@ recoverFromError state =
                     | committed = errorMessage "[ - can't have space after the bracket " :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = Helpers.prependMessage "Can't have space after left bracket - try [something ..." state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "Can't have space after left bracket - try [something ..." state.messages
                 }
 
         -- left bracket with nothing after it.  // OK
@@ -392,7 +399,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = 0
                     , numberOfTokens = 0
-                    , messages = Helpers.prependMessage "That left bracket needs something after it" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "That left bracket needs something after it" state.messages
                 }
 
         -- extra right bracket
@@ -402,7 +409,7 @@ recoverFromError state =
                     | committed = errorMessage " extra ]?" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = Helpers.prependMessage "Extra right bracket(s)" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "Extra right bracket(s)" state.messages
                 }
 
         -- dollar sign with no closing dollar sign
@@ -424,7 +431,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
-                    , messages = Helpers.prependMessage "opening dollar sign needs to be matched with a closing one" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "opening dollar sign needs to be matched with a closing one" state.messages
                 }
 
         -- backtick with no closing backtick
@@ -446,7 +453,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
-                    , messages = Helpers.prependMessage "opening backtick needs to be matched with a closing one" state.messages
+                    , messages = Helpers.prependMessage state.lineNumber "opening backtick needs to be matched with a closing one" state.messages
                 }
 
         _ ->
@@ -489,7 +496,7 @@ recoverFromError1 state =
                         , tokenIndex = 0
                         , numberOfTokens = List.length newStack
                         , committed = errorMessage "[" :: state.committed
-                        , messages = Helpers.prependMessage ("Unmatched brackets: added " ++ String.fromInt k ++ " right brackets") state.messages
+                        , messages = Helpers.prependMessage state.lineNumber ("Unmatched brackets: added " ++ String.fromInt k ++ " right brackets") state.messages
                     }
 
     else
@@ -499,7 +506,7 @@ recoverFromError1 state =
                     bracketError k
                         -- :: Expr "blue" [ Text (" " ++ Token.toString state.tokens) dummyLoc ] dummyLoc
                         :: state.committed
-                , messages = Helpers.prependMessage (bracketErrorAsString k) state.messages
+                , messages = Helpers.prependMessage state.lineNumber (bracketErrorAsString k) state.messages
             }
 
 
@@ -543,18 +550,3 @@ dummyLoc =
 
 
 -- LOOP
-
-
-type Step state a
-    = Loop state
-    | Done a
-
-
-loop : state -> (state -> Step state a) -> a
-loop s f =
-    case f s of
-        Loop s_ ->
-            loop s_ f
-
-        Done b ->
-            b

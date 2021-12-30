@@ -1,7 +1,6 @@
 module Parser.Tools exposing
     ( Context(..)
     , Problem(..)
-    , Step(..)
     , StringData
     , sequence
     , text
@@ -62,10 +61,6 @@ textWithEndSymbol symb prefix continue =
 
 
 -- LOOP
-
-
-type Step state a
-    = Loop state
 
 
 sequence : List (Parser a) -> Parser (List a)

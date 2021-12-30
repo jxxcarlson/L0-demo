@@ -6,6 +6,7 @@ import L0 exposing (SyntaxTree)
 import List.Extra
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
+import Parser.Helpers exposing (Step(..), loop)
 import Render.ASTTools as ASTTools
 import Render.Lambda as Lambda
 import Render.Settings exposing (Settings)
@@ -162,21 +163,6 @@ nextState ((ExpressionBlock { name }) as block) state =
         --- OUTSIDE
         ( OutsideList, _ ) ->
             { state | outputList = block :: state.outputList, inputList = List.drop 1 state.inputList }
-
-
-type Step state a
-    = Loop state
-    | Done a
-
-
-loop : state -> (state -> Step state a) -> a
-loop s f =
-    case f s of
-        Loop s_ ->
-            loop s_ f
-
-        Done b ->
-            b
 
 
 exportBlock : Settings -> ExpressionBlock -> String

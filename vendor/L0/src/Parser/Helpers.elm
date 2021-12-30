@@ -20,15 +20,15 @@ loop s f =
             b
 
 
-prependMessage : String -> List String -> List String
-prependMessage message messages =
+prependMessage : Int -> String -> List String -> List String
+prependMessage lineNumber message messages =
     case messages of
         first :: rest ->
             if message == first then
                 messages
 
             else
-                message :: messages
+                (message ++ "(line " ++ String.fromInt lineNumber ++ ")") :: messages
 
         _ ->
             message :: messages

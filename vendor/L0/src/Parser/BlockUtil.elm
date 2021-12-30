@@ -88,21 +88,21 @@ toExpressionBlockFromIntermediateBlock (IntermediateBlock { name, args, indent, 
         , numberOfLines = List.length (String.lines content)
         , id = id
         , blockType = blockType
-        , content = mapContent blockType content
+        , content = mapContent lineNumber blockType content
         , messages = messages
         , children = List.map toExpressionBlockFromIntermediateBlock children
         , sourceText = sourceText
         }
 
 
-toExpressionBlock : Tree.BlocksV.Block -> ExpressionBlock
-toExpressionBlock block =
+toExpressionBlock : Int -> Tree.BlocksV.Block -> ExpressionBlock
+toExpressionBlock lineNumber block =
     let
         blockType =
             classify block
 
         state =
-            Parser.Expression.parseToState block.content
+            Parser.Expression.parseToState lineNumber block.content
     in
     case blockType of
         Paragraph ->
@@ -113,9 +113,7 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse block.content)
-
-                --, content = Right state.committed
+                , content = Right (Parser.Expression.parse block.lineNumber block.content)
                 , messages = state.messages
                 , blockType = blockType
                 , children = []
@@ -148,7 +146,7 @@ toExpressionBlock block =
                 , lineNumber = block.lineNumber
                 , id = String.fromInt block.lineNumber
                 , numberOfLines = block.numberOfLines
-                , content = Right (Parser.Expression.parse rawContent)
+                , content = Right (Parser.Expression.parse lineNumber rawContent)
 
                 --, content = Right state.committed
                 , messages = messages
@@ -169,11 +167,11 @@ toExpressionBlock block =
                                 state.messages
 
                             else
-                                Helpers.prependMessage "You need to close this math expression with '$$'" state.messages
+                                Helpers.prependMessage lineNumber "You need to close this math expression with '$$'" state.messages
 
                         VerbatimBlock [ "code" ] ->
                             if String.startsWith "```" firstLine && not (String.endsWith "```" rawContent) then
-                                Helpers.prependMessage "You need to close this code block with triple backticks" state.messages
+                                Helpers.prependMessage lineNumber "You need to close this code block with triple backticks" state.messages
 
                             else
                                 state.messages
@@ -205,11 +203,11 @@ toExpressionBlock block =
                 }
 
 
-mapContent : BlockType -> String -> Either String (List Expr)
-mapContent blockType content =
+mapContent : Int -> BlockType -> String -> Either String (List Expr)
+mapContent lineNumber blockType content =
     case blockType of
         Paragraph ->
-            Right (Parser.Expression.parse content)
+            Right (Parser.Expression.parse lineNumber content)
 
         OrdinaryBlock args ->
             let
@@ -229,7 +227,7 @@ mapContent blockType content =
                     else
                         rawContent_
             in
-            Right (Parser.Expression.parse content)
+            Right (Parser.Expression.parse lineNumber content)
 
         VerbatimBlock args ->
             let
@@ -275,7 +273,7 @@ toIntermediateBlock block =
             classify block
 
         state =
-            Parser.Expression.parseToState block.content
+            Parser.Expression.parseToState block.lineNumber block.content
     in
     case blockType of
         Paragraph ->
@@ -302,7 +300,7 @@ toIntermediateBlock block =
 
                 messages =
                     if rawContent_ == "" && not (List.member (List.head args |> Maybe.withDefault "!!") bareBlockNames) then
-                        Helpers.prependMessage ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") state.messages
+                        Helpers.prependMessage block.lineNumber ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") state.messages
 
                     else
                         state.messages
@@ -342,11 +340,11 @@ toIntermediateBlock block =
                                 state.messages
 
                             else
-                                Helpers.prependMessage "You need to close this math expression with '$$'" state.messages
+                                Helpers.prependMessage block.lineNumber "You need to close this math expression with '$$'" state.messages
 
                         VerbatimBlock [ "code" ] ->
                             if String.startsWith "```" firstLine && not (String.endsWith "```" rawContent) then
-                                Helpers.prependMessage "You need to close this code block with triple backticks" state.messages
+                                Helpers.prependMessage block.lineNumber "You need to close this code block with triple backticks" state.messages
 
                             else
                                 state.messages

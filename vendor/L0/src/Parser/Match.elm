@@ -1,5 +1,6 @@
 module Parser.Match exposing (deleteAt, match, reducible, splitAt)
 
+import Parser.Helpers exposing (Step(..), loop)
 import Parser.Symbol as Symbol exposing (Symbol(..), value)
 
 
@@ -103,18 +104,3 @@ nextStep state =
 
             else
                 Loop { symbols = List.drop 1 state.symbols, index = state.index + 1, brackets = brackets }
-
-
-type Step state a
-    = Loop state
-    | Done a
-
-
-loop : state -> (state -> Step state a) -> a
-loop s f =
-    case f s of
-        Loop s_ ->
-            loop s_ f
-
-        Done b ->
-            b

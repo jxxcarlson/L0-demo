@@ -1,6 +1,6 @@
 module L0 exposing
     ( parse
-    , SyntaxTree, b, bb, parseToIntermediate
+    , SyntaxTree, parseToIntermediate
     )
 
 {-| A Parser for the experimental L0 module. See the app folder to see how it is used.
@@ -56,11 +56,9 @@ parseToIntermediate sourceText =
 
 
 -- |> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toExpressionBlock Parser.BlockUtil.toBlock
-
-
-b =
-    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine
-
-
-bb =
-    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine >> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toExpressionBlock Parser.BlockUtil.toBlock
+--b =
+--    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine
+--
+--
+--bb =
+--    Tree.BlocksV.fromStringAsParagraphs isVerbatimLine >> Tree.Build.forestFromBlocks Parser.BlockUtil.l0Empty Parser.BlockUtil.toExpressionBlock Parser.BlockUtil.toBlock
