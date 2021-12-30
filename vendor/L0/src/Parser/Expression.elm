@@ -7,6 +7,7 @@ module Parser.Expression exposing
 import Either exposing (Either(..))
 import List.Extra
 import Parser.Expr exposing (Expr(..))
+import Parser.Helpers as Helpers
 import Parser.Match as M
 import Parser.Symbol as Symbol exposing (Symbol(..))
 import Parser.Token as Token exposing (Meta, Token(..), TokenType(..))
@@ -201,7 +202,7 @@ reduceState state =
             Just L ->
                 case eval (state.stack |> List.reverse) of
                     (Expr "invisible" [ Text message _ ] _) :: rest ->
-                        { state | stack = [], committed = rest ++ state.committed, messages = prependMessage message state.messages }
+                        { state | stack = [], committed = rest ++ state.committed, messages = Helpers.prependMessage message state.messages }
 
                     whatever ->
                         { state | stack = [], committed = whatever ++ state.committed }
@@ -340,20 +341,6 @@ isReducible tokens =
     tokens |> List.reverse |> Symbol.convertTokens |> M.reducible
 
 
-prependMessage : String -> List String -> List String
-prependMessage message messages =
-    case messages of
-        first :: rest ->
-            if message == first then
-                messages
-
-            else
-                message :: messages
-
-        _ ->
-            message :: messages
-
-
 recoverFromError : State -> Step State State
 recoverFromError state =
     case List.reverse state.stack of
@@ -364,7 +351,7 @@ recoverFromError state =
                     | committed = errorMessage "[?]" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = prependMessage "Brackets need to enclose something" state.messages
+                    , messages = Helpers.prependMessage "Brackets need to enclose something" state.messages
                 }
 
         -- consecutive left brackets
@@ -374,7 +361,7 @@ recoverFromError state =
                     | committed = errorMessage "[" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index
-                    , messages = prependMessage "You have consecutive left brackets" state.messages
+                    , messages = Helpers.prependMessage "You have consecutive left brackets" state.messages
                 }
 
         -- missing right bracket // OK
@@ -384,7 +371,7 @@ recoverFromError state =
                     | committed = errorMessage (errorSuffix rest) :: errorMessage2 ("[" ++ fName) :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = prependMessage "Missing right bracket" state.messages
+                    , messages = Helpers.prependMessage "Missing right bracket" state.messages
                 }
 
         -- space after left bracket // OK
@@ -394,7 +381,7 @@ recoverFromError state =
                     | committed = errorMessage "[ - can't have space after the bracket " :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = prependMessage "Can't have space after left bracket - try [something ..." state.messages
+                    , messages = Helpers.prependMessage "Can't have space after left bracket - try [something ..." state.messages
                 }
 
         -- left bracket with nothing after it.  // OK
@@ -405,7 +392,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = 0
                     , numberOfTokens = 0
-                    , messages = prependMessage "That left bracket needs something after it" state.messages
+                    , messages = Helpers.prependMessage "That left bracket needs something after it" state.messages
                 }
 
         -- extra right bracket
@@ -415,7 +402,7 @@ recoverFromError state =
                     | committed = errorMessage " extra ]?" :: state.committed
                     , stack = []
                     , tokenIndex = meta.index + 1
-                    , messages = prependMessage "Extra right bracket(s)" state.messages
+                    , messages = Helpers.prependMessage "Extra right bracket(s)" state.messages
                 }
 
         -- dollar sign with no closing dollar sign
@@ -437,7 +424,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
-                    , messages = prependMessage "opening dollar sign needs to be matched with a closing one" state.messages
+                    , messages = Helpers.prependMessage "opening dollar sign needs to be matched with a closing one" state.messages
                 }
 
         -- backtick with no closing backtick
@@ -459,7 +446,7 @@ recoverFromError state =
                     , stack = []
                     , tokenIndex = meta.index + 1
                     , numberOfTokens = 0
-                    , messages = prependMessage "opening backtick needs to be matched with a closing one" state.messages
+                    , messages = Helpers.prependMessage "opening backtick needs to be matched with a closing one" state.messages
                 }
 
         _ ->
@@ -502,7 +489,7 @@ recoverFromError1 state =
                         , tokenIndex = 0
                         , numberOfTokens = List.length newStack
                         , committed = errorMessage "[" :: state.committed
-                        , messages = prependMessage ("Unmatched brackets: added " ++ String.fromInt k ++ " right brackets") state.messages
+                        , messages = Helpers.prependMessage ("Unmatched brackets: added " ++ String.fromInt k ++ " right brackets") state.messages
                     }
 
     else
@@ -512,7 +499,7 @@ recoverFromError1 state =
                     bracketError k
                         -- :: Expr "blue" [ Text (" " ++ Token.toString state.tokens) dummyLoc ] dummyLoc
                         :: state.committed
-                , messages = prependMessage (bracketErrorAsString k) state.messages
+                , messages = Helpers.prependMessage (bracketErrorAsString k) state.messages
             }
 
 

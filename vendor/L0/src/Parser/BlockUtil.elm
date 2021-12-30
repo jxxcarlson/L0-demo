@@ -14,6 +14,7 @@ import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..), IntermediateBlock(..))
 import Parser.Expr exposing (Expr)
 import Parser.Expression
+import Parser.Helpers as Helpers
 import Tree.BlocksV
 
 
@@ -158,7 +159,7 @@ toExpressionBlock block =
 
         VerbatimBlock args ->
             let
-                ( _, rawContent ) =
+                ( firstLine, rawContent ) =
                     split block.content
 
                 messages =
@@ -168,14 +169,14 @@ toExpressionBlock block =
                                 state.messages
 
                             else
-                                "You need to close this math expression with '$$'" :: state.messages
+                                Helpers.prependMessage "You need to close this math expression with '$$'" state.messages
 
                         VerbatimBlock [ "code" ] ->
-                            if String.endsWith "```" rawContent then
-                                state.messages
+                            if String.startsWith "```" firstLine && not (String.endsWith "```" rawContent) then
+                                Helpers.prependMessage "You need to close this code block with triple backticks" state.messages
 
                             else
-                                "You need to close this code block with triple backticks" :: []
+                                state.messages
 
                         _ ->
                             state.messages
@@ -263,6 +264,10 @@ mapContent blockType content =
             content_
 
 
+bareBlockNames =
+    [ "makeTableOfContents" ]
+
+
 toIntermediateBlock : Tree.BlocksV.Block -> IntermediateBlock
 toIntermediateBlock block =
     let
@@ -296,14 +301,14 @@ toIntermediateBlock block =
                     split block.content
 
                 messages =
-                    if rawContent_ == "" then
-                        ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") :: state.messages
+                    if rawContent_ == "" && not (List.member (List.head args |> Maybe.withDefault "!!") bareBlockNames) then
+                        Helpers.prependMessage ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") state.messages
 
                     else
                         state.messages
 
                 rawContent =
-                    if rawContent_ == "" then
+                    if rawContent_ == "" && not (List.member (List.head args |> Maybe.withDefault "!!") bareBlockNames) then
                         firstLine ++ "\n[red Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
 
                     else
@@ -327,7 +332,7 @@ toIntermediateBlock block =
 
         VerbatimBlock args ->
             let
-                ( _, rawContent ) =
+                ( firstLine, rawContent ) =
                     split block.content
 
                 messages =
@@ -337,14 +342,14 @@ toIntermediateBlock block =
                                 state.messages
 
                             else
-                                "You need to close this math expression with '$$'" :: state.messages
+                                Helpers.prependMessage "You need to close this math expression with '$$'" state.messages
 
                         VerbatimBlock [ "code" ] ->
-                            if String.endsWith "```" rawContent then
-                                state.messages
+                            if String.startsWith "```" firstLine && not (String.endsWith "```" rawContent) then
+                                Helpers.prependMessage "You need to close this code block with triple backticks" state.messages
 
                             else
-                                "You need to close this code block with triple backticks" :: []
+                                state.messages
 
                         _ ->
                             state.messages

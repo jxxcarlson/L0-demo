@@ -1,4 +1,8 @@
-module Parser.Helpers exposing (Step(..), loop)
+module Parser.Helpers exposing
+    ( Step(..)
+    , loop
+    , prependMessage
+    )
 
 
 type Step state a
@@ -14,3 +18,17 @@ loop s f =
 
         Done b ->
             b
+
+
+prependMessage : String -> List String -> List String
+prependMessage message messages =
+    case messages of
+        first :: rest ->
+            if message == first then
+                messages
+
+            else
+                message :: messages
+
+        _ ->
+            message :: messages
