@@ -1,35 +1,25 @@
-module DateTimeUtility exposing (toUtcSlug, toUtcString)
+module DateTimeUtility exposing (toUtcSlug)
 
 import List.Extra
 import Time exposing (Month(..), toDay, toHour, toMinute, toMonth, toSecond, toYear, utc)
 
 
-toUtcString : Time.Posix -> String
-toUtcString time =
+toUtcSlug : String -> String -> Time.Posix -> String
+toUtcSlug str1 str2 time =
     String.fromInt (toYear utc time)
         ++ "-"
         ++ (toMonth utc time |> monthString)
         ++ "-"
         ++ String.fromInt (toDay utc time)
         ++ "-"
-        ++ String.fromInt (toHour utc time)
-        ++ ":"
-        ++ String.fromInt (toMinute utc time)
-        ++ ":"
-        ++ String.fromInt (toSecond utc time)
+        ++ str1
+        ++ (toHour utc time |> String.fromInt)
+        ++ str2
 
 
-toUtcSlug : Time.Posix -> String
-toUtcSlug time =
-    String.fromInt (toYear utc time)
-        ++ "-"
-        ++ (toMonth utc time |> monthString)
-        ++ "-"
-        ++ String.fromInt (toDay utc time)
-        ++ "-"
-        ++ (toHour utc time |> letter)
-        ++ (toMinute utc time |> modBy 26 |> letter)
-        ++ (toSecond utc time |> modBy 26 |> letter)
+hmsSlug : Int -> Int -> Int -> String
+hmsSlug h m s =
+    modBy 1000 (3600 * h + 60 * m + s) |> String.fromInt
 
 
 alphabet =
@@ -39,13 +29,6 @@ alphabet =
 letter : Int -> String
 letter k =
     List.Extra.getAt k alphabet |> Maybe.withDefault "0"
-
-
-
---++ ":"
---++ String.fromInt (toMinute utc time)
---++ ":"
---++ String.fromInt (toSecond utc time)
 
 
 monthString : Time.Month -> String

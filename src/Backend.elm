@@ -143,7 +143,7 @@ updateFromFrontend sessionId clientId msg model =
                             publicIdTokenData.token
 
                         Just user ->
-                            user.username ++ "-" ++ DateTimeUtility.toUtcSlug model.currentTime
+                            user.username ++ "-" ++ DateTimeUtility.toUtcSlug (String.left 1 publicIdTokenData.token) (String.slice 1 2 publicIdTokenData.token) model.currentTime
 
                 title =
                     Abstract.getElement "title" doc_.content
