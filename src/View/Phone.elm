@@ -222,7 +222,7 @@ viewRendered model width_ =
                 [ View.Utility.katexCSS
                 , E.column [ E.spacing 18, E.width (E.px width_), E.paddingXY 16 32 ]
                     ((Render.TOC.view model.counter (renderSettings model.windowWidth) model.ast |> E.map Render)
-                        :: (Render.L0.renderFromAST model.counter (renderSettings model.windowWidth) model.ast |> List.map (E.map Render))
+                        :: (Render.L0.renderFromAST model.counter (renderSettings (round <| 2.5 * toFloat model.windowWidth)) model.ast |> List.map (E.map Render))
                     )
                 ]
 
