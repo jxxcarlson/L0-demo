@@ -8,6 +8,7 @@ import Backend.Update
 import Cmd.Extra
 import Config
 import Data
+import DateTimeUtility
 import Dict exposing (Dict)
 import Docs
 import Document exposing (Access(..))
@@ -136,13 +137,21 @@ updateFromFrontend sessionId clientId msg model =
                 publicIdTokenData =
                     Token.get authorIdTokenData.seed
 
+                humanFriendlyPublicId =
+                    case maybeCurrentUser of
+                        Nothing ->
+                            publicIdTokenData.token
+
+                        Just user ->
+                            user.username ++ "-" ++ DateTimeUtility.toUtcSlug model.currentTime
+
                 title =
                     Abstract.getElement "title" doc_.content
 
                 doc =
                     { doc_
                         | id = "id-" ++ idTokenData.token
-                        , publicId = "pu-" ++ publicIdTokenData.token
+                        , publicId = humanFriendlyPublicId
                         , created = model.currentTime
                         , modified = model.currentTime
                         , title = title
@@ -155,7 +164,7 @@ updateFromFrontend sessionId clientId msg model =
                     Dict.insert ("au-" ++ authorIdTokenData.token) doc.id model.authorIdDict
 
                 publicIdDict =
-                    Dict.insert ("pu-" ++ publicIdTokenData.token) doc.id model.publicIdDict
+                    Dict.insert humanFriendlyPublicId doc.id model.publicIdDict
 
                 usersDocumentsDict =
                     case maybeCurrentUser of
@@ -179,7 +188,7 @@ updateFromFrontend sessionId clientId msg model =
 
                 message =
                     --  "userIds : " ++ String.fromInt (List.length list)
-                    "Author link: " ++ Config.appUrl ++ "/a/au-" ++ authorIdTokenData.token ++ ", Public link:" ++ Config.appUrl ++ "/p/pu-" ++ publicIdTokenData.token
+                    "Author link: " ++ Config.appUrl ++ "/a/au-" ++ authorIdTokenData.token ++ ", Public link:" ++ Config.appUrl ++ "/p/pu-" ++ humanFriendlyPublicId
             in
             { model
                 | randomSeed = publicIdTokenData.seed
