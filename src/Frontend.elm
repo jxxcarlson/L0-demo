@@ -11,6 +11,7 @@ import Config
 import Debounce exposing (Debounce)
 import Docs
 import Document exposing (Access(..))
+import Element
 import File
 import File.Download as Download
 import File.Select as Select
@@ -40,6 +41,7 @@ import UrlManager
 import User
 import Util
 import View.Main
+import View.Phone
 import View.Utility
 
 
@@ -721,5 +723,10 @@ view : Model -> { title : String, body : List (Html.Html FrontendMsg) }
 view model =
     { title = Config.appName
     , body =
-        [ View.Main.view model ]
+        case (Element.classifyDevice { width = model.windowWidth, height = model.windowHeight }).class of
+            Element.Phone ->
+                [ View.Phone.view model ]
+
+            _ ->
+                [ View.Main.view model ]
     }
