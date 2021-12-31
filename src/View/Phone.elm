@@ -36,12 +36,7 @@ view : Model -> Html FrontendMsg
 view model =
     E.layoutWith { options = [ E.focusStyle View.Utility.noFocus ] }
         [ View.Style.bgGray 0.9, E.clipX, E.clipY ]
-        (mainColumn model)
-
-
-mainColumn : Model -> Element FrontendMsg
-mainColumn model =
-    viewRendered model (smallPanelWidth model.windowWidth)
+        (viewRendered model (smallPanelWidth model.windowWidth))
 
 
 
@@ -225,7 +220,7 @@ viewRendered model width_ =
                 , View.Utility.elementAttribute "id" "__RENDERED_TEXT__"
                 ]
                 [ View.Utility.katexCSS
-                , E.column [ E.spacing 18, E.width (E.px (width_ - 60)) ]
+                , E.column [ E.spacing 18, E.width (E.px width_), E.paddingXY 16 32 ]
                     ((Render.TOC.view model.counter (renderSettings model.windowWidth) model.ast |> E.map Render)
                         :: (Render.L0.renderFromAST model.counter (renderSettings model.windowWidth) model.ast |> List.map (E.map Render))
                     )
