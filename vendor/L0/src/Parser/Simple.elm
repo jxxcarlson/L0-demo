@@ -40,9 +40,9 @@ tokenize str =
     Token.run str |> List.map simplifyToken
 
 
-parse : String -> StateS
-parse str =
-    Expression.parseToState str |> toStateS
+parse : Int -> String -> StateS
+parse k str =
+    Expression.parseToState k str |> toStateS
 
 
 toStateS : State -> StateS

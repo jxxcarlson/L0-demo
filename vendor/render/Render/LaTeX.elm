@@ -24,15 +24,6 @@ export settings ast =
         ++ "\n\n\\end{document}\n"
 
 
-
---rawExport : Settings -> SyntaxTree -> String
---rawExport settings ast =
---    ast
---        |> List.map (Tree.map (exportBlock settings))
---        |> List.map unravel
---        |> String.join "\n\n"
-
-
 rawExport : Settings -> SyntaxTree -> String
 rawExport settings ast =
     ast
@@ -41,7 +32,6 @@ rawExport settings ast =
         |> encloseLists
         |> List.map (exportBlock settings)
         |> String.join "\n\n"
-        |> String.replace "_" "\\_"
 
 
 type Status
@@ -171,7 +161,7 @@ exportBlock settings ((ExpressionBlock { blockType, name, content, children }) a
         Paragraph ->
             case content of
                 Left str ->
-                    str
+                    mapChars str
 
                 Right exprs_ ->
                     exportExprList settings exprs_
@@ -223,6 +213,11 @@ exportBlock settings ((ExpressionBlock { blockType, name, content, children }) a
 renderDefs settings exprs =
     "%% Macro definitions from L0 text:\n"
         ++ exportExprList settings exprs
+
+
+mapChars : String -> String
+mapChars str =
+    String.replace "_" "\\_" str
 
 
 
@@ -384,10 +379,10 @@ macro1 name arg =
     else
         case Dict.get name functionDict of
             Nothing ->
-                "\\" ++ name ++ "{" ++ String.trimLeft arg ++ "}"
+                "\\" ++ name ++ "{" ++ mapChars (String.trimLeft arg) ++ "}"
 
             Just realName ->
-                "\\" ++ realName ++ "{" ++ String.trimLeft arg ++ "}"
+                "\\" ++ realName ++ "{" ++ mapChars (String.trimLeft arg) ++ "}"
 
 
 exportExprList : Settings -> List Expr -> String
@@ -416,7 +411,7 @@ exportExpr settings expr =
                         macro1 name (List.map (exportExpr settings) exps_ |> String.join " ")
 
         Text str _ ->
-            str
+            mapChars str
 
         Verbatim name body _ ->
             renderVerbatim name body
@@ -425,6 +420,7 @@ exportExpr settings expr =
             "error: " ++ err
 
 
+renderVerbatim : String -> String -> String
 renderVerbatim name body =
     case Dict.get name verbatimExprDict of
         Nothing ->

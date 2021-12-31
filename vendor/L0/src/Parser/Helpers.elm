@@ -22,13 +22,19 @@ loop s f =
 
 prependMessage : Int -> String -> List String -> List String
 prependMessage lineNumber message messages =
-    case messages of
-        first :: rest ->
-            if message == first then
-                messages
+    (message ++ " (line " ++ String.fromInt (lineNumber + 2) ++ ")") :: List.take 2 messages
 
-            else
-                (message ++ "(line " ++ String.fromInt lineNumber ++ ")") :: messages
 
-        _ ->
-            message :: messages
+
+--prependMessage : Int -> String -> List String -> List String
+--prependMessage lineNumber message messages =
+--    case messages of
+--        first :: rest ->
+--            if message == first then
+--                messages
+--
+--            else
+--                (message ++ "(line " ++ String.fromInt lineNumber ++ ")") :: messages
+--
+--        _ ->
+--            message :: messages

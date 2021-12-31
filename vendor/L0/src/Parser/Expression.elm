@@ -297,7 +297,10 @@ errorMessageInvisible : Int -> String -> Expr
 errorMessageInvisible lineNumber message =
     let
         m =
-            message ++ " (line " ++ String.fromInt lineNumber ++ ")"
+            -- message ++ " (line " ++ String.fromInt lineNumber ++ ")"
+            message
+
+        --  ++ " (line " ++ String.fromInt lineNumber ++ ")"
     in
     Expr "invisible" [ Text m dummyLoc ] dummyLoc
 
