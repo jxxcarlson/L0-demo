@@ -16,6 +16,8 @@ module View.Button exposing
     , printToPDF
     , runSpecial
     , setDocumentAsCurrent
+    , setDocumentInPhoneAsCurrent
+    , showTOCInPhone
     , signIn
     , signOut
     , startupHelp
@@ -262,6 +264,37 @@ setDocumentAsCurrent docPermissions currentDocument document =
     in
     Input.button []
         { onPress = Just (SetDocumentAsCurrent docPermissions document)
+        , label = E.el [ E.centerX, E.centerY, Font.size 14, fg, style ] (E.text document.title)
+        }
+
+
+showTOCInPhone : Element FrontendMsg
+showTOCInPhone =
+    Input.button []
+        { onPress = Just ShowTOCInPhone
+        , label = E.el [ E.centerX, E.centerY, Font.size 18 ] (E.text "Index")
+        }
+
+
+setDocumentInPhoneAsCurrent : DocPermissions -> Maybe Document.Document -> Document.Document -> Element FrontendMsg
+setDocumentInPhoneAsCurrent docPermissions currentDocument document =
+    let
+        fg =
+            if currentDocument == Just document then
+                Font.color (E.rgb 0.7 0 0)
+
+            else
+                Font.color (E.rgb 0 0 0.8)
+
+        style =
+            if document.public then
+                Font.italic
+
+            else
+                Font.unitalicized
+    in
+    Input.button []
+        { onPress = Just (SetDocumentInPhoneAsCurrent docPermissions document)
         , label = E.el [ E.centerX, E.centerY, Font.size 14, fg, style ] (E.text document.title)
         }
 

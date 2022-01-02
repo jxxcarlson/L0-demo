@@ -88,6 +88,7 @@ init url key =
       , windowHeight = 900
       , popupStatus = PopupClosed
       , showEditor = False
+      , phoneMode = PMShowDocumentList
 
       -- SYNC
       , foundIds = []
@@ -287,6 +288,28 @@ update msg model =
             ( { model | inputPassword = str }, Cmd.none )
 
         -- UI
+        ShowTOCInPhone ->
+            ( { model | phoneMode = PMShowDocumentList }, Cmd.none )
+
+        SetDocumentInPhoneAsCurrent permissions doc ->
+            let
+                ast =
+                    L0.parse doc.content |> Render.Acc.transformST
+            in
+            ( { model
+                | currentDocument = Just doc
+                , sourceText = doc.content
+                , ast = ast
+                , title = Render.ASTTools.title ast
+                , tableOfContents = Render.ASTTools.tableOfContents ast
+                , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
+                , permissions = setPermissions model.currentUser permissions doc
+                , counter = model.counter + 1
+                , phoneMode = PMShowDocument
+              }
+            , View.Utility.setViewPortToTop
+            )
+
         SetAppMode appMode ->
             ( { model | appMode = appMode }, Cmd.none )
 

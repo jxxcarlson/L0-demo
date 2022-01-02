@@ -44,6 +44,7 @@ type alias FrontendModel =
     , popupStatus : PopupStatus
     , showEditor : Bool
     , authorId : String
+    , phoneMode : PhoneMode
 
     -- SYNC
     , foundIds : List String
@@ -76,6 +77,11 @@ type alias FrontendModel =
 type AppMode
     = UserMode
     | AdminMode
+
+
+type PhoneMode
+    = PMShowDocument
+    | PMShowDocumentList
 
 
 type PopupWindow
@@ -196,6 +202,8 @@ type FrontendMsg
     | SendSyncLR
     | GetSelection String
       -- DOC
+    | SetDocumentInPhoneAsCurrent DocPermissions Document
+    | ShowTOCInPhone
     | InputSearchSource String
     | InputText String
     | DebounceMsg Debounce.Msg
