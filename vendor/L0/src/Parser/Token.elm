@@ -39,6 +39,31 @@ type Token
     | TokenError (List (DeadEnd Context Problem)) Meta
 
 
+setIndex : Int -> Token -> Token
+setIndex k token =
+    case token of
+        LB meta ->
+            LB { meta | index = k }
+
+        RB meta ->
+            RB { meta | index = k }
+
+        S str meta ->
+            S str { meta | index = k }
+
+        W str meta ->
+            W str { meta | index = k }
+
+        MathToken meta ->
+            MathToken { meta | index = k }
+
+        CodeToken meta ->
+            CodeToken { meta | index = k }
+
+        TokenError list meta ->
+            TokenError list { meta | index = k }
+
+
 type alias Meta =
     { begin : Int, end : Int, index : Int }
 
@@ -49,8 +74,7 @@ type alias State a =
     , tokenIndex : Int
     , sourceLength : Int
     , tokens : List a
-    , lastToken : Maybe Token
-    , lastTokenType : Maybe TokenType
+    , currentToken : Maybe Token
     , mode : Mode
     }
 
@@ -178,7 +202,14 @@ length token =
 
 init : String -> State a
 init str =
-    { source = str, scanpointer = 0, sourceLength = String.length str, tokens = [], lastToken = Nothing, lastTokenType = Nothing, tokenIndex = 0, mode = Normal }
+    { source = str
+    , scanpointer = 0
+    , sourceLength = String.length str
+    , tokens = []
+    , currentToken = Nothing
+    , tokenIndex = 0
+    , mode = Normal
+    }
 
 
 type alias TokenParser =
@@ -211,7 +242,12 @@ get state start input =
 nextStep : State Token -> Step (State Token) (List Token)
 nextStep state =
     if state.scanpointer >= state.sourceLength then
-        Done state.tokens
+        case state.currentToken of
+            Just token ->
+                Done (token :: state.tokens)
+
+            Nothing ->
+                Done state.tokens
 
     else
         let
@@ -221,33 +257,61 @@ nextStep state =
             newScanPointer =
                 state.scanpointer + length token + 1
 
-            ( newToken, mergeStatus ) =
-                mergeTokens state.lastToken token
+            ( tokens, tokenIndex, currentToken_ ) =
+                if isTextToken token then
+                    -- if head of the token list is a left bracket token, commit the text token immediately:
+                    -- it is the expected function name
+                    if Maybe.map type_ (List.head state.tokens) == Just TLB then
+                        ( setIndex state.tokenIndex token :: state.tokens, state.tokenIndex + 1, Nothing )
 
-            tokens =
-                case mergeStatus of
-                    TokensUnchanged ->
-                        token :: state.tokens
+                    else
+                        -- otherwise, update the current token so as to merge words into a single phrase
+                        ( state.tokens, state.tokenIndex, updateCurrentToken state.tokenIndex token state.currentToken )
 
-                    TokensMerged ->
-                        newToken :: List.drop 1 state.tokens
+                else if type_ token == TLB then
+                    -- commit a left bracket token immediately, taking care to commit the currentToken if it contains text
+                    case state.currentToken of
+                        Nothing ->
+                            ( setIndex state.tokenIndex token :: state.tokens, state.tokenIndex + 1, Nothing )
 
-            lastToken =
-                if List.member state.lastTokenType [ Nothing, Just TLB, Just TRB ] then
-                    Nothing
+                        Just textToken ->
+                            ( setIndex (state.tokenIndex + 1) token :: setIndex state.tokenIndex textToken :: state.tokens, state.tokenIndex + 2, Nothing )
 
                 else
-                    Just newToken
+                    -- the token is neither a left bracket token nore a text token.  Commit it immediatley, taking care
+                    -- to also commit the currentToken if it holds text.
+                    case state.currentToken of
+                        Nothing ->
+                            ( setIndex state.tokenIndex token :: state.tokens, state.tokenIndex + 1, Nothing )
+
+                        Just textToken ->
+                            ( setIndex (state.tokenIndex + 1) token :: textToken :: state.tokens, state.tokenIndex + 2, Nothing )
+
+            currentToken =
+                if isTextToken token then
+                    currentToken_
+
+                else
+                    Nothing
         in
         Loop
             { state
                 | tokens = tokens
-                , lastToken = lastToken
-                , lastTokenType = Just (type_ token)
                 , scanpointer = newScanPointer
-                , tokenIndex = state.tokenIndex + 1
+                , tokenIndex = tokenIndex
+                , currentToken = currentToken
                 , mode = newMode token state.mode
             }
+
+
+updateCurrentToken : Int -> Token -> Maybe Token -> Maybe Token
+updateCurrentToken index token currentToken =
+    case currentToken of
+        Nothing ->
+            Just (setIndex index token)
+
+        Just token_ ->
+            Just <| setIndex index (mergeToken token_ token)
 
 
 isTextToken : Token -> Bool
@@ -260,22 +324,8 @@ type MergeStatus
     | TokensMerged
 
 
-mergeTokens : Maybe Token -> Token -> ( Token, MergeStatus )
-mergeTokens lastToken_ token =
-    case lastToken_ of
-        Nothing ->
-            ( token, TokensUnchanged )
-
-        Just lastToken ->
-            if isTextToken lastToken && isTextToken token then
-                ( mergeTokensAux lastToken token, TokensMerged )
-
-            else
-                ( token, TokensUnchanged )
-
-
-mergeTokensAux : Token -> Token -> Token
-mergeTokensAux lastToken currentToken =
+mergeToken : Token -> Token -> Token
+mergeToken lastToken currentToken =
     let
         lastTokenMeta =
             getMeta lastToken
@@ -284,7 +334,7 @@ mergeTokensAux lastToken currentToken =
             getMeta currentToken
 
         meta =
-            { begin = lastTokenMeta.begin, end = currentTokenMeta.end, index = currentTokenMeta.index }
+            { begin = lastTokenMeta.begin, end = currentTokenMeta.end, index = -1 }
     in
     S (stringValue lastToken ++ stringValue currentToken) meta
 

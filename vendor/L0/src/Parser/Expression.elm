@@ -2,6 +2,7 @@ module Parser.Expression exposing
     ( State
     , parse
     , parseToState
+    , parseTokenList
     )
 
 import Either exposing (Either(..))
