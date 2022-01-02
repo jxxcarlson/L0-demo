@@ -120,6 +120,7 @@ viewRendered model width_ =
                 , Font.size 14
                 , E.alignTop
                 , E.scrollbarY
+                , E.clipX
                 , View.Utility.elementAttribute "id" "__RENDERED_TEXT__"
                 ]
                 [ View.Utility.katexCSS
@@ -212,14 +213,6 @@ smallPanelWidth ww =
     smallAppWidth ww - innerGutter
 
 
-smallHeaderWidth ww =
-    smallAppWidth ww
-
-
-headerWidth ww =
-    appWidth ww - 2 * innerGutter
-
-
 indexWidth ww =
     ramp 150 300 ww
 
@@ -231,10 +224,6 @@ appWidth ww =
 smallAppWidth ww =
     -- ramp 700 1000 ww
     ww
-
-
-docListWidth =
-    220
 
 
 ramp a b x =
