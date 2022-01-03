@@ -16,6 +16,7 @@ import Tree exposing (Tree)
 type alias Accumulator =
     { headingIndex : Vector
     , numberedItemIndex : Int
+    , equationIndex : Int
     , environment : Dict String Lambda
     }
 
@@ -40,6 +41,7 @@ init : Int -> Accumulator
 init k =
     { headingIndex = Vector.init k
     , numberedItemIndex = 0
+    , equationIndex = 0
     , environment = Dict.empty
     }
 
@@ -96,6 +98,36 @@ transformBlock acc ((ExpressionBlock { args, blockType, children, content, messa
                 , sourceText = sourceText
                 }
 
+        VerbatimBlock [ "equation" ] ->
+            ExpressionBlock
+                { args = args ++ [ String.fromInt acc.equationIndex ]
+                , blockType = blockType
+                , children = children
+                , content = content
+                , messages = messages
+                , indent = indent
+                , lineNumber = lineNumber
+                , numberOfLines = numberOfLines
+                , name = name
+                , id = id
+                , sourceText = sourceText
+                }
+
+        VerbatimBlock [ "aligned" ] ->
+            ExpressionBlock
+                { args = args ++ [ String.fromInt acc.equationIndex ]
+                , blockType = blockType
+                , children = children
+                , content = content
+                , messages = messages
+                , indent = indent
+                , lineNumber = lineNumber
+                , numberOfLines = numberOfLines
+                , name = name
+                , id = id
+                , sourceText = sourceText
+                }
+
         _ ->
             expand acc.environment block
 
@@ -120,6 +152,7 @@ expand dict ((ExpressionBlock { args, blockType, children, content, messages, in
 updateAccumulator : ExpressionBlock -> Accumulator -> Accumulator
 updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulator =
     case blockType of
+        -- provide numbering for sections
         OrdinaryBlock [ "heading", level ] ->
             let
                 headingIndex =
@@ -127,12 +160,28 @@ updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulato
             in
             { accumulator | headingIndex = headingIndex, numberedItemIndex = 0 }
 
+        -- provide numbering for lists
         OrdinaryBlock [ "numbered" ] ->
             let
                 numberedItemIndex =
                     accumulator.numberedItemIndex + 1
             in
             { accumulator | numberedItemIndex = numberedItemIndex }
+
+        -- provide for numbering of equations
+        VerbatimBlock [ "equation" ] ->
+            let
+                equationIndex =
+                    accumulator.equationIndex + 1
+            in
+            { accumulator | equationIndex = equationIndex }
+
+        VerbatimBlock [ "aligned" ] ->
+            let
+                equationIndex =
+                    accumulator.equationIndex + 1
+            in
+            { accumulator | equationIndex = equationIndex }
 
         -- insert definitions of lambdas
         OrdinaryBlock [ "defs" ] ->
