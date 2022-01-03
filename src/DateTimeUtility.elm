@@ -6,11 +6,11 @@ import Time exposing (Month(..), toDay, toHour, toMinute, toMonth, toSecond, toY
 
 toUtcSlug : String -> String -> Time.Posix -> String
 toUtcSlug str1 str2 time =
-    String.fromInt (toYear utc time)
-        ++ "-"
-        ++ (toMonth utc time |> monthString)
+    (toMonth utc time |> monthString)
         ++ "-"
         ++ String.fromInt (toDay utc time)
+        ++ "-"
+        ++ String.fromInt (toYear utc time)
         ++ "-"
         ++ str1
         ++ (toHour utc time |> String.fromInt)
@@ -35,31 +35,31 @@ monthString : Time.Month -> String
 monthString month =
     case month of
         Jan ->
-            "01"
+            "1"
 
         Feb ->
-            "02"
+            "2"
 
         Mar ->
-            "03"
+            "3"
 
         Apr ->
-            "04"
+            "4"
 
         May ->
-            "05"
+            "5"
 
         Jun ->
-            "06"
+            "6"
 
         Jul ->
-            "07"
+            "7"
 
         Aug ->
-            "08"
+            "8"
 
         Sep ->
-            "09"
+            "9"
 
         Oct ->
             "10"

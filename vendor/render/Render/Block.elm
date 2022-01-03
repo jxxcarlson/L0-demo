@@ -212,18 +212,21 @@ renderDisplayMath count settings args id str =
         w =
             String.fromInt settings.width ++ "px"
 
-        lines =
+        allLines =
             String.lines str
 
+        lines =
+            String.lines str |> List.filter (\line -> not (String.left 2 line == "$$"))
+
         n =
-            List.length lines
+            List.length allLines
 
         lastLine =
             List.Extra.getAt (n - 1) lines
     in
     if lastLine == Just "$$" then
         Element.column [ Events.onClick (SendId id), Element.width (Element.px settings.width), Element.centerX ]
-            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" (List.take (n - 1) lines)) ]
+            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" lines) ]
 
     else if lastLine == Just "$" then
         Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
