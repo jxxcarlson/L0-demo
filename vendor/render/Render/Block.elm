@@ -222,7 +222,7 @@ renderDisplayMath count settings args id str =
             List.length allLines
 
         lastLine =
-            List.Extra.getAt (n - 1) lines
+            List.Extra.getAt (n - 1) allLines
     in
     if lastLine == Just "$$" then
         Element.column [ Events.onClick (SendId id), Element.width (Element.px settings.width), Element.centerX ]
