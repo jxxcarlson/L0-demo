@@ -223,15 +223,27 @@ env_ count settings args id exprs =
 env : String -> Int -> Settings -> List String -> String -> List Expr -> Element L0Msg
 env name count settings args id exprs =
     let
-        heading_ =
-            if List.isEmpty args then
-                name
+        label =
+            args
+                |> List.filter (\s -> String.contains "index::" s)
+                |> String.join ""
+                |> String.replace "index::" ""
+
+        headingString_ =
+            String.join " " (List.filter (\s -> not (String.contains "::" s)) args)
+
+        headingString =
+            if headingString_ == "" then
+                ""
 
             else
-                name ++ " (" ++ String.join " " args ++ ")"
+                " (" ++ headingString_ ++ ")"
+
+        envHeading =
+            name ++ " " ++ label ++ headingString
     in
     Element.column [ Element.spacing 8, Render.Utility.elementAttribute "id" id ]
-        [ Element.el [ Font.bold, Events.onClick (SendId id) ] (Element.text heading_)
+        [ Element.el [ Font.bold, Events.onClick (SendId id) ] (Element.text envHeading)
         , Element.paragraph [ Font.italic, Events.onClick (SendId id) ]
             (renderWithDefault ("| " ++ name) count settings exprs)
         ]

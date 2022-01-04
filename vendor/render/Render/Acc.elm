@@ -17,6 +17,11 @@ type alias Accumulator =
     { headingIndex : Vector
     , numberedItemIndex : Int
     , equationIndex : Int
+    , definitionIndex : Int
+    , remarkIndex : Int
+    , lemmaIndex : Int
+    , problemIndex : Int
+    , theoremIndex : Int
     , environment : Dict String Lambda
     }
 
@@ -42,6 +47,11 @@ init k =
     { headingIndex = Vector.init k
     , numberedItemIndex = 0
     , equationIndex = 0
+    , definitionIndex = 0
+    , remarkIndex = 0
+    , lemmaIndex = 0
+    , problemIndex = 0
+    , theoremIndex = 0
     , environment = Dict.empty
     }
 
@@ -65,88 +75,58 @@ transformAccumulateTree tree acc =
     Tree.mapAccumulate transformer acc tree
 
 
+namedIndex : String -> Int -> String
+namedIndex name k =
+    name ++ "::" ++ String.fromInt k
+
+
 transformBlock : Accumulator -> ExpressionBlock -> ExpressionBlock
-transformBlock acc ((ExpressionBlock { args, blockType, children, content, messages, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
-    case blockType of
+transformBlock acc (ExpressionBlock block) =
+    case block.blockType of
         OrdinaryBlock [ "heading", level ] ->
             ExpressionBlock
-                { args = args ++ [ Vector.toString acc.headingIndex ]
-                , blockType = blockType
-                , children = children
-                , content = content
-                , messages = messages
-                , indent = indent
-                , lineNumber = lineNumber
-                , numberOfLines = numberOfLines
-                , name = name
-                , id = id
-                , sourceText = sourceText
-                }
+                { block | args = block.args ++ [ Vector.toString acc.headingIndex ] }
 
         OrdinaryBlock [ "numbered" ] ->
             ExpressionBlock
-                { args = args ++ [ String.fromInt acc.numberedItemIndex ]
-                , blockType = blockType
-                , children = children
-                , content = content
-                , messages = messages
-                , indent = indent
-                , lineNumber = lineNumber
-                , numberOfLines = numberOfLines
-                , name = name
-                , id = id
-                , sourceText = sourceText
-                }
+                { block | args = block.args ++ [ String.fromInt acc.numberedItemIndex ] }
 
-        VerbatimBlock [ "equation" ] ->
-            ExpressionBlock
-                { args = args ++ [ String.fromInt acc.equationIndex ]
-                , blockType = blockType
-                , children = children
-                , content = content
-                , messages = messages
-                , indent = indent
-                , lineNumber = lineNumber
-                , numberOfLines = numberOfLines
-                , name = name
-                , id = id
-                , sourceText = sourceText
-                }
+        OrdinaryBlock args ->
+            case List.head args of
+                Just "theorem" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.theoremIndex ] }
+
+                Just "lemma" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.lemmaIndex ] }
+
+                Just "definition" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.definitionIndex ] }
+
+                Just "problem" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.problemIndex ] }
+
+                Just "remark" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.remarkIndex ] }
+
+                _ ->
+                    ExpressionBlock block
 
         VerbatimBlock [ "aligned" ] ->
             ExpressionBlock
-                { args = args ++ [ String.fromInt acc.equationIndex ]
-                , blockType = blockType
-                , children = children
-                , content = content
-                , messages = messages
-                , indent = indent
-                , lineNumber = lineNumber
-                , numberOfLines = numberOfLines
-                , name = name
-                , id = id
-                , sourceText = sourceText
-                }
+                { block | args = block.args ++ [ String.fromInt acc.equationIndex ] }
 
         _ ->
-            expand acc.environment block
+            expand acc.environment (ExpressionBlock block)
 
 
 expand : Dict String Lambda -> ExpressionBlock -> ExpressionBlock
-expand dict ((ExpressionBlock { args, blockType, children, content, messages, indent, lineNumber, numberOfLines, name, id, sourceText }) as block) =
-    ExpressionBlock
-        { args = args
-        , blockType = blockType
-        , children = children
-        , content = Either.map (List.map (Lambda.expand dict)) content
-        , messages = messages
-        , indent = indent
-        , lineNumber = lineNumber
-        , numberOfLines = numberOfLines
-        , name = name
-        , id = id
-        , sourceText = sourceText
-        }
+expand dict (ExpressionBlock block) =
+    ExpressionBlock { block | content = Either.map (List.map (Lambda.expand dict)) block.content }
 
 
 updateAccumulator : ExpressionBlock -> Accumulator -> Accumulator
@@ -168,6 +148,34 @@ updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulato
             in
             { accumulator | numberedItemIndex = numberedItemIndex }
 
+        OrdinaryBlock args ->
+            case List.head args of
+                Just "theorem" ->
+                    { accumulator | theoremIndex = accumulator.theoremIndex + 1 }
+
+                Just "lemma" ->
+                    { accumulator | lemmaIndex = accumulator.lemmaIndex + 1 }
+
+                Just "definition" ->
+                    { accumulator | definitionIndex = accumulator.definitionIndex + 1 }
+
+                Just "problem" ->
+                    { accumulator | problemIndex = accumulator.problemIndex + 1 }
+
+                Just "remark" ->
+                    { accumulator | remarkIndex = accumulator.remarkIndex + 1 }
+
+                Just "defs" ->
+                    case content of
+                        Left _ ->
+                            accumulator
+
+                        Right exprs ->
+                            { accumulator | environment = List.foldl (\lambda dict -> Lambda.insert (Lambda.extract lambda) dict) accumulator.environment exprs }
+
+                _ ->
+                    accumulator
+
         -- provide for numbering of equations
         VerbatimBlock [ "equation" ] ->
             let
@@ -184,13 +192,12 @@ updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulato
             { accumulator | equationIndex = equationIndex }
 
         -- insert definitions of lambdas
-        OrdinaryBlock [ "defs" ] ->
-            case content of
-                Left _ ->
-                    accumulator
-
-                Right exprs ->
-                    { accumulator | environment = List.foldl (\lambda dict -> Lambda.insert (Lambda.extract lambda) dict) accumulator.environment exprs }
-
+        --OrdinaryBlock [ "defs" ] ->
+        --    case content of
+        --        Left _ ->
+        --            accumulator
+        --
+        --        Right exprs ->
+        --            { accumulator | environment = List.foldl (\lambda dict -> Lambda.insert (Lambda.extract lambda) dict) accumulator.environment exprs }
         _ ->
             { accumulator | numberedItemIndex = 0 }
