@@ -116,6 +116,10 @@ transformBlock acc (ExpressionBlock block) =
                 _ ->
                     ExpressionBlock block
 
+        VerbatimBlock [ "equation" ] ->
+            ExpressionBlock
+                { block | args = block.args ++ [ String.fromInt acc.equationIndex ] }
+
         VerbatimBlock [ "aligned" ] ->
             ExpressionBlock
                 { block | args = block.args ++ [ String.fromInt acc.equationIndex ] }
