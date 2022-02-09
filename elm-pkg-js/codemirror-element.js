@@ -27,6 +27,7 @@ exports.init =  async function(app) {
                        margin-top: -54px;
                        border: 1px solid #e0e0e0;
                        border-radius: 4px;
+                       background-color: #5773a1;
                        font-family: "Inconsolata", "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
                    }
                    .codemirror_placeholder {
