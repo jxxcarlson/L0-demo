@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "codemirror": "^5.65.1",
     "elm-json": "^0.2.10"
   }
 }

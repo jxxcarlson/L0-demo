@@ -84,7 +84,7 @@ viewEditorAndRenderedText model =
             [ header model (E.px <| appWidth model.windowWidth)
             , E.row [ E.spacing 12 ]
                 [ -- viewEditor model (panelWidth_ model.windowWidth)
-                  aceEditor model
+                  editor model
                 , viewRenderedForEditor model (panelWidth_ model.windowWidth)
                 , viewMydocs model 110
                 ]
@@ -97,15 +97,15 @@ viewEditorAndRenderedText model =
 --
 
 
-aceEditor : Model -> Element FrontendMsg
-aceEditor model =
+editor : Model -> Element FrontendMsg
+editor model =
     E.column [ E.moveUp 4 ]
         [ E.row [ E.width E.fill ]
             [ View.Input.searchSourceText model
             , Button.syncLR
             , searchStatus model
             ]
-        , aceEditor_ model
+        , editor_ model
         ]
 
 
@@ -136,8 +136,8 @@ searchStatus model =
 --
 
 
-aceEditor_ : Model -> Element FrontendMsg
-aceEditor_ model =
+editor_ : Model -> Element FrontendMsg
+editor_ model =
     let
         onChange : Html.Attribute FrontendMsg
         onChange =
@@ -155,7 +155,7 @@ aceEditor_ model =
     in
     E.el [ E.htmlAttribute onChange, E.htmlAttribute onSelect ] <|
         E.html <|
-            Html.node "ace-editor"
+            Html.node "codemirror-editor"
                 [ --HtmlAttr.attribute "theme" "one_dark"
                   HtmlAttr.attribute "wrapmode" "true"
                 , HtmlAttr.attribute "tabsize" "2"
