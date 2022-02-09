@@ -1,7 +1,7 @@
 
 exports.init =  async function(app) {
 
-  console.log("I am starting codemirror-element: init"); // CHECK
+  console.log("I am setting up codemirror-element (exports.init)"); // CHECK
 
   var codemirrorJs = document.createElement('script')
   codemirrorJs.type = 'text/javascript'
@@ -9,10 +9,7 @@ exports.init =  async function(app) {
   codemirrorJs.onload = initCodemirror
 
   document.head.appendChild(codemirrorJs);
-  console.log("codemirror-element: I have appended codemirrorJs to document.head");  // CHECK
-
-
-
+  console.log("I have appended codemirrorJs to document.head");  // CHECK
 
     function initCodemirror() {
 
@@ -45,7 +42,7 @@ exports.init =  async function(app) {
 
          // Fires when an instance of the element is created
       constructor(self) {
-            console.log("codemirror: in constructor")
+            console.log("codemirror: entering constructor")
             // Polyfill caveat we need to fetch the right context
             // https://github.com/WebReflection/document-register-element/tree/master#v1-caveat
             self = super(self)
@@ -66,12 +63,12 @@ exports.init =  async function(app) {
         }
 
 connectedCallback() {
-                console.log("codemirror: In connectedCallback")
+                console.log("codemirror: entering connectedCallback")
                 let container = this.container
                 let element = this
                 let editor = null
 
-                
+                // OK, stuff needs to go here.
 
                 this._attached = true
             } // end connected callback
