@@ -2,7 +2,6 @@
     "type": "application",
     "source-directories": [
         "src",
-        "vendor/render",
         "vendor/L0/src"
     ],
     "elm-version": "0.19.1",

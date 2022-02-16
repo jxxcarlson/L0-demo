@@ -1,4 +1,4 @@
-module Render.ASTTools exposing
+module Compiler.ASTTools exposing
     ( exprListToStringList
     , extractTextFromSyntaxTreeByKey
     , filterBlocksByArgs

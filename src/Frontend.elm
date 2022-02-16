@@ -7,6 +7,9 @@ import Browser exposing (UrlRequest(..))
 import Browser.Events
 import Browser.Navigation as Nav
 import Cmd.Extra exposing (withCmd, withCmds, withNoCmd)
+import Compiler.ASTTools
+import Compiler.Acc
+import Compiler.DifferentialParser
 import Config
 import Debounce exposing (Debounce)
 import Docs
@@ -25,10 +28,7 @@ import List.Extra
 import Parser.Block exposing (ExpressionBlock)
 import Parser.BlockUtil as BlockUtil
 import Process
-import Render.ASTTools
-import Render.Acc
 import Render.Block
-import Render.DifferentialParser
 import Render.L0 as L0
 import Render.LaTeX as LaTeX
 import Render.Msg exposing (L0Msg(..))
@@ -91,6 +91,10 @@ init url key =
       , phoneMode = PMShowDocumentList
 
       -- SYNC
+      , doSync = False
+      , docLoaded = NotLoaded
+      , linenumber = 0
+      , initialText = ""
       , foundIds = []
       , foundIdIndex = 0
       , selectedId = ""
@@ -102,10 +106,10 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , sourceText = welcome
-      , ast = L0.parse welcome |> Render.Acc.transformST
-      , editRecord = Render.DifferentialParser.init chunker parser welcome
-      , title = Render.ASTTools.title (L0.parse welcome)
-      , tableOfContents = Render.ASTTools.tableOfContents (L0.parse welcome)
+      , ast = L0.parse welcome |> Compiler.Acc.transformST
+      , editRecord = Compiler.DifferentialParser.init chunker parser ""
+      , title = Compiler.ASTTools.title (L0.parse welcome)
+      , tableOfContents = Compiler.ASTTools.tableOfContents (L0.parse welcome)
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -294,14 +298,14 @@ update msg model =
         SetDocumentInPhoneAsCurrent permissions doc ->
             let
                 ast =
-                    L0.parse doc.content |> Render.Acc.transformST
+                    L0.parse doc.content |> Compiler.Acc.transformST
             in
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
                 , ast = ast
-                , title = Render.ASTTools.title ast
-                , tableOfContents = Render.ASTTools.tableOfContents ast
+                , title = Compiler.ASTTools.title ast
+                , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
@@ -335,6 +339,10 @@ update msg model =
         GetSelection str ->
             ( { model | message = "Selection: " ++ str }, Cmd.none )
 
+        -- SYNC
+        SelectedText str ->
+            firstSyncLR model str
+
         SendSyncLR ->
             ( { model | syncRequestIndex = model.syncRequestIndex + 1 }, Cmd.none )
 
@@ -344,7 +352,7 @@ update msg model =
                     if model.foundIdIndex == 0 then
                         let
                             foundIds_ =
-                                Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast
+                                Compiler.ASTTools.matchingIdsInAST model.searchSourceText model.ast
 
                             id_ =
                                 List.head foundIds_ |> Maybe.withDefault "(nothing)"
@@ -429,7 +437,7 @@ update msg model =
         SearchText ->
             let
                 ids =
-                    Render.ASTTools.matchingIdsInAST model.searchSourceText model.ast
+                    Compiler.ASTTools.matchingIdsInAST model.searchSourceText model.ast
 
                 ( cmd, id ) =
                     case List.head ids of
@@ -451,11 +459,11 @@ update msg model =
             in
             let
                 editRecord =
-                    Render.DifferentialParser.update chunker parser model.editRecord str
+                    Compiler.DifferentialParser.update chunker parser model.editRecord str
 
                 syntaxTree : List (Tree ExpressionBlock)
                 syntaxTree =
-                    editRecord.parsed |> Render.Acc.transformST
+                    editRecord.parsed |> Compiler.Acc.transformST
 
                 messages : List String
                 messages =
@@ -465,8 +473,8 @@ update msg model =
             ( { model
                 | sourceText = str
                 , ast = syntaxTree
-                , title = Render.ASTTools.title syntaxTree
-                , tableOfContents = Render.ASTTools.tableOfContents syntaxTree
+                , title = Compiler.ASTTools.title syntaxTree
+                , tableOfContents = Compiler.ASTTools.tableOfContents syntaxTree
                 , message = String.join ", " messages
                 , debounce = debounce
               }
@@ -508,14 +516,14 @@ update msg model =
         SetDocumentAsCurrent permissions doc ->
             let
                 ast =
-                    L0.parse doc.content |> Render.Acc.transformST
+                    L0.parse doc.content |> Compiler.Acc.transformST
             in
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
                 , ast = ast
-                , title = Render.ASTTools.title ast
-                , tableOfContents = Render.ASTTools.tableOfContents ast
+                , title = Compiler.ASTTools.title ast
+                , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
@@ -575,6 +583,49 @@ update msg model =
 
         FinallyDoCleanPrintArtefacts privateId ->
             ( model, Cmd.none )
+
+
+firstSyncLR model searchSourceText =
+    let
+        data =
+            let
+                foundIds_ =
+                    Compiler.ASTTools.matchingIdsInAST searchSourceText model.ast
+
+                id_ =
+                    List.head foundIds_ |> Maybe.withDefault "(nothing)"
+            in
+            { foundIds = foundIds_
+            , foundIdIndex = 1
+            , cmd = View.Utility.setViewportForElement id_
+            , selectedId = id_
+            , searchCount = 0
+            }
+    in
+    ( { model
+        | selectedId = data.selectedId
+        , foundIds = data.foundIds
+        , foundIdIndex = data.foundIdIndex
+        , searchCount = data.searchCount
+        , message = ("[" ++ data.selectedId ++ "]") :: data.foundIds |> String.join ", "
+      }
+    , data.cmd
+    )
+
+
+nextSyncLR model =
+    let
+        id_ =
+            List.Extra.getAt model.foundIdIndex model.foundIds |> Maybe.withDefault "(nothing)"
+    in
+    ( { model
+        | selectedId = id_
+        , foundIdIndex = modBy (List.length model.foundIds) (model.foundIdIndex + 1)
+        , searchCount = model.searchCount + 1
+        , message = ("[" ++ id_ ++ "]") :: model.foundIds |> String.join ", "
+      }
+    , View.Utility.setViewportForElement id_
+    )
 
 
 fixId_ : String -> String
@@ -708,9 +759,9 @@ updateFromBackend msg model =
             in
             ( { model
                 | sourceText = doc.content
-                , ast = ast |> Render.Acc.transformST
-                , title = Render.ASTTools.title ast
-                , tableOfContents = Render.ASTTools.tableOfContents ast
+                , ast = ast |> Compiler.Acc.transformST
+                , title = Compiler.ASTTools.title ast
+                , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , showEditor = showEditor
                 , currentDocument = Just doc
                 , documents = documents

@@ -8,13 +8,13 @@ module Render.Utility exposing
     , vspace
     )
 
+import Compiler.ASTTools
 import Dict exposing (Dict)
 import Element exposing (paddingEach)
 import Html.Attributes
 import List.Extra
 import Maybe.Extra
 import Parser.Expr
-import Render.ASTTools
 
 
 getArg : String -> Int -> List String -> String
@@ -43,7 +43,7 @@ internalLink str =
 makeId : List Parser.Expr.Expr -> Element.Attribute msg
 makeId exprs =
     elementAttribute "id"
-        (Render.ASTTools.stringValueOfList exprs |> String.trim |> makeSlug)
+        (Compiler.ASTTools.stringValueOfList exprs |> String.trim |> makeSlug)
 
 
 makeSlug : String -> String

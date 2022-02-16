@@ -105,7 +105,7 @@ aceEditor model =
             , Button.syncLR
             , searchStatus model
             ]
-        , aceEditor_ model
+        , editor_ model
         ]
 
 
@@ -136,42 +136,68 @@ searchStatus model =
 --
 
 
-aceEditor_ : Model -> Element FrontendMsg
-aceEditor_ model =
-    let
-        onChange : Html.Attribute FrontendMsg
-        onChange =
-            Json.Decode.string
-                |> Json.Decode.at [ "target", "editorText" ]
-                |> Json.Decode.map InputText
-                |> Html.Events.on "change"
-
-        onSelect : Html.Attribute FrontendMsg
-        onSelect =
-            Json.Decode.string
-                |> Json.Decode.at [ "target", "editorText" ]
-                |> Json.Decode.map GetSelection
-                |> Html.Events.on "selectedtext"
-    in
-    E.el [ E.htmlAttribute onChange, E.htmlAttribute onSelect ] <|
-        E.html <|
-            Html.node "ace-editor"
-                [ --HtmlAttr.attribute "theme" "one_dark"
-                  HtmlAttr.attribute "wrapmode" "true"
-                , HtmlAttr.attribute "tabsize" "2"
-                , HtmlAttr.attribute "linenumber" (String.fromInt (model.lineNumber + 1))
-                , HtmlAttr.attribute "softtabs" "true"
-                , HtmlAttr.attribute "navigateWithinSoftTabs" "true"
-                , HtmlAttr.attribute "fontsize" "12"
-                , HtmlAttr.style "height" (String.fromInt (panelHeight_ model - 40) ++ "px")
-                , HtmlAttr.style "width" (String.fromInt (panelWidth_ model.windowWidth) ++ "px")
-                , HtmlAttr.attribute "text" (Maybe.map .content model.currentDocument |> Maybe.withDefault "")
-                , HtmlAttr.attribute "searchkey" model.searchSourceText
-                , HtmlAttr.attribute "searchcount" (String.fromInt model.searchCount)
-
-                --, HtmlAttr.attribute "sendsync" (String.fromInt model.syncRequestIndex)
+editor_ : Model -> Element FrontendMsg
+editor_ model =
+    E.el
+        [ E.htmlAttribute onSelectionChange
+        , E.htmlAttribute onTextChange
+        , htmlId "editor-here"
+        , E.width (E.px 550)
+        , Background.color (E.rgb255 0 68 85)
+        , Font.color (E.rgb 0.85 0.85 0.85)
+        , Font.size 12
+        ]
+        (E.html
+            (Html.node "codemirror-editor"
+                [ HtmlAttr.attribute "text" (loadedDocument model)
+                , HtmlAttr.attribute "linenumber" (String.fromInt model.linenumber)
+                , HtmlAttr.attribute "selection" (stringOfBool model.doSync)
                 ]
                 []
+            )
+        )
+
+
+stringOfBool bool =
+    case bool of
+        False ->
+            "false"
+
+        True ->
+            "true"
+
+
+htmlId str =
+    E.htmlAttribute (HtmlAttr.id str)
+
+
+loadedDocument model =
+    case model.docLoaded of
+        NotLoaded ->
+            "(((empty)))"
+
+        DocLoaded ->
+            model.initialText
+
+
+onTextChange : Html.Attribute FrontendMsg
+onTextChange =
+    textDecoder
+        |> Json.Decode.map InputText
+        |> Html.Events.on "text-change"
+
+
+onSelectionChange : Html.Attribute FrontendMsg
+onSelectionChange =
+    textDecoder
+        |> Json.Decode.map SelectedText
+        |> Html.Events.on "selected-text"
+
+
+textDecoder : Json.Decode.Decoder String
+textDecoder =
+    Json.Decode.string
+        |> Json.Decode.at [ "detail" ]
 
 
 

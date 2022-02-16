@@ -1,7 +1,4 @@
-module L0 exposing
-    ( parse
-    , SyntaxTree, parseToIntermediateBlocks
-    )
+module L0 exposing (SyntaxTree, parse, parseToIntermediateBlocks)
 
 {-| A Parser for the experimental L0 module. See the app folder to see how it is used.
 The Render folder in app could have been included with the parser. However, this way
@@ -10,7 +7,7 @@ users are free to design their own renderer.
 Since this package is still experimental (but needed in various test projects).
 The documentation is skimpy.
 
-@docs AST, parse
+@docs SyntaxTree, parse, parseToIntermediateBlocks
 
 -}
 
@@ -46,6 +43,7 @@ parse sourceText =
         |> List.map (Tree.map Parser.BlockUtil.toExpressionBlockFromIntermediateBlock)
 
 
+{-| -}
 parseToIntermediateBlocks : String -> List (Tree Parser.Block.IntermediateBlock)
 parseToIntermediateBlocks sourceText =
     sourceText

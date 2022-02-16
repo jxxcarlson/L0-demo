@@ -2,7 +2,7 @@
 // For now, its presence will mean Lamdera detects the extra JS and packages
 // In future this will be more structured + restricted once the design is done
 const elm_katex= require('./elm-pkg-js/elm-katex.js')
-const ace_element= require('./elm-pkg-js/ace-element.js')
+const codemirror_element= require('./elm-pkg-js/codemirror-element.js')
 // const ace= require('./elm-pkg-js/ace.js')
 
 exports.init = async function init(app) {
@@ -10,7 +10,7 @@ exports.init = async function init(app) {
   // This file will not run in Local development, an equivalent to this is
   // automatically generated in Local Development for every file in elm-pkg-js/
   elm_katex.init(app)
-  ace_element.init(app)
+  codemirror_element.init(app)
 
 
 }

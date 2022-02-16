@@ -5,7 +5,7 @@ import Authentication exposing (AuthenticationDict)
 import Browser exposing (UrlRequest)
 import Browser.Dom as Dom
 import Browser.Navigation exposing (Key)
-import Data
+import Compiler.DifferentialParser
 import Debounce exposing (Debounce)
 import Dict exposing (Dict)
 import Document exposing (Document)
@@ -15,7 +15,6 @@ import Http
 import L0
 import Parser.Block exposing (ExpressionBlock, IntermediateBlock)
 import Random
-import Render.DifferentialParser
 import Render.Msg exposing (L0Msg)
 import Time
 import Tree
@@ -51,11 +50,15 @@ type alias FrontendModel =
     , foundIdIndex : Int
     , selectedId : String
     , syncRequestIndex : Int
+    , linenumber : Int
+    , doSync : Bool
 
     -- DOCUMENT
+    , docLoaded : DocLoaded
+    , initialText : String
     , sourceText : String
     , ast : L0.SyntaxTree
-    , editRecord : Render.DifferentialParser.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock)
+    , editRecord : Compiler.DifferentialParser.EditRecord (Tree.Tree IntermediateBlock) (Tree.Tree ExpressionBlock)
     , tableOfContents : List ExpressionBlock
     , title : List ExpressionBlock
     , searchCount : Int
@@ -72,6 +75,11 @@ type alias FrontendModel =
     , publicDocuments : List Document
     , deleteDocumentState : DocumentDeleteState
     }
+
+
+type DocLoaded
+    = NotLoaded
+    | DocLoaded
 
 
 type AppMode
@@ -198,6 +206,7 @@ type FrontendMsg
     | InputUsername String
     | InputPassword String
       -- SYNC
+    | SelectedText String
     | SyncLR
     | SendSyncLR
     | GetSelection String

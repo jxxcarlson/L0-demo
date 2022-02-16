@@ -1,0 +1,5 @@
+scripts:
+
+  make:
+    - npm start
+    # - cp  ../../codemirror/editor.bundle.js public/assets

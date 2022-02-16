@@ -1,5 +1,7 @@
 module Render.LaTeX exposing (export, exportExpr, rawExport)
 
+import Compiler.ASTTools as ASTTools
+import Compiler.Lambda as Lambda
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import L0 exposing (SyntaxTree)
@@ -7,8 +9,6 @@ import List.Extra
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
 import Parser.Helpers exposing (Step(..), loop)
-import Render.ASTTools as ASTTools
-import Render.Lambda as Lambda
 import Render.Settings exposing (Settings)
 import Render.Utility as Utility
 import Tree exposing (Tree)

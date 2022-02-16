@@ -1,4 +1,4 @@
-module Render.Lambda exposing (Lambda, apply, expand, extract, insert, subst, toString)
+module Compiler.Lambda exposing (Lambda, apply, expand, extract, insert, subst, toString)
 
 import Dict exposing (Dict)
 import Parser.Expr exposing (Expr(..))

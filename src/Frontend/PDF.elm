@@ -1,5 +1,6 @@
 module Frontend.PDF exposing (gotLink, print)
 
+import Compiler.ASTTools as ASTTools
 import Document exposing (Document)
 import Either
 import Http
@@ -8,7 +9,6 @@ import L0 exposing (SyntaxTree)
 import Maybe.Extra
 import Parser.Block exposing (ExpressionBlock(..))
 import Process
-import Render.ASTTools as ASTTools
 import Render.LaTeX as LaTeX
 import Render.Settings
 import Task

@@ -1,5 +1,6 @@
 module Render.Block exposing (render)
 
+import Compiler.ASTTools as ASTTools
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Element exposing (Element)
@@ -10,7 +11,6 @@ import Html.Attributes
 import List.Extra
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr)
-import Render.ASTTools as ASTTools
 import Render.Elm
 import Render.Math exposing (DisplayMode(..))
 import Render.Msg exposing (L0Msg(..))

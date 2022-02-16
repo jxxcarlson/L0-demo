@@ -1,4 +1,4 @@
-module Render.Vector exposing (Vector, get, increment, init, resetFrom, set, toString)
+module Compiler.Vector exposing (Vector, get, increment, init, resetFrom, set, toString)
 
 import List.Extra
 

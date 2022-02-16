@@ -2,6 +2,5 @@ scripts:
 
   update-vendor:
       - cp -r /Users/jxxcarlson/dev/bluesky/elm-l0-parser/src vendor/L0/
-      - cp -r /Users/jxxcarlson/dev/bluesky/elm-l0-parser/app/src/Render vendor/render/
 
   cloc: cloc --by-file --exclude-dir=Evergreen src/

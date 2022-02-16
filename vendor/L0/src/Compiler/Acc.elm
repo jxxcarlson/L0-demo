@@ -1,15 +1,15 @@
-module Render.Acc exposing
+module Compiler.Acc exposing
     ( Accumulator
     , make
     , transformST
     )
 
+import Compiler.Lambda as Lambda exposing (Lambda)
+import Compiler.Vector as Vector exposing (Vector)
 import Dict exposing (Dict)
 import Either exposing (Either(..))
 import Parser.Block exposing (BlockType(..), ExpressionBlock(..))
 import Parser.Expr exposing (Expr(..))
-import Render.Lambda as Lambda exposing (Lambda)
-import Render.Vector as Vector exposing (Vector)
 import Tree exposing (Tree)
 
 
