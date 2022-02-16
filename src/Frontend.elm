@@ -396,7 +396,12 @@ update msg model =
             ( { model | showEditor = False }, sendToBackend GetPublicDocuments )
 
         OpenEditor ->
-            ( { model | showEditor = True }, Cmd.none )
+            case model.currentDocument of
+                Nothing ->
+                    ( { model | message = "No document to open in editor" }, Cmd.none )
+
+                Just doc ->
+                    ( { model | showEditor = True, sourceText = doc.content }, Frontend.Cmd.setInitialEditorContent )
 
         Help docId ->
             ( model, sendToBackend (GetDocumentByAuthorId docId) )
@@ -481,13 +486,13 @@ update msg model =
             , cmd
             )
 
-        LoadDocumentInEditor ->
+        SetInitialEditorContent ->
             case model.currentDocument of
                 Nothing ->
-                    ( { model | message = "No document to load into editor" }, Cmd.none )
+                    ( { model | message = "Could not set editor content: there is no current document" }, Cmd.none )
 
                 Just doc ->
-                    ( { model | docLoaded = DocLoaded, initialText = doc.content, sourceText = doc.content, message = "Doc loaded" }, Cmd.none )
+                    ( { model | initialText = doc.content }, Cmd.none )
 
         InputAuthorId str ->
             ( { model | authorId = str }, Cmd.none )
@@ -536,7 +541,7 @@ update msg model =
                 , permissions = setPermissions model.currentUser permissions doc
                 , counter = model.counter + 1
               }
-            , View.Utility.setViewPortToTop
+            , Cmd.batch [ View.Utility.setViewPortToTop ]
             )
 
         SetPublic doc public ->
@@ -798,7 +803,7 @@ updateFromBackend msg model =
             ( { model | currentUser = Just user }, Cmd.none )
 
         SendDocuments documents ->
-            ( { model | documents = documents }, Process.sleep 100 |> Task.perform (always LoadDocumentInEditor) )
+            ( { model | documents = documents }, Cmd.none )
 
 
 view : Model -> { title : String, body : List (Html.Html FrontendMsg) }

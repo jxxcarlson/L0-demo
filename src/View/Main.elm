@@ -95,18 +95,16 @@ viewEditorAndRenderedText model =
 
 
 --
-
-
-aceEditor : Model -> Element FrontendMsg
-aceEditor model =
-    E.column [ E.moveUp 4 ]
-        [ E.row [ E.width E.fill ]
-            [ View.Input.searchSourceText model
-            , Button.syncLR
-            , searchStatus model
-            ]
-        , editor_ model
-        ]
+--aceEditor : Model -> Element FrontendMsg
+--aceEditor model =
+--    E.column [ E.moveUp 4 ]
+--        [ E.row [ E.width E.fill ]
+--            [ View.Input.searchSourceText model
+--            , Button.syncLR
+--            , searchStatus model
+--            ]
+--        , editor_ model
+--        ]
 
 
 searchStatus model =
@@ -149,7 +147,9 @@ editor_ model =
         ]
         (E.html
             (Html.node "codemirror-editor"
-                [ HtmlAttr.attribute "text" (loadedDocument model)
+                [ HtmlAttr.attribute "text" model.initialText
+
+                --  HtmlAttr.attribute "text" (loadedDocument model)
                 , HtmlAttr.attribute "linenumber" (String.fromInt model.linenumber)
                 , HtmlAttr.attribute "selection" (stringOfBool model.doSync)
                 ]
@@ -171,13 +171,14 @@ htmlId str =
     E.htmlAttribute (HtmlAttr.id str)
 
 
-loadedDocument model =
-    case model.docLoaded of
-        NotLoaded ->
-            "(((empty)))"
 
-        DocLoaded ->
-            model.initialText
+--loadedDocument model =
+--    case model.docLoaded of
+--        NotLoaded ->
+--            "(((empty)))"
+--
+--        DocLoaded ->
+--            model.initialText
 
 
 onTextChange : Html.Attribute FrontendMsg

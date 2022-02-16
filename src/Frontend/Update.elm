@@ -5,8 +5,8 @@ module Frontend.Update exposing
     )
 
 import Document exposing (Document)
+import Frontend.Cmd
 import Lamdera exposing (sendToBackend)
-import List.Extra
 import Types exposing (..)
 
 
@@ -40,7 +40,7 @@ newDocument model =
                 , author = Maybe.map .username model.currentUser
             }
     in
-    ( { model | showEditor = True }, sendToBackend (CreateDocument model.currentUser doc) )
+    ( { model | showEditor = True }, Cmd.batch [ Frontend.Cmd.setInitialEditorContent, sendToBackend (CreateDocument model.currentUser doc) ] )
 
 
 updateCurrentDocument : Document -> FrontendModel -> FrontendModel

@@ -211,7 +211,7 @@ type FrontendMsg
     | SendSyncLR
     | GetSelection String
       -- DOC
-    | LoadDocumentInEditor
+    | SetInitialEditorContent
     | SetDocumentInPhoneAsCurrent DocPermissions Document
     | ShowTOCInPhone
     | InputSearchSource String

@@ -20406,6 +20406,7 @@ initCodeMirror = function () {
                                        , fixedHeightEditor
                                        , myTheme
                                        , EditorView.lineWrapping
+                                       // Below: send updated text from CM to Elm
                                        , EditorView.updateListener.of((v)=> {
                                            if(v.docChanged) {
                                                sendText(editor);
@@ -20435,7 +20436,7 @@ initCodeMirror = function () {
                                              editor.dom.dispatchEvent(event);
                                           }
 
-                 function replaceAllText(editor, str) {
+                 function setEditorText(editor, str) {
                              console.log("replaceAllText (dispatch)");
                              const currentValue = editor.state.doc.toString();
                              const endPosition = currentValue.length;
@@ -20449,7 +20450,7 @@ initCodeMirror = function () {
                          }
 
                 function attributeChangedCallback_(editor, attr, oldVal, newVal) {
-                 switch (attr) {
+                   switch (attr) {
 
                       case "linenumber":
                                var lineNumber = parseInt(newVal) + 2;
@@ -20460,8 +20461,10 @@ initCodeMirror = function () {
                                editor.scrollPosIntoView(loc.from);
                             break
                       case "text":
-                            console.log ("Attr case text (replaceAllText)");
-                            replaceAllText(editor, newVal);
+                            // replace the editor text with text sent from Elm
+                            // That text is set in property 'text' of editor_
+                            console.log ("Attr case text: set the editor text to the string sent from Elm");
+                            setEditorText(editor, newVal);
                             break
 
                       case "selection":
@@ -20469,7 +20472,7 @@ initCodeMirror = function () {
                            var selectionTo = editor.state.selection.ranges[0].to;
                            var selectionSlice = editor.state.sliceDoc(selectionFrom,selectionTo );
                            console.log("Attr case selection", selectionSlice);
-                          sendSelectedText(editor, selectionSlice);
+                           sendSelectedText(editor, selectionSlice);
 
 
                           break
