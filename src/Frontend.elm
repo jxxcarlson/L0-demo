@@ -481,6 +481,14 @@ update msg model =
             , cmd
             )
 
+        LoadDocumentInEditor ->
+            case model.currentDocument of
+                Nothing ->
+                    ( { model | message = "No document to load into editor" }, Cmd.none )
+
+                Just doc ->
+                    ( { model | docLoaded = DocLoaded, initialText = doc.content, sourceText = doc.content, message = "Doc loaded" }, Cmd.none )
+
         InputAuthorId str ->
             ( { model | authorId = str }, Cmd.none )
 
@@ -790,7 +798,7 @@ updateFromBackend msg model =
             ( { model | currentUser = Just user }, Cmd.none )
 
         SendDocuments documents ->
-            ( { model | documents = documents }, Cmd.none )
+            ( { model | documents = documents }, Process.sleep 100 |> Task.perform (always LoadDocumentInEditor) )
 
 
 view : Model -> { title : String, body : List (Html.Html FrontendMsg) }

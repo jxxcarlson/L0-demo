@@ -84,7 +84,7 @@ viewEditorAndRenderedText model =
             [ header model (E.px <| appWidth model.windowWidth)
             , E.row [ E.spacing 12 ]
                 [ -- viewEditor model (panelWidth_ model.windowWidth)
-                  aceEditor model
+                  editor_ model
                 , viewRenderedForEditor model (panelWidth_ model.windowWidth)
                 , viewMydocs model 110
                 ]

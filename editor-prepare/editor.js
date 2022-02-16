@@ -34,31 +34,14 @@ let myTheme = EditorView.theme({
 }, {dark: true})
 
 
-//.codemirror-matching-bracket { background: red; }
-//.codemirror-nonmatching-bracket { background: green; }
-
-
 class CodemirrorEditor extends HTMLElement {
 
     static get observedAttributes() { return ['selection', 'linenumber', 'text']; }
-
-    get editorText() {
-        //return this.textContent
-        return this.editor.getSession().getValue()
-    }
-
-    set editorText(s) {
-        console.log("Setting editor value:", s)
-        this.editor.getSession().setValue(s)
-    }
 
     constructor(self) {
 
         self = super(self)
         console.log("CM EDITOR: In constructor")
-//
-
-
 
         return self
     }
@@ -71,8 +54,6 @@ class CodemirrorEditor extends HTMLElement {
                 const event = new CustomEvent('text-change', { 'detail': editor.state.doc.toString() , 'bubbles':true, 'composed': true});
                 editor.dom.dispatchEvent(event);
              }
-
-
 
            // Set up editor if need be and point this.editor to it
             if (this.editor) {
@@ -91,7 +72,7 @@ class CodemirrorEditor extends HTMLElement {
                                        }
                                      })
                                    ],
-                               doc: "EMPTY"
+                               doc: "EMPTY\n1\n2\n3"
 
                                }),
                                parent: document.getElementById("editor-here")
@@ -109,11 +90,13 @@ class CodemirrorEditor extends HTMLElement {
     attributeChangedCallback(attr, oldVal, newVal) {
 
              function sendSelectedText(editor, str) {
+                                         console.log("sendSelectedText (dispatch)", str)
                                          const event = new CustomEvent('selected-text', { 'detail': str , 'bubbles':true, 'composed': true});
                                          editor.dom.dispatchEvent(event);
                                       }
 
              function replaceAllText(editor, str) {
+                         console.log("replaceAllText (dispatch)")
                          const currentValue = editor.state.doc.toString();
                          const endPosition = currentValue.length;
 
@@ -131,10 +114,13 @@ class CodemirrorEditor extends HTMLElement {
                   case "linenumber":
                            var lineNumber = parseInt(newVal) + 2
                            var loc =  editor.state.doc.line(lineNumber)
+                           console.log("Attr case lineNumber", loc)
+                           console.log("position", loc.from)
                            editor.dispatch({selection: {anchor: parseInt(loc.from)}})
                            editor.scrollPosIntoView(loc.from)
                         break
                   case "text":
+                        console.log ("Attr case text (replaceAllText)")
                         replaceAllText(editor, newVal)
                         break
 
@@ -142,6 +128,7 @@ class CodemirrorEditor extends HTMLElement {
                        var selectionFrom = editor.state.selection.ranges[0].from
                        var selectionTo = editor.state.selection.ranges[0].to
                        var selectionSlice = editor.state.sliceDoc(selectionFrom,selectionTo )
+                       console.log("Attr case selection", selectionSlice)
                       sendSelectedText(editor, selectionSlice)
 
 

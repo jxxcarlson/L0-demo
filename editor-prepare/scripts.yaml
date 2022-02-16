@@ -2,4 +2,4 @@ scripts:
 
   make:
     - npm start
-    # - cp  ../../codemirror/editor.bundle.js public/assets
+    # - sed 's/(function () {/initCodeMirror = function () {/' codemirror.js > codemirror.js
