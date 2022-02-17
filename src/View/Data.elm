@@ -16,7 +16,7 @@ The L0 Markup Language
 L0 is a simple yet expressive markup language. Use this app
 to experiment with it.  For now, look at the examples
 below.  We will have a language manual for 
-you soon.
+you soon.  The app is pre-release software.
 
 | heading 1
 Marked-up Text
