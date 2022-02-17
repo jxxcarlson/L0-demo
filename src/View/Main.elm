@@ -140,6 +140,7 @@ editor_ model =
         , E.htmlAttribute onTextChange
         , htmlId "editor-here"
         , E.width (E.px 550)
+        , E.height (E.px 725)
         , Background.color (E.rgb255 0 68 85)
         , Font.color (E.rgb 0.85 0.85 0.85)
         , Font.size 12
