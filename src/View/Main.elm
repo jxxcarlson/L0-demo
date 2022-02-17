@@ -46,17 +46,16 @@ mainColumn model =
             viewAdmin model
 
         UserMode ->
-            if model.showEditor then
-                viewEditorAndRenderedText model
-
-            else if model.statusReport == [] then
-                viewRenderedTextOnly model
-
-            else
-                viewStatusReport model
+            --  if model.showEditor then
+            viewEditorAndRenderedText model
 
 
 
+--else if model.statusReport == [] then
+--    viewRenderedTextOnly model
+--
+--else
+--    viewStatusReport model
 -- TOP
 
 

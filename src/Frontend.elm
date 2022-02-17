@@ -534,6 +534,7 @@ update msg model =
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
+                , initialText = doc.content
                 , ast = ast
                 , title = Compiler.ASTTools.title ast
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
