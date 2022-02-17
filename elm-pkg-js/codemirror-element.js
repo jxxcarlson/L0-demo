@@ -20365,12 +20365,20 @@ window.initCodeMirror = function () {
       "&.cm-focused .cm-selectionBackground, ::selection": {
         backgroundColor: "#074"
       },
-      ".cm-gutters": {
+      "&.cm-gutters": {
         backgroundColor: "#045",
         color: "#ddd",
         border: "none"
       },
-      ".cm-matching-bracket": { background: "#f70a0a" } // not working
+      "&.cm-matching-bracket": { background: "#f70a0a" }  // not working
+    //  "&.cm-editor": {
+    //      resize: both,
+    //      height: auto,
+    //      maxheight: "200px"
+    //    }
+
+
+
 
     }, {dark: true});
 

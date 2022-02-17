@@ -92,47 +92,6 @@ viewEditorAndRenderedText model =
         ]
 
 
-
---
---aceEditor : Model -> Element FrontendMsg
---aceEditor model =
---    E.column [ E.moveUp 4 ]
---        [ E.row [ E.width E.fill ]
---            [ View.Input.searchSourceText model
---            , Button.syncLR
---            , searchStatus model
---            ]
---        , editor_ model
---        ]
-
-
-searchStatus model =
-    let
-        n =
-            List.length model.foundIds
-
-        i =
-            if model.foundIdIndex == 0 then
-                n
-
-            else
-                model.foundIdIndex
-
-        msg =
-            if n > 0 then
-                String.fromInt i ++ "/" ++ String.fromInt n
-
-            else
-                ""
-    in
-    E.el [ Background.color (E.rgb 0.4 0.4 0.4), Font.color (E.rgb 1 1 1), Font.size 14, E.width (E.px 80), E.height (E.px 33) ]
-        (E.el [ E.centerX, E.centerY ] (E.text msg))
-
-
-
---
-
-
 editor_ : Model -> Element FrontendMsg
 editor_ model =
     E.el
@@ -140,7 +99,7 @@ editor_ model =
         , E.htmlAttribute onTextChange
         , htmlId "editor-here"
         , E.width (E.px 550)
-        , E.height (E.px 725)
+        , E.height (E.px (appHeight_ model - 110))
         , Background.color (E.rgb255 0 68 85)
         , Font.color (E.rgb 0.85 0.85 0.85)
         , Font.size 12
@@ -148,8 +107,6 @@ editor_ model =
         (E.html
             (Html.node "codemirror-editor"
                 [ HtmlAttr.attribute "text" model.initialText
-
-                --  HtmlAttr.attribute "text" (loadedDocument model)
                 , HtmlAttr.attribute "linenumber" (String.fromInt model.linenumber)
                 , HtmlAttr.attribute "selection" (stringOfBool model.doSync)
                 ]
@@ -169,16 +126,6 @@ stringOfBool bool =
 
 htmlId str =
     E.htmlAttribute (HtmlAttr.id str)
-
-
-
---loadedDocument model =
---    case model.docLoaded of
---        NotLoaded ->
---            "(((empty)))"
---
---        DocLoaded ->
---            model.initialText
 
 
 onTextChange : Html.Attribute FrontendMsg
