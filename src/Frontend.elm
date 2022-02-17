@@ -401,7 +401,7 @@ update msg model =
                     ( { model | message = "No document to open in editor" }, Cmd.none )
 
                 Just doc ->
-                    ( { model | showEditor = True, sourceText = doc.content }, Frontend.Cmd.setInitialEditorContent )
+                    ( { model | showEditor = True, sourceText = doc.content, initialText = doc.content }, Frontend.Cmd.setInitialEditorContent )
 
         Help docId ->
             ( model, sendToBackend (GetDocumentByAuthorId docId) )

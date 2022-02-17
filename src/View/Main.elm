@@ -7,6 +7,7 @@ import Element as E exposing (Element)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Input as Input
+import Element.Keyed
 import Html exposing (Html)
 import Html.Attributes as HtmlAttr exposing (attribute)
 import Html.Events
@@ -46,16 +47,14 @@ mainColumn model =
             viewAdmin model
 
         UserMode ->
-            --  if model.showEditor then
-            viewEditorAndRenderedText model
+            if model.showEditor then
+                viewEditorAndRenderedText model
+
+            else
+                viewRenderedTextOnly model
 
 
 
---else if model.statusReport == [] then
---    viewRenderedTextOnly model
---
---else
---    viewStatusReport model
 -- TOP
 
 
@@ -94,7 +93,7 @@ viewEditorAndRenderedText model =
 
 editor_ : Model -> Element FrontendMsg
 editor_ model =
-    E.el
+    Element.Keyed.el
         [ E.htmlAttribute onSelectionChange
         , E.htmlAttribute onTextChange
         , htmlId "editor-here"
@@ -104,7 +103,8 @@ editor_ model =
         , Font.color (E.rgb 0.85 0.85 0.85)
         , Font.size 12
         ]
-        (E.html
+        ( stringOfBool model.showEditor
+        , E.html
             (Html.node "codemirror-editor"
                 [ HtmlAttr.attribute "text" model.initialText
                 , HtmlAttr.attribute "linenumber" (String.fromInt model.linenumber)
