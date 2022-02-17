@@ -20350,7 +20350,7 @@ window.initCodeMirror = function () {
     ];
 
     const fixedHeightEditor = EditorView.theme({
-        "&": {height: "700px"},
+        "&": {height: "700px"   },
         ".cm-scroller": {overflow: "auto"}
       });
 
