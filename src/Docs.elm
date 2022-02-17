@@ -1,12 +1,13 @@
 module Docs exposing (deleted, docsNotFound, notSignedIn)
 
 import Document exposing (Document, empty)
+import View.Data
 
 
 notSignedIn : Document
 notSignedIn =
     { empty
-        | content = welcomeText
+        | content = View.Data.welcome
         , id = "id-sys-1"
         , publicId = "public-sys-1"
     }
@@ -30,16 +31,6 @@ Your document has been deleted.
 
 
 """
-
-
-welcomeText =
-    """
- | title
- Welcome to the L0 Lab Demo
- 
- [image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]
- 
- """
 
 
 docsNotFound =

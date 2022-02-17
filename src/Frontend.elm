@@ -40,6 +40,7 @@ import Url exposing (Url)
 import UrlManager
 import User
 import Util
+import View.Data
 import View.Main
 import View.Phone
 import View.Utility
@@ -87,14 +88,13 @@ init url key =
       , windowWidth = 600
       , windowHeight = 900
       , popupStatus = PopupClosed
-      , showEditor = False
+      , showEditor = True
       , phoneMode = PMShowDocumentList
 
       -- SYNC
       , doSync = False
       , docLoaded = NotLoaded
       , linenumber = 0
-      , initialText = ""
       , foundIds = []
       , foundIdIndex = 0
       , selectedId = ""
@@ -105,11 +105,12 @@ init url key =
       -- DOCUMENT
       , lineNumber = 0
       , permissions = ReadOnly
-      , sourceText = welcome
-      , ast = L0.parse welcome |> Compiler.Acc.transformST
+      , initialText = ""
+      , sourceText = View.Data.welcome
+      , ast = L0.parse View.Data.welcome |> Compiler.Acc.transformST
       , editRecord = Compiler.DifferentialParser.init chunker parser ""
-      , title = Compiler.ASTTools.title (L0.parse welcome)
-      , tableOfContents = Compiler.ASTTools.tableOfContents (L0.parse welcome)
+      , title = Compiler.ASTTools.title (L0.parse View.Data.welcome)
+      , tableOfContents = Compiler.ASTTools.tableOfContents (L0.parse View.Data.welcome)
       , debounce = Debounce.init
       , counter = 0
       , inputSearchKey = ""
@@ -121,18 +122,8 @@ init url key =
       , publicDocuments = []
       , deleteDocumentState = WaitingForDeleteAction
       }
-    , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments ]
+    , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments, Frontend.Cmd.setInitialEditorContent ]
     )
-
-
-welcome =
-    """
-| title
-Welcome to the L0 Lab Demo
-
-[image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]
-
-"""
 
 
 debounceConfig : Debounce.Config FrontendMsg
