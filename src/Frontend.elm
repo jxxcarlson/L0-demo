@@ -413,9 +413,9 @@ update msg model =
                     -- ( { model | lineNumber = m.loc.begin.row, message = "line " ++ String.fromInt (m.loc.begin.row + 1) }, Cmd.none )
                     ( model, Cmd.none )
 
-                Render.Msg.SendId id ->
+                Render.Msg.SendId line ->
                     -- TODO: the below (using id also for line number) is not a great idea.
-                    ( { model | message = "Id: " ++ id, lineNumber = String.toInt id |> Maybe.withDefault 0 |> (\x -> x + 1) }, Cmd.none )
+                    ( { model | message = "Line " ++ line, linenumber = String.toInt line |> Maybe.withDefault 0 }, Cmd.none )
 
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )

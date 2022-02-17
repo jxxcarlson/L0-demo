@@ -9,7 +9,7 @@ import {EditorState,basicSetup} from "@codemirror/basic-setup"
 import {EditorView} from "@codemirror/view"
 
 const fixedHeightEditor = EditorView.theme({
-    "&": {height: "800px"},
+    "&": {height: "700px"},
     ".cm-scroller": {overflow: "auto"}
   })
 
