@@ -12,6 +12,7 @@ module View.Button exposing
     , importJson
     , linkTemplate
     , newDocument
+    , nextSyncButton
     , openEditor
     , printToPDF
     , runSpecial
@@ -21,6 +22,7 @@ module View.Button exposing
     , signIn
     , signOut
     , startupHelp
+    , syncButton
     , syncLR
     , toggleAppMode
     , toggleEditor
@@ -120,6 +122,24 @@ cancelDeleteDocument model =
 
 syncLR =
     buttonTemplate [] SendSyncLR "Sync"
+
+
+
+--syncButton : Element Msg
+
+
+syncButton : Element FrontendMsg
+syncButton =
+    buttonTemplate [] StartSync "Sync"
+
+
+nextSyncButton : List a -> Element FrontendMsg
+nextSyncButton foundIds =
+    if List.length foundIds < 2 then
+        E.none
+
+    else
+        buttonTemplate [] NextSync "Next sync"
 
 
 toggleEditor model =

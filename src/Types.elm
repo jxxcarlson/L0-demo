@@ -208,6 +208,8 @@ type FrontendMsg
       -- SYNC
     | SelectedText String
     | SyncLR
+    | StartSync
+    | NextSync
     | SendSyncLR
     | GetSelection String
       -- DOC

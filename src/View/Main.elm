@@ -287,7 +287,9 @@ footer model width_ =
         , E.width E.fill -- (E.px width_)
         , Font.size 14
         ]
-        [ Button.exportToLaTeX
+        [ Button.syncButton
+        , Button.nextSyncButton model.foundIds
+        , Button.exportToLaTeX
         , Button.printToPDF model
 
         -- , View.Utility.showIf (isAdmin model) Button.runSpecial
