@@ -1,4 +1,4 @@
-initCodeMirror = function () {
+window.initCodeMirror = function () {
     'use strict';
 
     // Compressed representation of the Grapheme_Cluster_Break=Extend
