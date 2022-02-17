@@ -16,4 +16,4 @@ setupWindow =
 
 setInitialEditorContent : Cmd FrontendMsg
 setInitialEditorContent =
-    Process.sleep 50 |> Task.perform (always SetInitialEditorContent)
+    Process.sleep 20 |> Task.perform (always SetInitialEditorContent)

@@ -393,7 +393,7 @@ update msg model =
             ( model, Cmd.none )
 
         CloseEditor ->
-            ( { model | showEditor = False }, sendToBackend GetPublicDocuments )
+            ( { model | showEditor = False, initialText = "" }, sendToBackend GetPublicDocuments )
 
         OpenEditor ->
             case model.currentDocument of
@@ -401,7 +401,8 @@ update msg model =
                     ( { model | message = "No document to open in editor" }, Cmd.none )
 
                 Just doc ->
-                    ( { model | showEditor = True, sourceText = doc.content, initialText = doc.content }, Frontend.Cmd.setInitialEditorContent )
+                    --( { model | showEditor = True, sourceText = doc.content, initialText = doc.content }, Frontend.Cmd.setInitialEditorContent )
+                    ( { model | showEditor = True, sourceText = doc.content, initialText = "" }, Frontend.Cmd.setInitialEditorContent )
 
         Help docId ->
             ( model, sendToBackend (GetDocumentByAuthorId docId) )
