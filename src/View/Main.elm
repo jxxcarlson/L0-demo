@@ -170,7 +170,7 @@ viewRenderedTextOnly model =
             , E.row [ E.spacing 12 ]
                 [ viewRenderedContainer model
                 , E.column [ E.spacing 8 ]
-                    [ hideIf (model.currentUser == Nothing) (viewMydocs model deltaH)
+                    [ viewMydocs model deltaH
                     , viewZipdocs model deltaH
                     ]
                 ]
