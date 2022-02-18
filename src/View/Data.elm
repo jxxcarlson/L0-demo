@@ -3,6 +3,97 @@ module View.Data exposing (welcome)
 
 welcome =
     """
+| title
+Welcome!
+
+
+This is a demo app for the markup language L0.  Examples: (a) some
+[i italic text]; (b) some [b bold text].
+
+Things enclosed
+in brackets are called [i expressions].  Expressions can be nested,
+e.g., to make [b [i bold-italic text]]. 
+
+[i [b [blue You can try out L0 now: just begin typing in this window.  Don't worry!  Your edits will not be saved.]]]
+
+[i [blue To see what you can do, compare the what is in the editor (left window) with the rendered text (right window).]]
+
+
+[b More Examples]
+
+You can make links: [link New York Times https://nytimes.com]
+
+Also images: [image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg [caption Himalayan bird]]
+
+Itemized lists:
+
+| item
+Bread
+
+| item
+Milk
+
+| item
+Grape jelly
+
+
+[b Math]
+
+An inline formula: $a^2 + b^2 = c^2$
+
+A displayed formula: 
+
+$$
+\\int_0^1 x^n dx = \\frac{1}{n+1}
+
+A theorem:
+
+| theorem
+There are infinitely many primes $p \\equiv 1\\ mod\\ 4$.
+
+
+[vskip]
+
+
+[b Language Note]
+
+L0 is made of just two constructs: expressions and blocks
+
+Expressions have the form
+
+|| code
+[Name Body]
+
+where the body is an expression. Here are the rules for forming
+expressions:
+
+| numbered
+ordinary text is an expression
+
+| numbered
+`[Name Body]` is an expression.  Here `Name` is the name of
+the expression, e.g., `i`, `b`, `link`, `image`, and `Body` is any
+expression, e.g., plain text.
+
+| numbered
+A seqeunce of experessions separated by spaces is an expression
+
+
+Orindary blocks have the form
+
+|| code
+| block-name
+expression
+
+Verbatim blocks have the form
+
+|| code
+|| block-name
+"""
+
+
+welcome2 =
+    """
 
  | title
  Welcome!
