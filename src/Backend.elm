@@ -463,7 +463,9 @@ searchForUserDocuments maybeUsername key model =
                 |> List.filter (\( dig, _ ) -> String.contains (String.toLower key) dig)
                 |> List.map (\( _, id ) -> id)
     in
-    List.foldl (\id acc -> Dict.get id model.documentDict :: acc) [] ids |> Maybe.Extra.values
+    List.foldl (\id acc -> Dict.get id model.documentDict :: acc) [] ids
+        |> Maybe.Extra.values
+        |> List.filter (\doc -> doc.author == maybeUsername)
 
 
 searchForDocuments : String -> Model -> List Document.Document
