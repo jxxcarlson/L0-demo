@@ -2,6 +2,7 @@ module View.Data exposing (welcome)
 
 
 welcome =
+    """
  | title
  Welcome!
 
