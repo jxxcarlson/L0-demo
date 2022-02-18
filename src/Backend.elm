@@ -222,6 +222,7 @@ updateFromFrontend sessionId clientId msg model =
                         ( model
                         , Cmd.batch
                             [ sendToFrontend clientId (SendDocument ReadOnly document)
+                            , sendToFrontend clientId (SetShowEditor True)
                             , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ document.publicId ++ ", id = " ++ document.id))
                             ]
                         )
@@ -232,6 +233,26 @@ updateFromFrontend sessionId clientId msg model =
                             [ sendToFrontend clientId (SendMessage "Sorry, that document is not public")
                             ]
                         )
+
+        GetDocumentByPublicId publicId ->
+            case Dict.get publicId model.publicIdDict of
+                Nothing ->
+                    ( model, sendToFrontend clientId (SendMessage "GetDocumentByPublicId, No docId for that publicId") )
+
+                Just docId ->
+                    case Dict.get docId model.documentDict of
+                        Nothing ->
+                            ( model, sendToFrontend clientId (SendMessage "No document for that docId") )
+
+                        Just doc ->
+                            ( model
+                            , Cmd.batch
+                                [ sendToFrontend clientId (SendMessage "Public document received")
+                                , sendToFrontend clientId (SendDocument CanEdit doc)
+                                , sendToFrontend clientId (SetShowEditor True)
+                                , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id))
+                                ]
+                            )
 
         GetDocumentByAuthorId authorId ->
             case Dict.get authorId model.authorIdDict of
@@ -251,26 +272,6 @@ updateFromFrontend sessionId clientId msg model =
                             ( model
                             , Cmd.batch
                                 [ sendToFrontend clientId (SendDocument CanEdit doc)
-                                , sendToFrontend clientId (SetShowEditor True)
-                                , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id))
-                                ]
-                            )
-
-        GetDocumentByPublicId publicId ->
-            case Dict.get publicId model.publicIdDict of
-                Nothing ->
-                    ( model, sendToFrontend clientId (SendMessage "GetDocumentByPublicId, No docId for that publicId") )
-
-                Just docId ->
-                    case Dict.get docId model.documentDict of
-                        Nothing ->
-                            ( model, sendToFrontend clientId (SendMessage "No document for that docId") )
-
-                        Just doc ->
-                            ( model
-                            , Cmd.batch
-                                [ sendToFrontend clientId (SendMessage "Public document received")
-                                , sendToFrontend clientId (SendDocument CanEdit doc)
                                 , sendToFrontend clientId (SetShowEditor True)
                                 , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id))
                                 ]
