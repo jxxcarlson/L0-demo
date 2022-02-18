@@ -221,9 +221,12 @@ updateFromFrontend sessionId clientId msg model =
                     if document.public then
                         ( model
                         , Cmd.batch
-                            [ sendToFrontend clientId (SendDocument ReadOnly document)
+                            [ -- sendToFrontend clientId (SendDocument ReadOnly document)
+                              sendToFrontend clientId (SendDocument CanEdit document)
                             , sendToFrontend clientId (SetShowEditor True)
-                            , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ document.publicId ++ ", id = " ++ document.id))
+                            , sendToFrontend clientId (SendMessage "Public document received")
+
+                            -- , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ document.publicId ++ ", id = " ++ document.id))
                             ]
                         )
 
