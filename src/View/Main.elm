@@ -192,7 +192,7 @@ viewMydocs model deltaH =
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> Time.posixToMillis |> String.fromInt
+                    \doc -> doc.modified |> Time.posixToMillis |> (\x -> -x) |> String.fromInt
 
         docs =
             List.sortBy sorter model.documents
