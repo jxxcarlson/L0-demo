@@ -725,30 +725,37 @@ save s =
 
 
 updateDoc model str =
-    case model.currentDocument of
-        Nothing ->
+    case ( model.currentDocument, model.currentUser ) of
+        ( Nothing, _ ) ->
             ( model, Cmd.none )
 
-        Just doc ->
-            let
-                newTitle =
-                    Abstract.getBlockContents "title" doc.content
+        ( _, Nothing ) ->
+            ( model, Cmd.none )
 
-                newDocument =
-                    { doc | content = str, title = newTitle }
+        ( Just doc, Just user ) ->
+            if user.username /= doc.author then
+                ( model, Cmd.none )
 
-                documents =
-                    List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
-            in
-            ( { model
-                | currentDocument = Just newDocument
+            else
+                let
+                    newTitle =
+                        Abstract.getBlockContents "title" doc.content
 
-                --, parseData = parseData
-                , counter = model.counter + 1
-                , documents = documents
-              }
-            , sendToBackend (SaveDocument model.currentUser newDocument)
-            )
+                    newDocument =
+                        { doc | content = str, title = newTitle }
+
+                    documents =
+                        List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
+                in
+                ( { model
+                    | currentDocument = Just newDocument
+
+                    --, parseData = parseData
+                    , counter = model.counter + 1
+                    , documents = documents
+                  }
+                , sendToBackend (SaveDocument model.currentUser newDocument)
+                )
 
 
 changePrintingState printingState doc =
