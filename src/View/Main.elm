@@ -168,7 +168,8 @@ viewRenderedTextOnly model =
             , E.row [ E.spacing 12 ]
                 [ viewRenderedContainer model
                 , E.column [ E.spacing 8 ]
-                    [ viewMydocs model deltaH
+                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent, Button.setSortModeAlpha ]
+                    , viewMydocs model deltaH
                     , viewPublicDocs model deltaH
                     ]
                 ]
@@ -195,7 +196,7 @@ viewMydocs model deltaH =
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> (\m -> maxInt - Time.posixToMillis m) |> String.fromInt
+                    \doc -> doc.modified |> (\m -> Time.posixToMillis m) |> String.fromInt
 
         docs =
             List.sortBy sorter model.documents
@@ -440,7 +441,7 @@ viewPublicDocuments model =
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> (\m -> maxInt - Time.posixToMillis m) |> String.fromInt
+                    \doc -> doc.modified |> (\m -> Time.posixToMillis m) |> String.fromInt
     in
     viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy sorter model.publicDocuments)
 

@@ -208,7 +208,7 @@ updateFromFrontend sessionId clientId msg model =
                     Abstract.getBlockContents "title" document.content
 
                 documentDict =
-                    Dict.insert document.id { document | title = title } model.documentDict
+                    Dict.insert document.id { document | title = title, modified = model.currentTime } model.documentDict
             in
             ( { model | documentDict = documentDict }, Cmd.none )
 
