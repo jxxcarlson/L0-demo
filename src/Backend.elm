@@ -465,7 +465,7 @@ searchForUserDocuments maybeUsername key model =
     in
     List.foldl (\id acc -> Dict.get id model.documentDict :: acc) [] ids
         |> Maybe.Extra.values
-        |> List.filter (\doc -> doc.author == maybeUsername)
+        |> List.filter (\doc -> doc.author /= Just "" && doc.author == maybeUsername)
 
 
 searchForDocuments : String -> Model -> List Document.Document
