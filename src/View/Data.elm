@@ -2,79 +2,61 @@ module View.Data exposing (welcome)
 
 
 welcome =
-    """
+ | title
+ Welcome!
+
+ This is a demo app for the markup language L0.
+
+ [i To see what
+ you can do with it, compare the left and right windows (source
+ and rendered text)].
+
+ [i [blue [b You can try out L0 now: just begin typing in the
+ left window.  Don't worry — your edits won't be saved, since
+ you don't own this document.]]]
+
+ A few examples:
 
 
-| title
-The L0 Markup Language
+ 1. A link: [link New York Times https://nytimes.com]
 
-| makeTableOfContents
+ 2. An image
+  [image https://i.stack.imgur.com/Rr6Xg.jpg]
 
+ 3. Some math: Pythagoras sez $a^2 + b^2 = c^2$.  In class we
+ learned that
 
-| heading 1
-Welcome
+ $$
+ \\int x^n dx = \\frac{1}{n+1}
+ $$
 
-This is a demo app for the markup language L0.  [i To see what
-you can do, compare the left and right windows] (source
-and rendered text).
+ 4. Some code: `a[0] := a[0] + 1`.  A block of code:
 
-[i [blue You can try out L0 now: just begin typing in the editor (left window). Your edits are saved ony in documents that
-you own or share.]]
+ || code
+ >>> for i in range(1,5):
+ ...   print(i, i*i)
+ ...
+ 1 1
+ 2 4
+ 3 9
+ 4 16
 
-[b Notes:] [ilink L0 Language id-wm152-fw616] | [ilink Using this app id-xi165-kh517]
-
-| heading 1
-Examples
-
-[b Basic formatting.]
-[i Italic text]; (b) some [b bold text]; (c) [b [i bold-italic text]]; (d) [blue [b [i blue bold-italic text]]]
-
-
-[b Links.] [link New York Times (external) https://nytimes.com],  [ilink "Surrealism" (doc in this app) id-xh164-mv973]
+ [vskip ]
 
 
+ [b More info:]
 
-[b Images.] [image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg [caption Himalayan bird]]
+ | item
+ [ilink L0 Examples  id-na181-oc100]
 
-[b Itemized lists]
+ | item
+ [ilink About the L0 Language id-wm152-fw616]
 
-| item
-Bread
-
-| item
-Milk
-
-| item
-Grape jelly
+ | item
+ [ilink Using this app id-xi165-kh517]
 
 
-| heading 2
-Math
 
-An inline formula: $a^2 + b^2 = c^2$
 
-A displayed formula:
-
-$$
-\\int_0^1 x^n dx = \\frac{1}{n+1}
-$$
-
-A theorem:
-
-| theorem
-There are infinitely many primes $p \\equiv 1\\ mod\\ 4$.
-
-| heading 2
-Code
-
-This is inline code: `a[0] = 1`.  And this is block code:
-
-|| code
-insertInList : a -> List a -> List a
-insertInList a list =
-    if List.Extra.notMember a list then
-        a :: list
-    else
-        list
- 
+  
  """
