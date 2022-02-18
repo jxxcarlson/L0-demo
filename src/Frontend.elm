@@ -237,7 +237,7 @@ update msg model =
                 , inputSearchKey = ""
                 , inputUsername = ""
                 , inputPassword = ""
-                , showEditor = False
+                , showEditor = True
               }
             , -- Cmd.none
               Nav.pushUrl model.key "/"

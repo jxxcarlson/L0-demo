@@ -77,14 +77,25 @@ viewAdmin model =
 
 viewEditorAndRenderedText : Model -> Element FrontendMsg
 viewEditorAndRenderedText model =
+    let
+        deltaH =
+            --case model.currentUser of
+            --    Nothing ->
+            --        110
+            --
+            --    Just _ ->
+            (appHeight_ model - 100) // 2 + 110
+    in
     E.column (mainColumnStyle model)
         [ E.column [ E.spacing 12, E.centerX, E.width (E.px <| appWidth model.windowWidth), E.height (E.px (appHeight_ model)) ]
             [ header model (E.px <| appWidth model.windowWidth)
             , E.row [ E.spacing 12 ]
-                [ -- viewEditor model (panelWidth_ model.windowWidth)
-                  editor_ model
+                [ editor_ model
                 , viewRenderedForEditor model (panelWidth_ model.windowWidth)
-                , viewMydocs model 110
+                , E.column [ E.spacing 8 ]
+                    [ viewMydocs model deltaH
+                    , viewPublicDocs model deltaH
+                    ]
                 ]
             , footer model (appWidth model.windowWidth)
             ]
@@ -171,7 +182,7 @@ viewRenderedTextOnly model =
                 [ viewRenderedContainer model
                 , E.column [ E.spacing 8 ]
                     [ viewMydocs model deltaH
-                    , viewZipdocs model deltaH
+                    , viewPublicDocs model deltaH
                     ]
                 ]
             , footer model (smallHeaderWidth model.windowWidth)
@@ -213,7 +224,7 @@ viewDocumentsInIndex docPermissions currentDocument docs =
     List.map (Button.setDocumentAsCurrent docPermissions currentDocument) docs
 
 
-viewZipdocs model deltaH =
+viewPublicDocs model deltaH =
     E.column
         [ E.width (E.px <| indexWidth model.windowWidth)
         , E.height (E.px (appHeight_ model - deltaH))
