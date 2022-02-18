@@ -733,7 +733,7 @@ updateDoc model str =
             ( model, Cmd.none )
 
         ( Just doc, Just user ) ->
-            if user.username /= doc.author then
+            if Just user.username /= doc.author then
                 ( model, Cmd.none )
 
             else
