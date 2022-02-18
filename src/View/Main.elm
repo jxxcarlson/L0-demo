@@ -186,13 +186,16 @@ viewRenderedContainer model =
 viewMydocs : Model -> Int -> Element FrontendMsg
 viewMydocs model deltaH =
     let
+        maxInt =
+            2 ^ 31 - 1
+
         sorter =
             case model.sortMode of
                 SortAlphabetically ->
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> Time.posixToMillis |> (\x -> -x) |> String.fromInt
+                    \doc -> doc.modified |> (\m -> maxInt - Time.posixToMillis m) |> String.fromInt
 
         docs =
             List.sortBy sorter model.documents
@@ -428,13 +431,16 @@ editorRenderSettings w =
 viewPublicDocuments : Model -> List (Element FrontendMsg)
 viewPublicDocuments model =
     let
+        maxInt =
+            2 ^ 31 - 1
+
         sorter =
             case model.sortMode of
                 SortAlphabetically ->
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> Time.posixToMillis |> String.fromInt
+                    \doc -> doc.modified |> (\m -> maxInt - Time.posixToMillis m) |> String.fromInt
     in
     viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy sorter model.publicDocuments)
 
