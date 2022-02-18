@@ -269,7 +269,8 @@ updateFromFrontend sessionId clientId msg model =
                         Just doc ->
                             ( model
                             , Cmd.batch
-                                [ sendToFrontend clientId (SendDocument ReadOnly doc)
+                                [ sendToFrontend clientId (SendMessage "Public document received")
+                                , sendToFrontend clientId (SendDocument CanEdit doc)
                                 , sendToFrontend clientId (SetShowEditor True)
                                 , sendToFrontend clientId (SendMessage (Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id))
                                 ]
