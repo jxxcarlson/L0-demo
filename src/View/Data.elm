@@ -23,6 +23,8 @@ e.g., to make [b [i bold-italic text]].
 
 You can make links: [link New York Times https://nytimes.com]
 
+As well as links to public docs on this site: [ilink Surrealism id-xh164-mv973]
+
 Also images: [image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg [caption Himalayan bird]]
 
 Itemized lists:
@@ -52,6 +54,7 @@ A theorem:
 There are infinitely many primes $p \\equiv 1\\ mod\\ 4$.
 
 
+
 [vskip]
 
 
@@ -79,7 +82,7 @@ expression, e.g., plain text.
 A seqeunce of experessions separated by spaces is an expression
 
 
-Orindary blocks have the form
+Ordinary blocks have the form
 
 || code
 | block-name
