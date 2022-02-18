@@ -127,7 +127,7 @@ blockDict =
 verbatimDict : Dict String (Int -> Settings -> List String -> String -> String -> Element L0Msg)
 verbatimDict =
     Dict.fromList
-        [ ( "math", renderDisplayMath )
+        [ ( "math", renderDisplayMath "$$" )
         , ( "equation", equation )
         , ( "aligned", aligned )
         , ( "code", renderCode )
@@ -137,7 +137,7 @@ verbatimDict =
 equation : Int -> Settings -> List String -> String -> String -> Element L0Msg
 equation count settings args id str =
     Element.row [ Element.width (Element.px settings.width) ]
-        [ Element.el [ Element.centerX ] (renderDisplayMath count settings args id str)
+        [ Element.el [ Element.centerX ] (renderDisplayMath "|| equation" count settings args id str)
         , Element.el [ Element.alignRight, Font.size 12, equationLabelPadding ] (Element.text <| "(" ++ Render.Utility.getArg "??" 0 args ++ ")")
         ]
 
@@ -149,7 +149,7 @@ aligned count settings args id str =
             "\\begin{aligned}\n" ++ str ++ "\n\\end{aligned}"
     in
     Element.row [ Element.width (Element.px settings.width) ]
-        [ Element.el [ Element.centerX ] (renderDisplayMath count settings args id content)
+        [ Element.el [ Element.centerX ] (renderDisplayMath "|| aligned" count settings args id content)
         , Element.el [ Element.alignRight, Font.size 12, equationLabelPadding ] (Element.text <| "(" ++ Render.Utility.getArg "??" 0 args ++ ")")
         ]
 
@@ -249,8 +249,8 @@ env name count settings args id exprs =
         ]
 
 
-renderDisplayMath : Int -> Settings -> List String -> String -> String -> Element L0Msg
-renderDisplayMath count settings args id str =
+renderDisplayMath : String -> Int -> Settings -> List String -> String -> String -> Element L0Msg
+renderDisplayMath prefix count settings args id str =
     let
         w =
             String.fromInt settings.width ++ "px"
@@ -271,13 +271,21 @@ renderDisplayMath count settings args id str =
         Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
             (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.paragraph [] [ Element.text "$", Element.el [ Font.color Render.Settings.redColor ] (Element.text " another $?") ] ])
 
-    else if lastLine == Just "$$" then
+    else if lastLine == Just "$$" || lastLine == Just "end" then
         Element.column [ Events.onClick (SendId id) ]
-            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" lines) ]
+            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" (List.take (n - 1) lines)) ]
 
     else
+        let
+            suffix =
+                if prefix == "$$" then
+                    "$$"
+
+                else
+                    "end"
+        in
         Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
-            (List.map Element.text ("$$" :: List.take n lines) ++ [ Element.paragraph [] [ Element.el [ Font.color Render.Settings.redColor ] (Element.text "$$") ] ])
+            (List.map Element.text (prefix :: List.take n lines) ++ [ Element.paragraph [] [ Element.el [ Font.color Render.Settings.redColor ] (Element.text suffix) ] ])
 
 
 
