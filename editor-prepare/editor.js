@@ -8,10 +8,10 @@ import {EditorState,basicSetup} from "@codemirror/basic-setup"
 
 import {EditorView} from "@codemirror/view"
 
-const fixedHeightEditor = EditorView.theme({
-    "&": {height: "700px"   },
-    ".cm-scroller": {overflow: "auto"}
-  })
+//const fixedHeightEditor = EditorView.theme({
+//    "&": {height: "700px"   },
+//    ".cm-scroller": {overflow: "auto"}
+//  })
 
 let myTheme = EditorView.theme({
 
@@ -42,6 +42,8 @@ let myTheme = EditorView.theme({
 }, {dark: true})
 
 
+
+
 class CodemirrorEditor extends HTMLElement {
 
     static get observedAttributes() { return ['selection', 'linenumber', 'text']; }
@@ -63,6 +65,12 @@ class CodemirrorEditor extends HTMLElement {
                 editor.dom.dispatchEvent(event);
              }
 
+            let panelTheme = EditorView.theme({
+                                '&': { maxHeight: '100%' },
+                                '.cm-gutter,.cm-content': { minHeight: '100px' },
+                                '.cm-scroller': { overflow: 'auto' },
+                              })
+
            // Set up editor if need be and point this.editor to it
             if (this.editor) {
                     editor = this.editor
@@ -71,8 +79,9 @@ class CodemirrorEditor extends HTMLElement {
                     let editor = new EditorView({
                                state: EditorState.create({
                                  extensions: [basicSetup
-                                   , fixedHeightEditor
+                                   //, fixedHeightEditor
                                    , myTheme
+                                   , panelTheme
                                    , EditorView.lineWrapping
                                    // Below: send updated text from CM to Elm
                                    , EditorView.updateListener.of((v)=> {
