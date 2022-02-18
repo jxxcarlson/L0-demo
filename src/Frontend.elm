@@ -474,6 +474,7 @@ update msg model =
                 , tableOfContents = Compiler.ASTTools.tableOfContents syntaxTree
                 , message = String.join ", " messages
                 , debounce = debounce
+                , counter = model.counter + 1
               }
             , cmd
             )

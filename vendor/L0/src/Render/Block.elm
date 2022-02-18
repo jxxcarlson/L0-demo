@@ -267,19 +267,21 @@ renderDisplayMath count settings args id str =
         lastLine =
             List.Extra.getAt (n - 1) allLines
     in
-    if lastLine == Just "$$" then
-        Element.column [ Events.onClick (SendId id), Element.width (Element.px settings.width), Element.centerX ]
-            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" lines) ]
-
-    else if lastLine == Just "$" then
+    if lastLine == Just "$" then
         Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
-            (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.paragraph [] [ Element.text "$", Element.el [ Font.color Render.Settings.redColor ] (Element.text " - another $?") ] ])
+            (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.paragraph [] [ Element.text "$", Element.el [ Font.color Render.Settings.redColor ] (Element.text " another $?") ] ])
+
+    else if lastLine == Just "$$" then
+        Element.column [ Events.onClick (SendId id) ]
+            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" lines) ]
 
     else
-        Element.column [ Events.onClick (SendId id) ]
-            -- Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
-            -- (List.map Element.text ("$$" :: lines) ++ [ Element.el [ Font.color Render.Settings.redColor ] (Element.text "$$??") ])
-            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" lines) ]
+        Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
+            (List.map Element.text ("$$" :: List.take n lines) ++ [ Element.paragraph [] [ Element.el [ Font.color Render.Settings.redColor ] (Element.text "$$") ] ])
+
+
+
+-- [ Element.text "hello" ]
 
 
 renderCode : Int -> Settings -> List String -> String -> String -> Element L0Msg
