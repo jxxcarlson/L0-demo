@@ -59,7 +59,7 @@ passwordTemplate width_ default msg text =
 
 searchDocsInput : FrontendModel -> Element FrontendMsg
 searchDocsInput model =
-    inputFieldTemplate2 [ onEnter Search |> E.htmlAttribute ] E.fill "Search ..." InputSearchKey model.inputSearchKey
+    inputFieldTemplate2 [ onEnter Search |> E.htmlAttribute ] E.fill "Search for documents ..." InputSearchKey model.inputSearchKey
 
 
 usernameInput model =
