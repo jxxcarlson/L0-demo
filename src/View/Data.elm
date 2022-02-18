@@ -21,6 +21,7 @@ and rendered text).
 [i [blue You can try out L0 now: just begin typing in the editor (left window). Your edits are saved ony in documents that
 you own or share.]]
 
+[b Notes:] [ilink L0 Language id-wm152-fw616] | [ilink Using this app id-xi165-kh517]
 
 | heading 1
 Examples
@@ -74,13 +75,5 @@ insertInList a list =
         a :: list
     else
         list
-
-
-[vskip 50]
-
-
-[ilink Language note id-wm152-fw616]
-
-
  
  """
