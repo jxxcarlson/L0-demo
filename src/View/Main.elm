@@ -422,7 +422,7 @@ editorRenderSettings w =
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
 viewPublicDocuments model =
-    viewDocumentsInIndex ReadOnly model.currentDocument model.publicDocuments
+    viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy (\doc -> doc.title) model.publicDocuments)
 
 
 viewPublicDocument : DocumentLink -> Element FrontendMsg
