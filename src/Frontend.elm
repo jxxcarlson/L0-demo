@@ -823,7 +823,7 @@ updateFromBackend msg model =
                 , currentDocument = Just doc
                 , documents = documents
               }
-            , Cmd.none
+            , Frontend.Cmd.setInitialEditorContent
             )
 
         GotPublicDocuments publicDocuments ->
