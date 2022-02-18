@@ -12,15 +12,11 @@ import Html exposing (Html)
 import Html.Attributes as HtmlAttr exposing (attribute)
 import Html.Events
 import Json.Decode
-import L0
-import Parser.Block exposing (ExpressionBlock(..))
-import Parser.Expr exposing (Expr)
-import Render.Elm
 import Render.L0
-import Render.Msg
 import Render.Settings
 import Render.TOC
 import String.Extra
+import Time
 import Types exposing (..)
 import View.Button as Button
 import View.Color as Color
@@ -79,7 +75,7 @@ viewEditorAndRenderedText : Model -> Element FrontendMsg
 viewEditorAndRenderedText model =
     let
         deltaH =
-            (appHeight_ model - 100) // 2 + 110
+            (appHeight_ model - 100) // 2 + 130
     in
     E.column (mainColumnStyle model)
         [ E.column [ E.spacing 12, E.centerX, E.width (E.px <| appWidth model.windowWidth), E.height (E.px (appHeight_ model)) ]
@@ -88,7 +84,8 @@ viewEditorAndRenderedText model =
                 [ editor_ model
                 , viewRenderedForEditor model (panelWidth_ model.windowWidth)
                 , E.column [ E.spacing 8 ]
-                    [ viewMydocs model deltaH
+                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent, Button.setSortModeAlpha ]
+                    , viewMydocs model deltaH
                     , viewPublicDocs model deltaH
                     ]
                 ]
@@ -163,7 +160,7 @@ viewRenderedTextOnly : Model -> Element FrontendMsg
 viewRenderedTextOnly model =
     let
         deltaH =
-            (appHeight_ model - 100) // 2 + 110
+            (appHeight_ model - 100) // 2 + 130
     in
     E.column (mainColumnStyle model)
         [ E.column [ E.centerX, E.spacing 12, E.width (E.px <| smallAppWidth model.windowWidth), E.height (E.px (appHeight_ model)) ]
@@ -189,8 +186,16 @@ viewRenderedContainer model =
 viewMydocs : Model -> Int -> Element FrontendMsg
 viewMydocs model deltaH =
     let
+        sorter =
+            case model.sortMode of
+                SortAlphabetically ->
+                    \doc -> softTruncate softTruncateLimit doc.title
+
+                SortByMostRecent ->
+                    \doc -> doc.modified |> Time.posixToMillis |> String.fromInt
+
         docs =
-            List.sortBy (\doc -> softTruncate softTruncateLimit doc.title) model.documents
+            List.sortBy sorter model.documents
     in
     E.column
         [ E.width (E.px <| indexWidth model.windowWidth)
@@ -422,7 +427,16 @@ editorRenderSettings w =
 
 viewPublicDocuments : Model -> List (Element FrontendMsg)
 viewPublicDocuments model =
-    viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy (\doc -> doc.title) model.publicDocuments)
+    let
+        sorter =
+            case model.sortMode of
+                SortAlphabetically ->
+                    \doc -> softTruncate softTruncateLimit doc.title
+
+                SortByMostRecent ->
+                    \doc -> doc.modified |> Time.posixToMillis |> String.fromInt
+    in
+    viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy sorter model.publicDocuments)
 
 
 viewPublicDocument : DocumentLink -> Element FrontendMsg

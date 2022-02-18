@@ -121,6 +121,7 @@ init url key =
       , documentDeleteState = WaitingForDeleteAction
       , publicDocuments = []
       , deleteDocumentState = WaitingForDeleteAction
+      , sortMode = SortAlphabetically
       }
     , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments, Frontend.Cmd.setInitialEditorContent ]
     )
@@ -547,6 +548,9 @@ update msg model =
                     List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
             in
             ( { model | documents = documents, currentDocument = Just newDocument }, sendToBackend (SaveDocument model.currentUser newDocument) )
+
+        SetSortMode sortMode ->
+            ( { model | sortMode = sortMode }, Cmd.none )
 
         ExportToMarkdown ->
             let

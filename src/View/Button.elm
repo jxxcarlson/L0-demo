@@ -18,6 +18,8 @@ module View.Button exposing
     , runSpecial
     , setDocumentAsCurrent
     , setDocumentInPhoneAsCurrent
+    , setSortModeAlpha
+    , setSortModeMostRecent
     , showTOCInPhone
     , signIn
     , signOut
@@ -172,6 +174,20 @@ signOut model =
 getDocumentByPrivateId : Element FrontendMsg
 getDocumentByPrivateId =
     buttonTemplate [] AskForDocumentByAuthorId "Get document"
+
+
+setSortModeAlpha : Element FrontendMsg
+setSortModeAlpha =
+    buttonTemplate [] (SetSortMode SortAlphabetically) "Alphabetically"
+
+
+setSortModeMostRecent : Element FrontendMsg
+setSortModeMostRecent =
+    buttonTemplate [] (SetSortMode SortByMostRecent) "Most recent"
+
+
+
+-- EXPORT
 
 
 exportToMarkown : Element FrontendMsg

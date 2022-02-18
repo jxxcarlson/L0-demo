@@ -74,7 +74,13 @@ type alias FrontendModel =
     , counter : Int
     , publicDocuments : List Document
     , deleteDocumentState : DocumentDeleteState
+    , sortMode : SortMode
     }
+
+
+type SortMode
+    = SortAlphabetically
+    | SortByMostRecent
 
 
 type DocLoaded
@@ -232,6 +238,7 @@ type FrontendMsg
     | DeleteDocument
     | SetDeleteDocumentState DocumentDeleteState
     | Render Render.Msg.L0Msg
+    | SetSortMode SortMode
       -- Export
     | ExportToMarkdown
     | ExportToLaTeX
