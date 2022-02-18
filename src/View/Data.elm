@@ -57,6 +57,7 @@ A displayed formula:
 
 $$
 \\int_0^1 x^n dx = \\frac{1}{n+1}
+$$
 
 A theorem:
 
