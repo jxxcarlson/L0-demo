@@ -79,11 +79,6 @@ viewEditorAndRenderedText : Model -> Element FrontendMsg
 viewEditorAndRenderedText model =
     let
         deltaH =
-            --case model.currentUser of
-            --    Nothing ->
-            --        110
-            --
-            --    Just _ ->
             (appHeight_ model - 100) // 2 + 110
     in
     E.column (mainColumnStyle model)
@@ -168,12 +163,7 @@ viewRenderedTextOnly : Model -> Element FrontendMsg
 viewRenderedTextOnly model =
     let
         deltaH =
-            case model.currentUser of
-                Nothing ->
-                    110
-
-                Just _ ->
-                    (appHeight_ model - 100) // 2 + 110
+            (appHeight_ model - 100) // 2 + 110
     in
     E.column (mainColumnStyle model)
         [ E.column [ E.centerX, E.spacing 12, E.width (E.px <| smallAppWidth model.windowWidth), E.height (E.px (appHeight_ model)) ]
