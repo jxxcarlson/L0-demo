@@ -286,7 +286,7 @@ header model width_ =
         , Button.deleteDocument model
         , Button.cancelDeleteDocument model
         , View.Utility.showIf model.showEditor Button.closeEditor
-        , View.Utility.hideIf (model.currentUser == Nothing || model.permissions == ReadOnly || model.showEditor) Button.openEditor
+        , View.Utility.hideIf model.showEditor Button.openEditor
         , View.Utility.showIf model.showEditor (Button.togglePublic model.currentDocument)
 
         -- , Button.l1LanguageButton model
