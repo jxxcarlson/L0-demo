@@ -89,9 +89,8 @@ deleteDocument model =
     in
     if userName /= Nothing && authorName == userName then
         deleteDocument_ model
-
-    else if userName == Just "jxxcarlson" then
-        deleteDocument_ model
+        --else if userName == Just "jxxcarlson" then
+        --    deleteDocument_ model
 
     else
         E.none
