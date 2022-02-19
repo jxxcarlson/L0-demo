@@ -196,7 +196,7 @@ viewMydocs model deltaH =
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> (\m -> Time.posixToMillis m) |> String.fromInt
+                    \doc -> doc.modified |> (\m -> -(Time.posixToMillis m)) |> String.fromInt
 
         docs =
             List.sortBy sorter model.documents
@@ -441,7 +441,7 @@ viewPublicDocuments model =
                     \doc -> softTruncate softTruncateLimit doc.title
 
                 SortByMostRecent ->
-                    \doc -> doc.modified |> (\m -> Time.posixToMillis m) |> String.fromInt
+                    \doc -> doc.modified |> (\m -> -(Time.posixToMillis m)) |> String.fromInt
     in
     viewDocumentsInIndex ReadOnly model.currentDocument (List.sortBy sorter model.publicDocuments)
 
