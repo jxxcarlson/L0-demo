@@ -51,14 +51,16 @@ $$
 
 [b More info:]
 
-| item
+| numbered
 [ilink L0 Examples  id-na181-oc100]
 
-| item
+| numbered
 [ilink About the L0 Language id-wm152-fw616]
 
-| item
+| numbered
 [ilink Using this app id-xi165-kh517]
 
+| numbered
+[ilink Physics example id-gw139-di529]
 
  """
