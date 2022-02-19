@@ -8,10 +8,7 @@ import {EditorState,basicSetup} from "@codemirror/basic-setup"
 
 import {EditorView} from "@codemirror/view"
 
-//const fixedHeightEditor = EditorView.theme({
-//    "&": {height: "700px"   },
-//    ".cm-scroller": {overflow: "auto"}
-//  })
+// import {search} from "@codemirror/search"
 
 let myTheme = EditorView.theme({
 
@@ -30,14 +27,6 @@ let myTheme = EditorView.theme({
     border: "none"
   },
   "&.cm-matching-bracket": { background: "#f70a0a" }  // not working
-//  "&.cm-editor": {
-//      resize: both,
-//      height: auto,
-//      maxheight: "200px"
-//    }
-
-
-
 
 }, {dark: true})
 
@@ -79,11 +68,11 @@ class CodemirrorEditor extends HTMLElement {
                     let editor = new EditorView({
                                state: EditorState.create({
                                  extensions: [basicSetup
-                                   //, fixedHeightEditor
                                    , myTheme
+                                   //, search({top: true})
                                    , panelTheme
-                                   //, EditorView.search({top:true})
                                    , EditorView.lineWrapping
+                                   , search({top: true})
                                    // Below: send updated text from CM to Elm
                                    , EditorView.updateListener.of((v)=> {
                                        if(v.docChanged) {

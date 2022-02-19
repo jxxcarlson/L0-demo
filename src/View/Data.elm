@@ -11,7 +11,10 @@ This is a demo app for the markup language L0.
 
 [i To see what
 you can do with L0, compare the left and right windows (source
-and rendered text)].
+and rendered text)].  Clicking on text on the right brings the
+corresponding text on the left into view.  For the reverse,
+highlight text on the left and click the [b[blue Sync]] button,
+lower left.
 
 You can also click on the titles in [b [blue Published docs]] to see what has been written already in L0.
 
