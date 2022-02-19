@@ -121,7 +121,7 @@ init url key =
       , documentDeleteState = WaitingForDeleteAction
       , publicDocuments = []
       , deleteDocumentState = WaitingForDeleteAction
-      , sortMode = SortAlphabetically
+      , sortMode = SortByMostRecent
       }
     , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments, Frontend.Cmd.setInitialEditorContent ]
     )
