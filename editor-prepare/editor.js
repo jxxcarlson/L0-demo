@@ -72,7 +72,7 @@ class CodemirrorEditor extends HTMLElement {
                                    //, search({top: true})
                                    , panelTheme
                                    , EditorView.lineWrapping
-                                   , search({top: true})
+                                   // , search({top: true})
                                    // Below: send updated text from CM to Elm
                                    , EditorView.updateListener.of((v)=> {
                                        if(v.docChanged) {
