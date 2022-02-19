@@ -9,7 +9,7 @@ module Config exposing
 
 
 appName =
-    "L0 Lab Demo"
+    "L0 Lab"
 
 
 appUrl =
