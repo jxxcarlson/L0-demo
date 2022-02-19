@@ -16,7 +16,9 @@ and rendered text)].
 You can also click on the titles in [b [blue Published docs]] to see what has been written already in L0.
 
 
-[i [blue [b Try out L0 now: just begin typing in the left window.  Don't worry — your edits won't be saved, since you don't own this document.]]]
+[i [blue [b You can try out L0 now: just begin typing in the left window.  Don't worry — your edits won't be saved, since you don't own this document.]]]
+
+[ilink L0 Examples  id-na181-oc100] | [ilink About the L0 Language id-wm152-fw616] | [ilink Using this app id-xi165-kh517] | [ilink Physics example id-gw139-di529]
 
 [vskip]
 
@@ -49,18 +51,8 @@ $$
 [vskip ]
 
 
-[b More info:]
 
-| numbered
-[ilink L0 Examples  id-na181-oc100]
 
-| numbered
-[ilink About the L0 Language id-wm152-fw616]
 
-| numbered
-[ilink Using this app id-xi165-kh517]
-
-| numbered
-[ilink Physics example id-gw139-di529]
 
  """
