@@ -298,10 +298,22 @@ updateFromFrontend sessionId clientId msg model =
             ( model, sendToFrontend clientId (GotPublicDocuments (searchForPublicDocuments "" model)) )
 
         StealDocument user id ->
-            stealId user id model |> Cmd.Extra.withNoCmd
+            -- stealId user id model |> Cmd.Extra.withNoCmd
+            let
+                badDocs =
+                    getBadDocuments model
+
+                newModel =
+                    List.foldl (\doc m -> Backend.Update.deleteDocument doc m |> Tuple.first) model (badDocs |> List.map Tuple.second)
+            in
+            ( newModel, sendToFrontend clientId (SendMessage ("Bad docs: " ++ String.fromInt (List.length badDocs))) )
 
         DeleteDocumentBE doc ->
             Backend.Update.deleteDocument doc model
+
+
+getBadDocuments model =
+    model.documentDict |> Dict.toList |> List.filter (\( id, doc ) -> doc.title == "")
 
 
 makeLink : String -> DocumentDict -> AbstractDict -> Maybe DocumentLink
