@@ -193,7 +193,7 @@ viewMydocs model deltaH =
                     List.sortBy (\doc -> softTruncate softTruncateLimit doc.title)
 
                 SortByMostRecent ->
-                    List.sortWith (\a b -> compare (Time.posixToMillis a.modified) (Time.posixToMillis b.modified))
+                    List.sortWith (\a b -> compare (Time.posixToMillis b.modified) (Time.posixToMillis a.modified))
 
         docs =
             sort model.documents
@@ -435,7 +435,7 @@ viewPublicDocuments model =
                     List.sortBy (\doc -> softTruncate softTruncateLimit doc.title)
 
                 SortByMostRecent ->
-                    List.sortWith (\a b -> compare (Time.posixToMillis a.modified) (Time.posixToMillis b.modified))
+                    List.sortWith (\a b -> compare (Time.posixToMillis b.modified) (Time.posixToMillis a.modified))
     in
     viewDocumentsInIndex ReadOnly model.currentDocument (sorter model.publicDocuments)
 
