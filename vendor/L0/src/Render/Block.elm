@@ -149,7 +149,7 @@ aligned count settings args id str =
             "\\begin{aligned}\n" ++ str ++ "\n\\end{aligned}"
     in
     Element.row [ Element.width (Element.px settings.width) ]
-        [ Element.el [ Element.centerX ] (renderDisplayMath "|| aligned" count settings args id content)
+        [ Element.el [ Element.centerX ] (renderDisplayMath "|| aligned" count settings args id str)
         , Element.el [ Element.alignRight, Font.size 12, equationLabelPadding ] (Element.text <| "(" ++ Render.Utility.getArg "??" 0 args ++ ")")
         ]
 
@@ -272,8 +272,19 @@ renderDisplayMath prefix count settings args id str =
             (List.map Element.text ("$$" :: List.take (n - 1) lines) ++ [ Element.paragraph [] [ Element.text "$", Element.el [ Font.color Render.Settings.redColor ] (Element.text " another $?") ] ])
 
     else if lastLine == Just "$$" || lastLine == Just "end" then
+        let
+            lines_ =
+                List.take (n - 1) lines
+
+            adjustedLines =
+                if prefix == "|| aligned" then
+                    "\\begin{aligned}" :: lines_ ++ [ "\\end{aligned}" ]
+
+                else
+                    lines_
+        in
         Element.column [ Events.onClick (SendId id) ]
-            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" (List.take (n - 1) lines)) ]
+            [ Render.Math.mathText count w "id" DisplayMathMode (String.join "\n" adjustedLines) ]
 
     else
         let
@@ -286,10 +297,6 @@ renderDisplayMath prefix count settings args id str =
         in
         Element.column [ Events.onClick (SendId id), Font.color Render.Settings.blueColor ]
             (List.map Element.text (prefix :: List.take n lines) ++ [ Element.paragraph [] [ Element.el [ Font.color Render.Settings.redColor ] (Element.text suffix) ] ])
-
-
-
--- [ Element.text "hello" ]
 
 
 renderCode : Int -> Settings -> List String -> String -> String -> Element L0Msg
