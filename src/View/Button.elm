@@ -176,13 +176,31 @@ getDocumentByPrivateId =
     buttonTemplate [] AskForDocumentByAuthorId "Get document"
 
 
-setSortModeAlpha : Element FrontendMsg
-setSortModeAlpha =
-    buttonTemplate [] (SetSortMode SortAlphabetically) "Alphabetically"
+setSortModeAlpha : SortMode -> Element FrontendMsg
+setSortModeAlpha sortMode =
+    let
+        bg =
+            case sortMode of
+                SortAlphabetically ->
+                    Background.color (E.rgb 0.7 0 0)
+
+                SortByMostRecent ->
+                    Background.color (E.rgb 0 0 0)
+    in
+    buttonTemplate [ bg ] (SetSortMode SortAlphabetically) "Alphabetically"
 
 
-setSortModeMostRecent : Element FrontendMsg
-setSortModeMostRecent =
+setSortModeMostRecent : SortMode -> Element FrontendMsg
+setSortModeMostRecent sortMode =
+    let
+        bg =
+            case sortMode of
+                SortAlphabetically ->
+                    Background.color (E.rgb 0 0 0)
+
+                SortByMostRecent ->
+                    Background.color (E.rgb 0.7 0 0)
+    in
     buttonTemplate [] (SetSortMode SortByMostRecent) "Most recent"
 
 

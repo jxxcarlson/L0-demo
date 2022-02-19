@@ -84,7 +84,7 @@ viewEditorAndRenderedText model =
                 [ editor_ model
                 , viewRenderedForEditor model (panelWidth_ model.windowWidth)
                 , E.column [ E.spacing 8 ]
-                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent, Button.setSortModeAlpha ]
+                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent model.sortMode, Button.setSortModeAlpha model.sortMode ]
                     , viewMydocs model deltaH
                     , viewPublicDocs model deltaH
                     ]
@@ -168,7 +168,7 @@ viewRenderedTextOnly model =
             , E.row [ E.spacing 12 ]
                 [ viewRenderedContainer model
                 , E.column [ E.spacing 8 ]
-                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent, Button.setSortModeAlpha ]
+                    [ E.row [ E.spacing 12 ] [ Button.setSortModeMostRecent model.sortMode, Button.setSortModeAlpha model.sortMode ]
                     , viewMydocs model deltaH
                     , viewPublicDocs model deltaH
                     ]
