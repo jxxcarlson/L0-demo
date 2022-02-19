@@ -253,8 +253,17 @@ footer model width_ =
         -- , View.Utility.showIf (isAdmin model) Button.exportJson
         --, View.Utility.showIf (isAdmin model) Button.importJson
         -- , View.Utility.showIf (isAdmin model) (View.Input.specialInput model)
-        , messageRow model
+        , E.el [ E.width E.fill, rightPaddingFooter model.showEditor ] (messageRow model)
         ]
+
+
+rightPaddingFooter showEditor =
+    case showEditor of
+        True ->
+            E.paddingEach { left = 0, right = 22, top = 0, bottom = 0 }
+
+        False ->
+            E.paddingEach { left = 0, right = 0, top = 0, bottom = 0 }
 
 
 messageRowInset model =
@@ -294,8 +303,6 @@ header model width_ =
         , View.Utility.showIf model.showEditor Button.closeEditor
         , View.Utility.hideIf model.showEditor Button.openEditor
         , View.Utility.showIf model.showEditor (Button.togglePublic model.currentDocument)
-
-        -- , Button.l1LanguageButton model
         , View.Utility.showIf model.showEditor (wordCount model)
         , E.el [ Font.size 14, Font.color (E.rgb 0.9 0.9 0.9) ] (E.text (currentAuthor model.currentDocument))
         , View.Input.searchDocsInput model
@@ -305,8 +312,17 @@ header model width_ =
         , Button.signOut model
 
         -- , Button.help
-        , E.el [ E.alignRight ] (title Config.appName)
+        , E.el [ E.alignRight, rightPaddingHeader model.showEditor ] (title Config.appName)
         ]
+
+
+rightPaddingHeader showEditor =
+    case showEditor of
+        True ->
+            E.paddingEach { left = 0, right = 30, top = 0, bottom = 0 }
+
+        False ->
+            E.paddingEach { left = 0, right = 0, top = 0, bottom = 0 }
 
 
 currentAuthor : Maybe Document -> String
