@@ -4,14 +4,14 @@ module View.Data exposing (welcome)
 welcome =
     """
 
- | title
- Welcome!
+| title
+Welcome!
 
- This is a demo app for the markup language L0.
+This is a demo app for the markup language L0.
 
- [i To see what
- you can do with L0, compare the left and right windows (source
- and rendered text)].
+[i To see what
+you can do with L0, compare the left and right windows (source
+and rendered text)].
 
 You can also click on the titles in [b [blue Published docs]] to see what has been written already in L0.
 
@@ -26,10 +26,10 @@ A few examples:
 1. A link: [link New York Times https://nytimes.com]
 
 2. An image
-  [image https://i.stack.imgur.com/Rr6Xg.jpg]
+[image https://i.stack.imgur.com/Rr6Xg.jpg]
 
 3. Some math: Pythagoras sez $a^2 + b^2 = c^2$.  In class we
- learned that
+learned that
 
 $$
 \int x^n dx = \frac{1}{n+1}
