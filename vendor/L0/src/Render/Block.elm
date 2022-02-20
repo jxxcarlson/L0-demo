@@ -259,7 +259,7 @@ renderDisplayMath prefix count settings args id str =
             String.lines str
 
         lines =
-            String.lines str |> List.filter (\line -> not (String.left 2 line == "$$"))
+            String.lines str |> List.filter (\line -> not (String.left 2 line == "$$")) |> List.filter (\line -> not (String.left 6 line == "[label"))
 
         n =
             List.length allLines
