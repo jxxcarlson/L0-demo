@@ -761,14 +761,17 @@ updateDoc model str =
             else
                 let
                     provisionalTitle =
-                        Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
+                        Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast |> Debug.log "PROV TITLE"
 
                     ( safeContent, safeTitle ) =
                         if String.left 1 provisionalTitle == "|" then
                             ( String.replace "| title\n" "| title\n{untitled}\n\n" str, "{untitled}" )
 
                         else
-                            ( str, doc.title )
+                            ( str, provisionalTitle )
+
+                    _ =
+                        Debug.log "SAFE TITLE" safeTitle
 
                     newDocument =
                         { doc | content = safeContent, title = safeTitle }
@@ -778,8 +781,6 @@ updateDoc model str =
                 in
                 ( { model
                     | currentDocument = Just newDocument
-
-                    --, parseData = parseData
                     , counter = model.counter + 1
                     , documents = documents
                   }
