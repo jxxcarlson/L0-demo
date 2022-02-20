@@ -145,16 +145,13 @@ updateFromFrontend sessionId clientId msg model =
                         Just user ->
                             user.username ++ "-" ++ DateTimeUtility.toUtcSlug (String.left 1 publicIdTokenData.token) (String.slice 1 2 publicIdTokenData.token) model.currentTime
 
-                title =
-                    Abstract.getElement "title" doc_.content
-
                 doc =
                     { doc_
                         | id = "id-" ++ idTokenData.token
                         , publicId = humanFriendlyPublicId
                         , created = model.currentTime
                         , modified = model.currentTime
-                        , title = title
+                        , title = "New Document"
                     }
 
                 documentDict =

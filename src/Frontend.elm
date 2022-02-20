@@ -760,35 +760,18 @@ updateDoc model str =
 
             else
                 let
-                    newTitle =
-                        (let
-                            provisionalTitle =
-                                Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
+                    provisionalTitle =
+                        Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
 
-                            defaultTitle str_ =
-                                if String.left 1 str_ == "|" then
-                                    "[[untitled]]"
+                    ( safeContent, safeTitle ) =
+                        if String.left 1 provisionalTitle == "|" then
+                            ( String.replace "| title\n" "| title\n{untitled}\n\n" str, "{untitled}" )
 
-                                else
-                                    str_
-                         in
-                         case ( provisionalTitle, doc.title ) of
-                            ( "", "" ) ->
-                                "((untitled))"
-
-                            ( a, "" ) ->
-                                a |> defaultTitle
-
-                            ( "", b ) ->
-                                b |> defaultTitle
-
-                            ( _, _ ) ->
-                                provisionalTitle |> defaultTitle
-                        )
-                            |> Debug.log "NEW TITLE"
+                        else
+                            ( str, doc.title )
 
                     newDocument =
-                        { doc | content = str, title = newTitle }
+                        { doc | content = safeContent, title = safeTitle }
 
                     documents =
                         List.Extra.setIf (\d -> d.id == newDocument.id) newDocument model.documents
