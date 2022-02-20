@@ -124,8 +124,8 @@ init url key =
       , sortMode = SortByMostRecent
       }
     , Cmd.batch
-        [ Frontend.Cmd.setInitialEditorContent 400
-        , Frontend.Cmd.setupWindow
+        [ -- Frontend.Cmd.setInitialEditorContent 400
+          Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
         , sendToBackend (GetDocumentById "id-bs174-rz397")
@@ -526,7 +526,7 @@ update msg model =
                         , documents = List.filter (\d -> d.id /= doc.id) model.documents
                         , deleteDocumentState = WaitingForDeleteAction
                       }
-                    , sendToBackend (DeleteDocumentBE doc)
+                    , Cmd.batch [ sendToBackend (DeleteDocumentBE doc), sendToBackend (GetDocumentById "id-ik166-ha850") ]
                     )
 
         SetDocumentAsCurrent permissions doc ->
