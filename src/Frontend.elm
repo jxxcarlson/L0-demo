@@ -847,6 +847,7 @@ updateFromBackend msg model =
                 , showEditor = showEditor
                 , currentDocument = Just doc
                 , initialText = doc.content
+                , sourceText = doc.content
                 , documents = documents
               }
             , Frontend.Cmd.setInitialEditorContent
