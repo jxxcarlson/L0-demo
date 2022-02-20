@@ -20357,7 +20357,8 @@ window.initCodeMirror = function () {
         caretColor: "#0e9"
       },
       "&.cm-focused .cm-cursor": {
-        borderLeftColor: "#0e9"
+        borderLeftColor: "#0e9",
+        highlightColor: "#037ffc"
       },
       "&.cm-focused .cm-selectionBackground, ::selection": {
         backgroundColor: "#074"
