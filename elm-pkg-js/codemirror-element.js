@@ -20422,7 +20422,7 @@ window.initCodeMirror = function () {
                                            }
                                          })
                                        ]
-                                   , doc: "EMPTY\n1\n2\n3"
+                                   , doc: ""
                                    }),
                                    parent: document.getElementById("editor-here")
 
