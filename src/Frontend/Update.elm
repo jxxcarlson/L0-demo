@@ -31,16 +31,21 @@ newDocument model =
         emptyDoc =
             Document.empty
 
-        title =
-            "| title\nNew Document\n\n"
+        documentsCreatedCounter =
+            model.documentsCreatedCounter + 1
+
+        titleString =
+            "| title\nNew Document (" ++ String.fromInt documentsCreatedCounter ++ ")\n\n"
 
         doc =
             { emptyDoc
-                | content = title
+                | content = titleString
                 , author = Maybe.map .username model.currentUser
             }
     in
-    ( { model | showEditor = True, documents = model.documents, initialText = "??" }, Cmd.batch [ sendToBackend (CreateDocument model.currentUser doc) ] )
+    ( { model | showEditor = True, documentsCreatedCounter = documentsCreatedCounter }
+    , Cmd.batch [ sendToBackend (CreateDocument model.currentUser doc) ]
+    )
 
 
 updateCurrentDocument : Document -> FrontendModel -> FrontendModel

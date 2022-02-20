@@ -55,6 +55,7 @@ type alias FrontendModel =
 
     -- DOCUMENT
     , docLoaded : DocLoaded
+    , documentsCreatedCounter : Int
     , initialText : String
     , sourceText : String
     , ast : L0.SyntaxTree

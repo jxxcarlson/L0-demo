@@ -106,6 +106,7 @@ init url key =
       , lineNumber = 0
       , permissions = ReadOnly
       , initialText = ""
+      , documentsCreatedCounter = 1
       , sourceText = View.Data.welcome
       , ast = L0.parse View.Data.welcome |> Compiler.Acc.transformST
       , editRecord = Compiler.DifferentialParser.init chunker parser ""
@@ -854,7 +855,8 @@ updateFromBackend msg model =
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , showEditor = showEditor
                 , currentDocument = Just doc
-                , initialText = ""
+
+                --, initialText = ""
                 , sourceText = doc.content
                 , documents = documents
                 , counter = model.counter + 1

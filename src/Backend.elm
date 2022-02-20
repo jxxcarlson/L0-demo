@@ -151,7 +151,6 @@ updateFromFrontend sessionId clientId msg model =
                         , publicId = humanFriendlyPublicId
                         , created = model.currentTime
                         , modified = model.currentTime
-                        , title = "New Document"
                     }
 
                 documentDict =
