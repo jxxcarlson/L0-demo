@@ -124,11 +124,11 @@ init url key =
       , sortMode = SortByMostRecent
       }
     , Cmd.batch
-        [ Frontend.Cmd.setupWindow
+        [ Frontend.Cmd.setInitialEditorContent
+        , Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
         , sendToBackend (GetDocumentById "id-bs174-rz397")
-        , Frontend.Cmd.setInitialEditorContent
         ]
     )
 
@@ -403,7 +403,6 @@ update msg model =
                     ( { model | message = "No document to open in editor" }, Cmd.none )
 
                 Just doc ->
-                    --( { model | showEditor = True, sourceText = doc.content, initialText = doc.content }, Frontend.Cmd.setInitialEditorContent )
                     ( { model | showEditor = True, sourceText = doc.content, initialText = "" }, Frontend.Cmd.setInitialEditorContent )
 
         Help docId ->
