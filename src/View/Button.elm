@@ -10,6 +10,7 @@ module View.Button exposing
     , getDocumentByPrivateId
     , help
     , home
+    , iLink
     , importJson
     , linkTemplate
     , newDocument
@@ -304,6 +305,10 @@ search =
 home : Element FrontendMsg
 home =
     buttonTemplate [] Home "Home"
+
+
+iLink id label =
+    buttonTemplate [] (Fetch id) label
 
 
 getDocument : Element FrontendMsg

@@ -422,6 +422,9 @@ update msg model =
                 GetPublicDocument id ->
                     ( model, sendToBackend (FetchDocumentById id) )
 
+        Fetch id ->
+            ( model, sendToBackend (FetchDocumentById id) )
+
         DebounceMsg msg_ ->
             let
                 ( debounce, cmd ) =

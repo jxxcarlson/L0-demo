@@ -306,7 +306,7 @@ header model width_ =
         , View.Utility.showIf model.showEditor (wordCount model)
         , E.el [ Font.size 14, Font.color (E.rgb 0.9 0.9 0.9) ] (E.text (currentAuthor model.currentDocument))
         , View.Input.searchDocsInput model
-        , Button.home
+        , Button.iLink Config.welcomeDocId "Home"
         , View.Utility.showIf (model.currentUser == Nothing) Button.signIn
         , View.Utility.showIf (model.currentUser == Nothing) (View.Input.usernameInput model)
         , View.Utility.showIf (model.currentUser == Nothing) (View.Input.passwordInput model)
