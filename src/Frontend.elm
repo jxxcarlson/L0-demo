@@ -128,8 +128,7 @@ init url key =
         , urlAction url.path
         , sendToBackend GetPublicDocuments
         , sendToBackend (GetDocumentById "id-bs174-rz397")
-
-        -- , Frontend.Cmd.setInitialEditorContent
+        , Frontend.Cmd.setInitialEditorContent
         ]
     )
 
