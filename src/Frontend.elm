@@ -846,6 +846,7 @@ updateFromBackend msg model =
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , showEditor = showEditor
                 , currentDocument = Just doc
+                , initialText = doc.content
                 , documents = documents
               }
             , Frontend.Cmd.setInitialEditorContent
