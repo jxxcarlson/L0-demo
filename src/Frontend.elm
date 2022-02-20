@@ -373,7 +373,7 @@ update msg model =
                 , foundIds = data.foundIds
                 , foundIdIndex = data.foundIdIndex
                 , searchCount = data.searchCount
-                , message = ("[" ++ data.selectedId ++ "]") :: data.foundIds |> String.join ", "
+                , message = ("!![" ++ adjustId data.selectedId ++ "]") :: List.map adjustId data.foundIds |> String.join ", "
               }
             , data.cmd
             )
@@ -602,6 +602,16 @@ update msg model =
             nextSyncLR model
 
 
+adjustId : String -> String
+adjustId str =
+    case String.toInt str of
+        Nothing ->
+            str
+
+        Just n ->
+            String.fromInt (n + 2)
+
+
 firstSyncLR model searchSourceText =
     let
         data =
@@ -624,7 +634,7 @@ firstSyncLR model searchSourceText =
         , foundIds = data.foundIds
         , foundIdIndex = data.foundIdIndex
         , searchCount = data.searchCount
-        , message = ("[" ++ data.selectedId ++ "]") :: data.foundIds |> String.join ", "
+        , message = ("[" ++ adjustId data.selectedId ++ "]") :: List.map adjustId data.foundIds |> String.join ", "
       }
     , data.cmd
     )
@@ -639,7 +649,7 @@ nextSyncLR model =
         | selectedId = id_
         , foundIdIndex = modBy (List.length model.foundIds) (model.foundIdIndex + 1)
         , searchCount = model.searchCount + 1
-        , message = ("[" ++ id_ ++ "]") :: model.foundIds |> String.join ", "
+        , message = ("[" ++ adjustId id_ ++ "]") :: List.map adjustId model.foundIds |> String.join ", "
       }
     , View.Utility.setViewportForElement id_
     )

@@ -27,7 +27,9 @@ let myTheme = EditorView.theme({
     color: "#ddd",
     border: "none"
   },
-  "&.cm-matching-bracket": { background: "#f70a0a" }  // not working
+  ".cm-bracket": { color: "#f00" },  // not working // "#f70a0a"
+  ".cm-activeLine": { backgroundColor: "#008c8c"},
+  ".cm-selected": { backgroundColor: "#f00"},
 
 }, {dark: true})
 
@@ -70,19 +72,17 @@ class CodemirrorEditor extends HTMLElement {
                                state: EditorState.create({
                                  extensions: [basicSetup
                                    , myTheme
-                                   //, search({top: true})
+                                   // , EditorView.search({top: true})
                                    , panelTheme
                                    , EditorView.lineWrapping
-                                   // , search({top: true})
                                    // Below: send updated text from CM to Elm
                                    , EditorView.updateListener.of((v)=> {
                                        if(v.docChanged) {
                                            sendText(editor)
                                        }
                                      })
-                                   ],
-                               doc: "EMPTY\n1\n2\n3"
-
+                                   ]
+                               , doc: "EMPTY\n1\n2\n3"
                                }),
                                parent: document.getElementById("editor-here")
 
