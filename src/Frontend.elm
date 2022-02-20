@@ -284,6 +284,9 @@ update msg model =
             ( { model | inputPassword = str }, Cmd.none )
 
         -- UI
+        Home ->
+            ( model, sendToBackend (GetDocumentById "id-bs174-rz397") )
+
         ShowTOCInPhone ->
             ( { model | phoneMode = PMShowDocumentList }, Cmd.none )
 

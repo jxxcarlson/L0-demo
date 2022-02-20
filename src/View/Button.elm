@@ -9,6 +9,7 @@ module View.Button exposing
     , getDocument
     , getDocumentByPrivateId
     , help
+    , home
     , importJson
     , linkTemplate
     , newDocument
@@ -298,6 +299,11 @@ importJson =
 search : Element FrontendMsg
 search =
     buttonTemplate [] Search "Search"
+
+
+home : Element FrontendMsg
+home =
+    buttonTemplate [] Home "Home"
 
 
 getDocument : Element FrontendMsg

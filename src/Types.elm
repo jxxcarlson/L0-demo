@@ -199,6 +199,7 @@ type FrontendMsg
     | ChangePopupStatus PopupStatus
     | CloseEditor
     | OpenEditor
+    | Home
       -- ADMIN
     | InputSpecial String
     | RunSpecial
