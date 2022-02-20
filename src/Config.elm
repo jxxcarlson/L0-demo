@@ -10,7 +10,7 @@ module Config exposing
 
 
 welcomeDocId =
-    "id-jq191-gb297"
+    "id-sq630-qd767"
 
 
 appName =
