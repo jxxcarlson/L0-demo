@@ -825,7 +825,7 @@ updateFromBackend msg model =
         SendDocument access doc ->
             let
                 documents =
-                    Util.insertInList doc model.documents
+                    Util.insertInListViaTitle doc model.documents
 
                 showEditor =
                     case access of
