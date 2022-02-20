@@ -127,7 +127,7 @@ init url key =
         [ Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
-        , sendToBackend (GetDocumentById "id-bs174-rz397")
+        , sendToBackend (GetDocumentById Config.welcomeDocId)
         ]
     )
 
@@ -290,7 +290,7 @@ update msg model =
 
         -- UI
         Home ->
-            ( model, sendToBackend (GetDocumentById "id-bs174-rz397") )
+            ( model, sendToBackend (GetDocumentById Config.welcomeDocId) )
 
         ShowTOCInPhone ->
             ( { model | phoneMode = PMShowDocumentList }, Cmd.none )

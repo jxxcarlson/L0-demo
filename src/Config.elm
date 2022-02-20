@@ -5,7 +5,12 @@ module Config exposing
     , pdfServer
     , startupHelpDocumentId
     , transitKey
+    , welcomeDocId
     )
+
+
+welcomeDocId =
+    "id-jq191-gb297"
 
 
 appName =
