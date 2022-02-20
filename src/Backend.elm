@@ -303,8 +303,19 @@ updateFromFrontend sessionId clientId msg model =
                 badDocs =
                     getBadDocuments model
 
+                updateDoc doc mod =
+                    let
+                        title =
+                            "((untitled))"
+
+                        documentDict =
+                            Dict.insert doc.id { doc | title = "((untitled))", modified = model.currentTime } mod.documentDict
+                    in
+                    { mod | documentDict = documentDict }
+
                 newModel =
-                    List.foldl (\doc m -> Backend.Update.deleteDocument doc m |> Tuple.first) model (badDocs |> List.map Tuple.second)
+                    -- List.foldl (\doc m -> Backend.Update.deleteDocument doc m |> Tuple.first) model (badDocs |> List.map Tuple.second)
+                    List.foldl (\doc m -> updateDoc doc m) model (badDocs |> List.map Tuple.second)
             in
             ( newModel, sendToFrontend clientId (SendMessage ("Bad docs: " ++ String.fromInt (List.length badDocs))) )
 
