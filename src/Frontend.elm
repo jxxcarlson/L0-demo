@@ -298,6 +298,7 @@ update msg model =
             ( { model
                 | currentDocument = Just doc
                 , sourceText = doc.content
+                , initialText = doc.content
                 , ast = ast
                 , title = Compiler.ASTTools.title ast
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
@@ -840,8 +841,7 @@ updateFromBackend msg model =
                     L0.parse doc.content
             in
             ( { model
-                | sourceText = doc.content
-                , ast = ast |> Compiler.Acc.transformST
+                | ast = ast |> Compiler.Acc.transformST
                 , title = Compiler.ASTTools.title ast
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , showEditor = showEditor
@@ -849,6 +849,7 @@ updateFromBackend msg model =
                 , initialText = doc.content
                 , sourceText = doc.content
                 , documents = documents
+                , counter = model.counter + 1
               }
             , Frontend.Cmd.setInitialEditorContent
             )
