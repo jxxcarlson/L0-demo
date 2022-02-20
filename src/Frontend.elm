@@ -761,7 +761,7 @@ updateDoc model str =
             else
                 let
                     provisionalTitle =
-                        Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast |> Debug.log "PROV TITLE"
+                        Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
 
                     ( safeContent, safeTitle ) =
                         if String.left 1 provisionalTitle == "|" then
@@ -769,9 +769,6 @@ updateDoc model str =
 
                         else
                             ( str, provisionalTitle )
-
-                    _ =
-                        Debug.log "SAFE TITLE" safeTitle
 
                     newDocument =
                         { doc | content = safeContent, title = safeTitle }
