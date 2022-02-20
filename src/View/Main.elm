@@ -297,12 +297,12 @@ messageRow model =
 
 header model width_ =
     E.row [ E.spacing 12, E.width E.fill ]
-        [ Button.newDocument
-        , Button.deleteDocument model
-        , Button.cancelDeleteDocument model
+        [ View.Utility.hideIf (model.currentUser == Nothing) Button.newDocument
+        , View.Utility.hideIf (model.currentUser == Nothing) (Button.deleteDocument model)
+        , View.Utility.hideIf (model.currentUser == Nothing) (Button.cancelDeleteDocument model)
         , View.Utility.showIf model.showEditor Button.closeEditor
         , View.Utility.hideIf model.showEditor Button.openEditor
-        , View.Utility.showIf model.showEditor (Button.togglePublic model.currentDocument)
+        , View.Utility.hideIf (model.currentUser == Nothing) (View.Utility.showIf model.showEditor (Button.togglePublic model.currentDocument))
         , View.Utility.showIf model.showEditor (wordCount model)
         , E.el [ Font.size 14, Font.color (E.rgb 0.9 0.9 0.9) ] (E.text (currentAuthor model.currentDocument))
         , View.Input.searchDocsInput model

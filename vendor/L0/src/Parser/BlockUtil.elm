@@ -127,14 +127,14 @@ toExpressionBlock lineNumber block =
 
                 messages =
                     if rawContent_ == "" then
-                        ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") :: state.messages
+                        ("(1) Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") :: state.messages
 
                     else
                         state.messages
 
                 rawContent =
                     if rawContent_ == "" then
-                        firstLine ++ "\n[red Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
+                        firstLine ++ "\n[red (2) Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
 
                     else
                         rawContent_
@@ -222,7 +222,7 @@ mapContent lineNumber blockType content =
                 --        state.messages
                 rawContent =
                     if rawContent_ == "" then
-                        firstLine ++ "\n[red Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
+                        firstLine ++ "\n[red (3) Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
 
                     else
                         rawContent_
@@ -300,14 +300,14 @@ toIntermediateBlock block =
 
                 messages =
                     if rawContent_ == "" && not (List.member (List.head args |> Maybe.withDefault "!!") bareBlockNames) then
-                        Helpers.prependMessage block.lineNumber ("Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") state.messages
+                        Helpers.prependMessage block.lineNumber ("(4) Write something below the block header (" ++ String.replace "| " "" firstLine ++ ")") state.messages
 
                     else
                         state.messages
 
                 rawContent =
                     if rawContent_ == "" && not (List.member (List.head args |> Maybe.withDefault "!!") bareBlockNames) then
-                        firstLine ++ "\n[red Write something below this block header (" ++ String.replace "| " "" firstLine ++ ")]"
+                        firstLine ++ "\n[red ??]"
 
                     else
                         rawContent_

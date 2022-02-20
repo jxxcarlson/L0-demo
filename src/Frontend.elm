@@ -457,7 +457,6 @@ update msg model =
 
         -- ( model, Cmd.none )
         InputText str ->
-            -- updateDoc model str
             let
                 -- Push your values here.
                 ( debounce, cmd ) =
@@ -762,15 +761,31 @@ updateDoc model str =
             else
                 let
                     newTitle =
-                        let
+                        (let
                             provisionalTitle =
                                 Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
-                        in
-                        if provisionalTitle /= "" then
-                            provisionalTitle
 
-                        else
-                            "((untitled))"
+                            defaultTitle str_ =
+                                if String.left 1 str_ == "|" then
+                                    "[[untitled]]"
+
+                                else
+                                    str_
+                         in
+                         case ( provisionalTitle, doc.title ) of
+                            ( "", "" ) ->
+                                "((untitled))"
+
+                            ( a, "" ) ->
+                                a |> defaultTitle
+
+                            ( "", b ) ->
+                                b |> defaultTitle
+
+                            ( _, _ ) ->
+                                provisionalTitle |> defaultTitle
+                        )
+                            |> Debug.log "NEW TITLE"
 
                     newDocument =
                         { doc | content = str, title = newTitle }
