@@ -486,8 +486,6 @@ viewStatusReport model =
             , E.column [ E.spacing 8, E.paddingXY 12 12, Font.size 14, Background.color (E.rgb 1 1 1), E.width (E.px (smallAppWidth model.windowWidth)) ]
                 (List.map (\item -> E.el [] (E.text item)) model.statusReport)
             , footer model (smallAppWidth model.windowWidth)
-
-            --, footer model 400
             ]
         ]
 

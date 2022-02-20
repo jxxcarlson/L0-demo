@@ -124,8 +124,7 @@ init url key =
       , sortMode = SortByMostRecent
       }
     , Cmd.batch
-        [ -- Frontend.Cmd.setInitialEditorContent 400
-          Frontend.Cmd.setupWindow
+        [ Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
         , sendToBackend (GetDocumentById "id-bs174-rz397")
@@ -763,7 +762,15 @@ updateDoc model str =
             else
                 let
                     newTitle =
-                        Abstract.getBlockContents "title" doc.content
+                        let
+                            provisionalTitle =
+                                Compiler.ASTTools.extractTextFromSyntaxTreeByKey "title" model.ast
+                        in
+                        if provisionalTitle /= "" then
+                            provisionalTitle
+
+                        else
+                            "((untitled))"
 
                     newDocument =
                         { doc | content = str, title = newTitle }

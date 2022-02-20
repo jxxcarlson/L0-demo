@@ -40,7 +40,7 @@ newDocument model =
                 , author = Maybe.map .username model.currentUser
             }
     in
-    ( { model | showEditor = True }, Cmd.batch [ sendToBackend (CreateDocument model.currentUser doc) ] )
+    ( { model | showEditor = True, documents = emptyDoc :: model.documents }, Cmd.batch [ sendToBackend (CreateDocument model.currentUser doc) ] )
 
 
 updateCurrentDocument : Document -> FrontendModel -> FrontendModel
