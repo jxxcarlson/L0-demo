@@ -14,6 +14,6 @@ setupWindow =
     Task.perform GotViewport Dom.getViewport
 
 
-setInitialEditorContent : Cmd FrontendMsg
-setInitialEditorContent =
-    Process.sleep 20 |> Task.perform (always SetInitialEditorContent)
+setInitialEditorContent : Float -> Cmd FrontendMsg
+setInitialEditorContent delay =
+    Process.sleep delay |> Task.perform (always SetInitialEditorContent)

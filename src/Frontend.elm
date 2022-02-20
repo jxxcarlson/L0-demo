@@ -124,7 +124,7 @@ init url key =
       , sortMode = SortByMostRecent
       }
     , Cmd.batch
-        [ Frontend.Cmd.setInitialEditorContent
+        [ Frontend.Cmd.setInitialEditorContent 400
         , Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
@@ -403,7 +403,7 @@ update msg model =
                     ( { model | message = "No document to open in editor" }, Cmd.none )
 
                 Just doc ->
-                    ( { model | showEditor = True, sourceText = doc.content, initialText = "" }, Frontend.Cmd.setInitialEditorContent )
+                    ( { model | showEditor = True, sourceText = doc.content, initialText = "" }, Frontend.Cmd.setInitialEditorContent 20 )
 
         Help docId ->
             ( model, sendToBackend (GetDocumentByAuthorId docId) )
@@ -856,7 +856,7 @@ updateFromBackend msg model =
                 , documents = documents
                 , counter = model.counter + 1
               }
-            , Frontend.Cmd.setInitialEditorContent
+            , Frontend.Cmd.setInitialEditorContent 20
             )
 
         GotPublicDocuments publicDocuments ->
