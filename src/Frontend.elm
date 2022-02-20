@@ -123,7 +123,14 @@ init url key =
       , deleteDocumentState = WaitingForDeleteAction
       , sortMode = SortByMostRecent
       }
-    , Cmd.batch [ Frontend.Cmd.setupWindow, urlAction url.path, sendToBackend GetPublicDocuments, Frontend.Cmd.setInitialEditorContent ]
+    , Cmd.batch
+        [ Frontend.Cmd.setupWindow
+        , urlAction url.path
+        , sendToBackend GetPublicDocuments
+        , sendToBackend (GetDocumentById "id-bs174-rz397")
+
+        -- , Frontend.Cmd.setInitialEditorContent
+        ]
     )
 
 
