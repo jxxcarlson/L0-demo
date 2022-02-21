@@ -131,7 +131,13 @@ verbatimDict =
         , ( "equation", equation )
         , ( "aligned", aligned )
         , ( "code", renderCode )
+        , ( "comment", renderComment )
         ]
+
+
+renderComment : Int -> Settings -> List String -> String -> String -> Element L0Msg
+renderComment _ _ _ _ _ =
+    Element.none
 
 
 equation : Int -> Settings -> List String -> String -> String -> Element L0Msg
