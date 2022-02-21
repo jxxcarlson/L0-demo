@@ -167,7 +167,7 @@ urlAction path =
                 sendToBackend GetStatus
 
             _ ->
-                Cmd.none
+                Process.sleep 500 |> Task.perform (always (SetPublicDocumentAsCurrentById Config.welcomeDocId))
 
 
 urlIsForGuest : Url -> Bool
