@@ -128,7 +128,9 @@ init url key =
         [ Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
-        , sendToBackend (GetDocumentById Config.welcomeDocId)
+
+        --, sendToBackend (GetDocumentById Config.welcomeDocId)
+        , Process.sleep 100 |> Task.perform (always (SetDocumentAsCurrentById Config.welcomeDocId))
         ]
     )
 
@@ -531,6 +533,29 @@ update msg model =
                     , Cmd.batch [ sendToBackend (DeleteDocumentBE doc), sendToBackend (GetDocumentById "id-ik166-ha850") ]
                     )
 
+        SetDocumentAsCurrentById id ->
+            case List.filter (\doc -> doc.id == id) model.documents |> List.head of
+                Nothing ->
+                    ( { model | message = "No document of id " ++ id ++ " found" }, Cmd.none )
+
+                Just doc ->
+                    let
+                        ast =
+                            L0.parse doc.content |> Compiler.Acc.transformST
+                    in
+                    ( { model
+                        | currentDocument = Just doc
+                        , sourceText = doc.content
+                        , initialText = doc.content
+                        , ast = ast
+                        , title = Compiler.ASTTools.title ast
+                        , tableOfContents = Compiler.ASTTools.tableOfContents ast
+                        , message = Config.appUrl ++ "/p/" ++ doc.publicId ++ ", id = " ++ doc.id
+                        , counter = model.counter + 1
+                      }
+                    , Cmd.batch [ View.Utility.setViewPortToTop ]
+                    )
+
         SetDocumentAsCurrent permissions doc ->
             let
                 ast =
@@ -858,8 +883,6 @@ updateFromBackend msg model =
                 , tableOfContents = Compiler.ASTTools.tableOfContents ast
                 , showEditor = showEditor
                 , currentDocument = Just doc
-
-                --, initialText = ""
                 , sourceText = doc.content
                 , documents = documents
                 , counter = model.counter + 1
