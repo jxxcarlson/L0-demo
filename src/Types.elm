@@ -222,7 +222,7 @@ type FrontendMsg
     | GetSelection String
       -- DOC
     | Fetch String
-    | SetDocumentAsCurrentById String
+    | SetPublicDocumentAsCurrentById String
     | SetInitialEditorContent
     | SetDocumentInPhoneAsCurrent DocPermissions Document
     | ShowTOCInPhone

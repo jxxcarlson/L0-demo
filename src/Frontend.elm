@@ -130,7 +130,7 @@ init url key =
         , sendToBackend GetPublicDocuments
 
         --, sendToBackend (GetDocumentById Config.welcomeDocId)
-        , Process.sleep 500 |> Task.perform (always (SetDocumentAsCurrentById Config.welcomeDocId))
+        , Process.sleep 100 |> Task.perform (always (SetPublicDocumentAsCurrentById Config.welcomeDocId))
         ]
     )
 
@@ -533,8 +533,8 @@ update msg model =
                     , Cmd.batch [ sendToBackend (DeleteDocumentBE doc), sendToBackend (GetDocumentById "id-ik166-ha850") ]
                     )
 
-        SetDocumentAsCurrentById id ->
-            case List.filter (\doc -> doc.id == id) model.documents |> List.head of
+        SetPublicDocumentAsCurrentById id ->
+            case List.filter (\doc -> doc.id == id) model.publicDocuments |> List.head of
                 Nothing ->
                     ( { model | message = "No document of id " ++ id ++ " found" }, Cmd.none )
 

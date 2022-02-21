@@ -10,6 +10,7 @@ module Config exposing
 
 
 welcomeDocId =
+    -- "id-kl117-ej494"
     "id-jb162-lb161"
 
 
@@ -18,6 +19,7 @@ appName =
 
 
 appUrl =
+    -- "localhost/8000"
     "https://l0-lab-demo.lamdera.app"
 
 
