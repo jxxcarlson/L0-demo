@@ -1,6 +1,7 @@
 module Config exposing
     ( appName
     , appUrl
+    , documentDeletedNotice
     , helpDocumentId
     , pdfServer
     , startupHelpDocumentId
@@ -12,6 +13,10 @@ module Config exposing
 welcomeDocId =
     -- "id-kl117-ej494"
     "id-jb162-lb161"
+
+
+documentDeletedNotice =
+    "id-ux175-hv037\n"
 
 
 appName =

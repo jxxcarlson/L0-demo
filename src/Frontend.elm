@@ -128,8 +128,6 @@ init url key =
         [ Frontend.Cmd.setupWindow
         , urlAction url.path
         , sendToBackend GetPublicDocuments
-
-        --, sendToBackend (GetDocumentById Config.welcomeDocId)
         , Process.sleep 500 |> Task.perform (always (SetPublicDocumentAsCurrentById Config.welcomeDocId))
         ]
     )
@@ -530,7 +528,7 @@ update msg model =
                         , documents = List.filter (\d -> d.id /= doc.id) model.documents
                         , deleteDocumentState = WaitingForDeleteAction
                       }
-                    , Cmd.batch [ sendToBackend (DeleteDocumentBE doc), sendToBackend (GetDocumentById "id-ik166-ha850") ]
+                    , Cmd.batch [ sendToBackend (DeleteDocumentBE doc), Process.sleep 500 |> Task.perform (always (SetPublicDocumentAsCurrentById Config.documentDeletedNotice)) ]
                     )
 
         SetPublicDocumentAsCurrentById id ->
