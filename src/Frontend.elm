@@ -130,7 +130,7 @@ init url key =
         , sendToBackend GetPublicDocuments
 
         --, sendToBackend (GetDocumentById Config.welcomeDocId)
-        , Process.sleep 100 |> Task.perform (always (SetDocumentAsCurrentById Config.welcomeDocId))
+        , Process.sleep 500 |> Task.perform (always (SetDocumentAsCurrentById Config.welcomeDocId))
         ]
     )
 
