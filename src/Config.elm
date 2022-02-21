@@ -16,7 +16,7 @@ welcomeDocId =
 
 
 documentDeletedNotice =
-    "id-ux175-hv037\n"
+    "id-ux175-hv037"
 
 
 appName =
