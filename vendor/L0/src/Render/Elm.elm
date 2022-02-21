@@ -84,6 +84,7 @@ markupDict =
         , ( "boldItalic", \g s exprList -> boldItalic g s exprList )
         , ( "strike", \g s exprList -> strike g s exprList )
         , ( "underline", \g s exprList -> underline g s exprList )
+        , ( "comment", \g s exprList -> Element.none )
 
         -- COLOR
         , ( "red", \g s exprList -> red g s exprList )
