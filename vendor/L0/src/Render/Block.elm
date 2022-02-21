@@ -117,6 +117,7 @@ blockDict =
         , ( "corollary", env "Corollary" )
         , ( "problem", env "Problem" )
         , ( "remark", env "Remark" )
+        , ( "example", env "Example" )
         , ( "note", env "Note" )
         , ( "env", env_ )
         , ( "item", item )

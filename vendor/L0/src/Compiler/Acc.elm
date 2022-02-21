@@ -19,6 +19,7 @@ type alias Accumulator =
     , equationIndex : Int
     , definitionIndex : Int
     , remarkIndex : Int
+    , exampleIndex : Int
     , lemmaIndex : Int
     , problemIndex : Int
     , theoremIndex : Int
@@ -49,6 +50,7 @@ init k =
     , equationIndex = 0
     , definitionIndex = 0
     , remarkIndex = 0
+    , exampleIndex = 0
     , lemmaIndex = 0
     , problemIndex = 0
     , theoremIndex = 0
@@ -113,6 +115,10 @@ transformBlock acc (ExpressionBlock block) =
                     ExpressionBlock
                         { block | args = block.args ++ [ namedIndex "index" acc.remarkIndex ] }
 
+                Just "example" ->
+                    ExpressionBlock
+                        { block | args = block.args ++ [ namedIndex "index" acc.exampleIndex ] }
+
                 _ ->
                     ExpressionBlock block
 
@@ -168,6 +174,9 @@ updateAccumulator ((ExpressionBlock { blockType, content }) as block) accumulato
 
                 Just "remark" ->
                     { accumulator | remarkIndex = accumulator.remarkIndex + 1 }
+
+                Just "example" ->
+                    { accumulator | exampleIndex = accumulator.exampleIndex + 1 }
 
                 Just "defs" ->
                     case content of
