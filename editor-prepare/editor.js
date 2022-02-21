@@ -73,6 +73,7 @@ class CodemirrorEditor extends HTMLElement {
                                  extensions: [basicSetup
                                    , myTheme
                                    // , EditorView.search({top: true})
+                                   // should use this: -> // , search({top: true})
                                    , panelTheme
                                    , EditorView.lineWrapping
                                    // Below: send updated text from CM to Elm
